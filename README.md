@@ -1,4 +1,4 @@
-# NFT24Studio
+# NFTStudio24
 
 ## How to Install and run locally
 - install dfx
