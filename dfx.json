@@ -1,0 +1,57 @@
+{
+  "canisters": {
+    "entry": {
+      "main": "backend/service/Entry.mo",
+      "type": "motoko",
+      "declarations": {
+        "output": "src/dfx/declarations/temp/entry"
+      }
+    },
+    "user": {
+      "main": "backend/service/User.mo",
+      "type": "motoko",
+      "declarations": {
+        "output": "src/dfx/declarations/temp/user"
+      }
+    },
+    "collection": {
+      "main": "backend/service/Collection.mo",
+      "type": "motoko",
+      "declarations": {
+        "output": "src/dfx/declarations/temp/collection"
+      }
+    },
+
+    "NFTStudio24": {
+      "dependencies": ["entry", "user"],
+      "frontend": {
+        "entrypoint": "out/index.html"
+      },
+      "source": ["out"],
+      "type": "assets",
+      "declarations": {
+        "output": "src/dfx/declarations/temp/NFTStudio24"
+      }
+    },
+    "internet_identity": {
+      "type": "custom",
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz",
+
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "declarations": {
+        "output": "src/dfx/declarations/temp/internet_identity"
+      }
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+.Article-post {
+  display: inline-block;
+  width: 100%;
+  position: relative;
+
+  &:before {
+    position: absolute;
+    content: "";
+    left: 15px;
+    right: 15px;
+    bottom: -5px;
+    height: 1px;
+    background-color: $grey;
+  }
+
+  .Article-post-inner {
+    display: inline-block;
+    width: 100%;
+    padding: 10px 15px;
+
+    span {
+      font-size: 40px;
+      color: $blue;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 600;
+      color: $black;
+      line-height: 17px;
+      margin: 0;
+      margin-top: 5px;
+    }
+
+    .img-pnl {
+      max-width: 100%;
+    }
+
+    .txt-pnl {
+      width: 100%;
+      overflow: hidden;
+    }
+  }
+}

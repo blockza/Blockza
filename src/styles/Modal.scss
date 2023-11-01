@@ -1,0 +1,137 @@
+.modal {
+  .modal-content {
+    @include bd-radius(15px);
+    // border-color: $darkgreygrey;
+  }
+
+  .connect-heading-pnl {
+    align-items: center;
+  }
+
+  .modal-body {
+    background-color: $darkgreygrey;
+    @include bd-radius(15px);
+    // border-color: $darkgreygrey;
+  }
+
+  p {
+    font-family: $inter;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 21px;
+    color: $black;
+    margin: 0;
+  }
+
+  .close-btn {
+    background-color: transparent !important;
+    padding: 0;
+    color: $black;
+    border: none !important;
+    opacity: 0.7;
+    font-size: 24px;
+
+    &:hover {
+      color: $color;
+    }
+  }
+
+  .connect-heading-pnl {
+    i {
+      font-size: 24px;
+    }
+
+    margin-bottom: 15px;
+  }
+
+  &.edit-profile-modal {
+    .modal-content {
+      background-color: $white;
+
+      .profile-info-panel {
+        font-family: $inter;
+
+        h2 {
+          font-family: $inter;
+
+          sup {
+            font-size: 12px;
+            @include bd-radius(10px);
+            font-family: $inter;
+            font-size: 14px;
+            padding: 2px 10px 4px;
+            font-weight: 400;
+            line-height: 17px;
+            background-color: rgba(183, 183, 183, 0.25);
+            color: #bbbbbb;
+
+            &.required {
+              background-color: rgba(255, 201, 5, 0.25);
+              color: $color;
+            }
+          }
+        }
+
+        p {
+          font-size: 16px;
+          color: $black;
+          opacity: 0.4;
+          margin-bottom: 15px;
+        }
+      }
+
+      .modal-body {
+        padding: 50px;
+        background-color: $white;
+
+        .profile-detail-pnl {
+          .banner-pnl {
+            position: relative;
+            @include bd-radius(20px 20px 0 0);
+
+            button {
+              position: absolute;
+              right: 15px;
+              top: 15px;
+              z-index: 2;
+              background-color: transparent;
+              border: none;
+              color: $white;
+              font-size: 26px;
+
+              &:hover {
+                color: $color;
+              }
+            }
+          }
+
+          h1 {
+            position: relative;
+            top: -35px;
+          }
+
+          .txt-pnl {
+            @include bd-radius(0 0 20px 20px);
+          }
+        }
+      }
+    }
+  }
+}
+
+.modal.black {
+  .modal-content {
+    border-color: $darkgreygrey;
+  }
+
+  .modal-body {
+    background-color: $darkgrey;
+    border-color: $darkgreygrey;
+  }
+
+  .close-btn,
+  p,
+  .connect-heading-pnl i {
+    color: $white;
+  }
+}

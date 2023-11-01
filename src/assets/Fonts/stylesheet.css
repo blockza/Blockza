@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Akzidenz-Grotesk BQ';
+    src: url('AkzidenzGroteskBQ-Reg.woff2') format('woff2'),
+        url('AkzidenzGroteskBQ-Reg.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+

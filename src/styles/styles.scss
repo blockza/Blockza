@@ -1,0 +1,136 @@
+// $primary-color: #007aff;
+// $secondary-color: #d9ebff;
+// $gray: #ececec;
+
+// $fontSizes-headingTwo: 1.875rem;
+// $fontSizes-headingThree: 1.5rem;
+// $lineHeights-1_25: 1.25rem;
+
+// $space-4: 1rem;
+
+// * {
+//   box-sizing: border-box;
+//   margin: 0;
+//   padding: 0;
+// }
+// .primary-btn {
+//   background-color: $secondary-color;
+//   color: $primary-color;
+//   padding: 7px 15px;
+//   border-radius: 5px;
+// }
+// .aspect-custom {
+//   aspect-ratio: 1184/303;
+// }
+
+// .aspect-2\1 {
+//   aspect-ratio: 2/1;
+// }
+
+// .wallet-container {
+//   .wallet-item {
+//     display: flex;
+//     justify-content: space-between;
+//     background-color: $gray;
+//     padding: 15px;
+//     border-radius: 5px;
+//     cursor: pointer;
+//     p {
+//       font-size: 17px;
+//       font-weight: 600;
+//     }
+//     img {
+//       width: 35.2px;
+//     }
+//     &:hover {
+//       background-color: #e2e2e2;
+//     }
+//   }
+// }
+// .dashboard-container {
+//   display: flex;
+//   background-color: #f7f7f7;
+//   overflow: hidden;
+//   max-height: min-content;
+//   .dashboard-sidebar {
+//     height: 100vh;
+//     & div {
+//       background-color: white !important;
+//     }
+//     .active-bar {
+//       color: $primary-color;
+//       svg {
+//         color: $primary-color;
+//       }
+//     }
+//   }
+//   .dashboard-content {
+//     flex: 1;
+//     max-height: 100vh;
+//     .entries-container {
+//       height: 100vh;
+//       overflow-y: scroll;
+//     }
+//   }
+// }
+// .pointer {
+//   cursor: pointer;
+// }
+// .entry {
+//   background-color: white;
+//   width: 100%;
+//   max-width: 720px;
+//   border-radius: 10px;
+
+//   border: 2px solid transparent;
+
+//   .title {
+//     line-height: 2rem;
+//     font-size: 1.5rem;
+//     font-weight: 600;
+//   }
+//   .description {
+//     background-color: #f7f7f7;
+//     width: fit-content;
+//     color: #979797;
+//     font-size: 12px;
+//     padding-inline: 4px;
+//     border-radius: 10px;
+//     margin-top: 8px;
+//   }
+//   &:hover {
+//     border-color: rgba(146, 145, 145, 0.514);
+//   }
+// }
+// .indv-entry {
+//   .entry-title {
+//     height: 33vw;
+//     width: 100%;
+//     font-size: clamp($fontSizes-headingTwo, 8vw, 4.5rem);
+//     color: $primary-color;
+//     letter-spacing: -0.5px;
+//     line-height: 1.2;
+//     padding: var($space-4);
+//     font-weight: 600;
+//     padding-top: undefined;
+//   }
+//   .entry-text {
+//     .entry-description {
+//       font-size: 1.1rem;
+//       line-height: 1.625;
+//     }
+//   }
+// }
+// .header-title {
+//   font-size: $fontSizes-headingThree;
+//   font-weight: 600;
+//   padding: 10px 0 0 10px;
+// }
+// .profile-position {
+//   top: 0%;
+//   left: 50%;
+//   transform: translate(-50%, -25%);
+// }
+// .card-custom {
+//   height: 440px;
+// }

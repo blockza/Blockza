@@ -1,0 +1,56 @@
+.sidebar-home {
+    ul.social-list {
+
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+        position: absolute;
+        left: 0;
+        bottom: 0px;
+        margin: 0;
+        padding: 0 20px 30px;
+        border-bottom: 10px solid $blue;
+
+        li {
+            display: inline-block;
+            width: 33.333333%;
+            float: left;
+            padding: 0;
+            margin: 0 auto;
+
+            a {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                @include bd-radius(5px);
+                position: relative;
+                margin-bottom: 20px;
+                padding: 0;
+                color: $blue;
+                opacity: 0.7;
+                background-color: rgba(255, 255, 255, 0.50);
+
+                i {
+                    font-size: 24px;
+                    color: $blue;
+                }
+
+                &:before,
+                &:after {
+                    display: none;
+                }
+
+                &:hover {
+                    opacity: 1;
+
+                    i {
+                        color: $blue;
+                    }
+                }
+
+
+            }
+        }
+    }
+}

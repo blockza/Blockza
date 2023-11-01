@@ -1,0 +1,194 @@
+/* Footer Starts Here
+===================== */
+#main,
+#main.black,
+body {
+    .footer {
+        background-color: $bggrey;
+        padding: 50px 30px 20px;
+
+        @media(max-width:1200px) {
+            padding: 50px 30px 20px;
+        }
+
+        @media(max-width:991px) {
+            padding: 30px 15px 20px;
+        }
+
+        @media(max-width:575px) {
+            text-align: center;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid;
+            border-color: $light-grey;
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        h4 {
+            color: $black;
+            line-height: 30px;
+
+            &.blue-text {
+                max-width: 250px;
+                margin-top: 10px;
+                color: $blue;
+                margin-bottom: 100px;
+
+                &:first-letter {
+                    background-color: $blue;
+                    color: $white;
+                }
+
+                @media(max-width:1200px) {
+                    max-width: 100%;
+                    margin-bottom: 15px;
+                }
+            }
+        }
+
+        h6,
+        p {
+            font-size: 16px;
+            font-weight: 500;
+            color: $black;
+            margin-bottom: 5px;
+            line-height: 23.36px;
+
+            @media(max-width:991px) {
+                margin-bottom: 5px;
+            }
+
+            @media(max-width:575px) {
+                margin-bottom: 15px;
+            }
+        }
+
+        p {
+            color: $grey;
+            font-weight: 400;
+
+            a {
+                color: $grey;
+                text-decoration: underline !important;
+
+                &:hover {
+                    color: $blue;
+                }
+            }
+        }
+
+        ul {
+            display: inline-block;
+            width: 100%;
+            float: left;
+
+            @media(max-width:575px) {
+                float: none;
+                margin-bottom: 30px;
+            }
+
+            li {
+                display: inline-block;
+                width: 100%;
+                margin-bottom: 5px;
+
+                @media(max-width:767px) {
+                    width: 50%;
+                }
+
+                @media(max-width:575px) {
+                    width: 100%;
+                    margin-bottom: 15px;
+                }
+
+                a {
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: $grey;
+
+                    &:hover {
+                        color: $blue;
+                    }
+                }
+            }
+
+            &.footer-social-list {
+                margin: 0;
+                text-align: right;
+
+                @media(max-width:575px) {
+                    text-align: center;
+                    margin-top: 10px;
+                }
+
+                li {
+                    width: auto;
+                    margin-left: 5px;
+
+                    @media(max-width:575px) {
+                        margin-left: 15px;
+                        margin-right: 15px;
+                        margin-bottom: 0;
+                        margin-top: 20px;
+
+                        &:first-child {
+                            width: 100%;
+                            margin-left: 0;
+                            margin-right: 0;
+                        }
+                    }
+
+
+                    a {
+                        width: 35px;
+                        height: 35px;
+                        @include bd-radius(50%);
+                        color: $black;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        font-size: 22px;
+
+                        i {
+                            color: $black;
+                        }
+
+                        &:hover {
+                            background: $blue;
+                            color: $white;
+                            transform: scale(1.1);
+
+                            i {
+                                color: $white;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &.anime {
+
+            .footer-logo,
+            h4,
+            h5,
+            h6 {
+                @include animation-anime(transleft, 1s, linear);
+            }
+
+            ul li {
+                @include animation-anime(transdown, 1s, linear);
+            }
+
+            p,
+            ul.footer-social-list li {
+                @include animation-anime(transright, 1s, linear);
+            }
+        }
+    }
+}
+
+/* Footer Ends Here
+=================== */

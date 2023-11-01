@@ -1,0 +1,223 @@
+// Reg Button
+.reg-btn {
+  font-weight: 700;
+  color: $white;
+  background: $gradient;
+  @include bd-radius(5px);
+  padding: 8px 25px 10px;
+  font-size: 16px;
+
+  i {
+    position: relative;
+    top: 2px;
+    margin-left: 5px;
+  }
+
+  &.big {
+    background: $color;
+    font-size: 22px;
+    font-weight: 500;
+    color: $black;
+    border: 1px solid $color;
+    padding: 3px 15px 5px;
+    font-weight: 600;
+    margin-right: 15px;
+    margin-bottom: 20px;
+
+    img {
+      max-width: 20px;
+    }
+
+    &:hover {
+      color: $black;
+      box-shadow: 10px 10px 10px rgba(255, 255, 255, 0.25);
+    }
+  }
+
+  &:hover {
+    color: $white;
+    @include box-shadow(5px, 5px, 5px, rgba(0, 0, 0, 0.25));
+
+    i {
+      margin-left: 10px;
+    }
+  }
+}
+
+.show-more-link {
+  font-size: 16px;
+  color: $grey;
+  font-weight: 500;
+
+  i {
+    font-size: 20px;
+  }
+
+  &:hover {
+    color: $blue;
+  }
+}
+
+.grey-button {
+  background-color: #ebebf0;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #bababe;
+  border-color: #e1e1e5;
+
+  &:hover {
+    background-color: $blue;
+    color: $white;
+  }
+}
+
+.blue-button {
+  background-color: $blue;
+  border-radius: 5px;
+  padding: 5px 30px;
+  font-size: 18px;
+  font-weight: 700;
+  color: $white;
+  border-color: $blue;
+
+  &:hover {
+    background-color: $black;
+    color: $white;
+  }
+}
+
+// Reg Button
+
+// Grey Button
+// .grey-btn {
+//   display: inline-flex !important;
+//   width: 100%;
+//   justify-content: space-between;
+//   background-color: #E8E8E8;
+//   border-radius: 6px;
+//   border: none;
+//   align-items: center;
+//   margin-bottom: 15px;
+//   padding: 10px;
+//   min-height: 56px;
+
+//   &:hover {
+//     background-color: $color;
+//   }
+// }
+
+// Grey Button
+
+
+// .edit-profile-btn {
+//   position: absolute;
+//   right: 15px;
+//   top: 15px;
+//   background-color: $light-grey;
+//   border-color: $light-grey;
+//   border-radius: 5px;
+//   color: $white;
+//   padding: 7px 30px;
+//   z-index: 3;
+
+//   &:hover {
+//     background-color: $color;
+//     border-color: $color;
+//     @include box-shadow(5px, 5px, 5px, rgba(0, 0, 0, 0.25));
+//   }
+// }
+
+// .back-btn {
+//   display: inline-block;
+//   font-family: $inter;
+//   font-size: 20px;
+//   font-weight: 500;
+//   line-height: 24px;
+//   color: rgba(0, 0, 0, 0.6);
+
+//   &:hover {
+//     color: $color;
+//   }
+// }
+
+// .angle-btn {
+//   display: inline-block;
+//   font-size: 30px;
+//   font-weight: 700;
+//   line-height: 24px;
+//   color: rgba(0, 0, 0, 0.6);
+
+//   &:hover {
+//     color: $color;
+//   }
+// }
+
+// .dot-dropdown-btn {
+//   button {
+//     background-color: transparent !important;
+//     border-color: transparent !important;
+//     color: rgba(0, 0, 0, 0.6);
+//     font-size: 24px;
+//     padding: 0;
+
+//     &:focus,
+//     &:hover {
+//       color: $color;
+//     }
+//   }
+// }
+
+// .yellow-btn {
+//   padding: 16px 18px 16px 18px;
+//   border-radius: 13px;
+//   border: 1px solid;
+//   border-color: #FFC905;
+//   background-color: #FFE505;
+
+//   &:hover {
+//     background-color: $color;
+//     border-color: $color;
+//   }
+// }
+
+// .view-more-btn {
+//   font-size: 16px;
+//   color: $black;
+
+//   i {
+//     margin-left: 5px;
+//     font-size: 20px;
+//     position: relative;
+//     top: 2px;
+//     @include trans1;
+//   }
+
+//   &:hover {
+//     color: $blue;
+
+//     i {
+//       margin-left: 10px;
+//     }
+//   }
+// }
+
+// .simple-btn {
+//   font-size: 20px;
+//   color: $black;
+//   font-weight: 600;
+//   background-color: transparent;
+//   border: none;
+
+//   i {
+//     font-size: 28px;
+//     position: relative;
+//     top: 2px;
+//     margin-left: 10px;
+//   }
+
+//   &:hover {
+//     color: $blue;
+//   }
+// }

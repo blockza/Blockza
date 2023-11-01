@@ -1,0 +1,49 @@
+$Sarala: 'Sarala', sans-serif;
+$inter: 'Inter', sans-serif;
+
+/* Mixins */
+@mixin trans1 {
+    -webkit-transition: all .5s ease-in-out;
+    -moz-transition: all .5s ease-in-out;
+    -ms-transition: all .5s ease-in-out;
+    -o-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;
+}
+
+/* Border Radius */
+/* In This 5px is by default */
+@mixin bd-radius($value : 5px) {
+    -webkit-border-radius: $value;
+    -moz-border-radius: $value;
+    border-radius: $value;
+}
+
+/* Border Radius */
+
+/* Box Shadow */
+@mixin box-shadow($top, $left, $blur, $color) {
+    -webkit-box-shadow: $top $left $blur $color;
+    -moz-box-shadow: $top $left $blur $color;
+    box-shadow: $top $left $blur $color;
+}
+
+/* Box Shadow */
+
+
+/* Animation */
+// @include animation-anime(Navanime, 1.2s, linear);
+@mixin animation-anime($animname, $animetime, $flow) {
+    -webkit-animation: $animname $animetime $flow;
+    -moz-animation: $animname $animetime $flow;
+    animation: $animname $animetime $flow;
+}
+
+@mixin animationanime($animname, $animetime, $flow, $stay, $altr) {
+    -webkit-animation: $animname $animetime $flow $stay $altr;
+    -moz-animation: $animname $animetime $flow $stay $altr;
+    animation: $animname $animetime $flow $stay $altr;
+}
+
+/* Animation */
+
+/* Mixins */

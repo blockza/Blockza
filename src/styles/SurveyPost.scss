@@ -1,0 +1,321 @@
+.servey-post {
+  background-color: $white;
+  display: inline-block;
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.15);
+
+  .share {
+    img {
+      max-width: 15px;
+    }
+  }
+
+  @media(max-width:1200px) {
+    margin-top: 30px;
+  }
+
+  .servey-post-inner {
+    display: inline-block;
+    width: 100%;
+    padding: 20px;
+
+    @media(max-width:1600px) {
+      padding: 15px;
+    }
+
+    .servey-post-head {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+
+      @media(max-width:575px) {
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+      }
+
+      .left-pnl {
+        display: flex;
+
+        @media(max-width:575px) {
+          display: inline-block;
+          width: 100%;
+        }
+      }
+
+      .img-pnl {
+        width: 50px;
+
+        @media(max-width:575px) {
+          width: 100px;
+          margin: 0 auto 20px;
+        }
+
+        img {
+          width: 50px;
+
+          @media(max-width:575px) {
+            width: auto;
+            max-width: 100px;
+          }
+        }
+      }
+
+      .share {
+        a {
+          color: $grey;
+          font-size: 12px;
+
+          i {
+            color: $blue;
+          }
+
+          &:hover {
+            color: $blue;
+          }
+
+          @media(max-width:1200px) {
+            font-size: 16px;
+          }
+
+          @media(max-width:575px) {
+            font-size: 14px;
+            margin-bottom: 10px;
+          }
+        }
+      }
+
+      .txt-pnl {
+        width: calc(100% - 40px);
+        padding-left: 10px;
+
+        @media(max-width:575px) {
+          width: 100%;
+          padding: 0;
+        }
+
+        h6 {
+          font-size: 16px;
+          color: $black;
+          margin: 0;
+
+          @media(max-width:1200px) {
+            font-size: 22px;
+            font-weight: 700;
+          }
+
+          @media(max-width:575px) {
+            width: 100%;
+          }
+
+          a {
+            font-size: 12px;
+            display: inline-block;
+            color: $white;
+            background-color: $lightblue;
+            padding: 5px;
+            border-radius: 3px 5px;
+            margin-left: 15px;
+
+            @media(max-width:1400px) {
+              margin-left: 0;
+            }
+
+            @media(max-width:1200px) {
+              margin-left: 15px;
+            }
+
+            img {
+              width: 15px;
+              margin-right: 5px;
+            }
+          }
+        }
+
+        p {
+          color: $darkgrey;
+          font-size: 14px;
+
+          @media(max-width:1600px) {
+            margin-bottom: 5px;
+            font-size: 13px;
+          }
+
+          @media(max-width:1400px) {
+            margin-bottom: 20px;
+          }
+
+          @media(max-width:1200px) {
+            margin-top: 5px;
+            font-size: 16px;
+          }
+
+          @media(max-width:575px) {
+            margin-bottom: 0px;
+          }
+
+          span {
+            color: $black;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+
+    .servey-post-body {
+      position: relative;
+      display: inline-block;
+      margin-top: 0px;
+      background-color: #f2f2f8;
+      border-radius: 15px;
+      border: 1px solid $border-color;
+      padding: 20px;
+      text-align: center;
+      width: 100%;
+
+      @media(max-width:1400px) {
+        padding: 20px 10px;
+      }
+
+      @media(max-width:1200px) {
+        padding: 20px;
+      }
+
+      @media(max-width:575px) {
+        padding: 20px 10px;
+      }
+
+      p {
+        font-size: 16px;
+        color: $blue;
+        margin-top: 10px;
+        margin-bottom: 0;
+
+        @media(max-width:1200px) {
+          font-size: 18px;
+        }
+
+        @media(max-width:575px) {
+          font-size: 16px;
+        }
+      }
+
+      h3 {
+        font-size: 18px;
+        color: $black;
+        font-weight: 600;
+        margin: 0;
+
+        @media(max-width:1200px) {
+          font-size: 22px;
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+
+        @media(max-width:575px) {
+          font-size: 18px;
+        }
+      }
+
+      h4 {
+        color: $blue;
+        margin: 0;
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      ul {
+        display: flex;
+        width: 100%;
+        background-color: $white;
+        border-radius: 5px;
+        padding: 8px 0px;
+        margin-bottom: 30px;
+
+        @media(max-width:1600px) {
+          margin-bottom: 15px;
+        }
+
+        @media(max-width:1200px) {
+          margin-bottom: 40px;
+        }
+
+        @media(max-width:575px) {
+          display: inline-block;
+          width: 100%;
+          background-color: transparent;
+          margin-bottom: 20px;
+        }
+
+        li {
+          padding: 0px 10px;
+          display: inline-block;
+          width: 50%;
+          text-align: left;
+          font-size: 14px;
+          color: $black;
+          font-weight: 600;
+
+          @media(max-width:1400px) {
+            font-size: 12px;
+          }
+
+          @media(max-width:1200px) {
+            font-size: 16px;
+          }
+
+          @media(max-width:575px) {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+            background-color: $white;
+            padding: 5px;
+          }
+
+          &:first-child {
+            border-right: 1px solid $border-color;
+
+            @media(max-width:575px) {
+              border: none;
+            }
+          }
+
+
+          img {
+            width: 20px;
+            margin-right: 5px;
+
+            @media(max-width:1400px) {
+              margin-right: 0;
+            }
+
+            @media(max-width:1200px) {
+              margin-right: 5px;
+              max-width: 25px;
+              width: auto;
+            }
+          }
+        }
+      }
+
+      .servey-btn {
+        display: inline-block;
+        width: 100%;
+        background-color: $blue;
+        color: $white;
+        font-size: 14px;
+        padding: 7px;
+        border-radius: 5px;
+
+        @media(max-width:1200px) {
+          padding: 10px 15px;
+        }
+
+        &:hover {
+          background-color: $lightblue;
+        }
+      }
+    }
+  }
+}

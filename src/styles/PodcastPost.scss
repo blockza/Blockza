@@ -1,0 +1,264 @@
+.Podcast-pnl {
+  position: relative;
+  background-color: transparent;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(7, 1, 72, 1) 0%,
+    rgba(71, 7, 154, 1) 67%,
+    rgba(29, 2, 68, 1) 100%
+  );
+
+  @media (max-width: 767px) {
+    border-radius: 15px;
+  }
+
+  h2 {
+    color: $white;
+    margin-bottom: 20px;
+    font-size: 50px;
+    color: $color;
+    font-weight: 700;
+
+    @media (max-width: 1600px) {
+      font-size: 35px;
+    }
+
+    @media (max-width: 1400px) {
+      font-size: 28px;
+    }
+
+    @media (max-width: 1200px) {
+      font-size: 40px;
+    }
+
+    @media (max-width: 575px) {
+      font-size: 30px;
+    }
+
+    span {
+      display: inline-block;
+      width: 100%;
+      color: $white;
+    }
+  }
+
+  h5 {
+    color: $white;
+    font-weight: 400;
+    margin-bottom: 30px;
+
+    @media (max-width: 1600px) {
+      font-size: 16px;
+    }
+  }
+
+  .podcast-post {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-image: url(../assets/Img/Mic.png);
+    background-repeat: no-repeat;
+    background-position: 98% bottom;
+    background-size: auto 88%;
+    overflow: hidden;
+    padding: 65px 0;
+
+    @media (max-width: 1819px) {
+      padding: 45px 0;
+    }
+
+    @media (max-width: 1600px) {
+      background-size: auto 78%;
+      padding: 54px 0;
+    }
+
+    @media (max-width: 1400px) {
+      background-size: auto 70%;
+      padding: 45px 0;
+    }
+
+    @media (max-width: 1200px) {
+      padding: 30px 0;
+    }
+
+    @media (max-width: 767px) {
+      padding: 40px 0;
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      background-image: none;
+    }
+
+    .reg-btn.big {
+      @media (max-width: 1819px) {
+        margin-right: 10px;
+      }
+
+      @media (max-width: 1600px) {
+        font-size: 16px;
+
+        img {
+          max-width: 15px;
+        }
+      }
+
+      @media (max-width: 1400px) {
+        font-size: 14px;
+      }
+
+      @media (max-width: 767px) {
+        font-size: 16px;
+      }
+
+      @media (max-width: 575px) {
+        margin-left: 5px;
+        margin-right: 5px;
+        width: 100%;
+      }
+    }
+
+    &::before {
+      position: absolute;
+      content: '';
+      right: -340px;
+      top: -200px;
+      width: 751px;
+      height: 811px;
+      background-color: transparent;
+      border: 180px solid;
+      border-color: #eaca08;
+      border-radius: 50%;
+
+      @media (max-width: 1819px) {
+        top: -182px;
+      }
+
+      @media (max-width: 1600px) {
+        right: -385px;
+      }
+
+      @media (max-width: 1400px) {
+        right: -452px;
+        border-width: 140px;
+      }
+
+      @media (max-width: 767px) {
+        display: none;
+      }
+    }
+
+    .text-pnl {
+      width: calc(100% - 450px);
+      padding: 0 30px;
+
+      @media (max-width: 1600px) {
+        width: calc(100% - 381px);
+        padding-right: 15px;
+      }
+
+      @media (max-width: 1400px) {
+        width: calc(100% - 315px);
+      }
+
+      @media (max-width: 767px) {
+        width: 100%;
+      }
+
+      @media (max-width: 575px) {
+        padding: 0 30px;
+      }
+    }
+
+    .img-pnl {
+      width: 270px;
+      height: 270px;
+      border-radius: 50%;
+      position: relative;
+      z-index: 2;
+
+      @media (max-width: 1600px) {
+        width: 220px;
+        height: 220px;
+      }
+
+      @media (max-width: 1400px) {
+        width: 180px;
+        height: 180px;
+      }
+
+      @media (max-width: 767px) {
+        margin: 0 auto;
+      }
+
+      img {
+        height: 270px;
+        width: 270px;
+        border: 10px solid;
+        border-color: $color;
+        border-radius: 50%;
+
+        @media (max-width: 1600px) {
+          width: 220px;
+          height: 220px;
+        }
+
+        @media (max-width: 1400px) {
+          width: 180px;
+          height: 180px;
+        }
+      }
+    }
+  }
+
+  &.anime {
+    h1,
+    h4 {
+      @include animation-anime(transdown, 1s, linear);
+    }
+  }
+}
+
+.podcast-list {
+  text-align: center;
+
+  ul {
+    display: inline-flex;
+    margin: 0 auto;
+    background-color: $color;
+    border: 1px solid;
+    border-color: $color;
+    @include bd-radius(15px);
+    padding: 0 50px;
+    margin: 15px 0px 25px;
+
+    @media (max-width: 767px) {
+      padding: 0;
+      width: 100%;
+    }
+
+    @media (max-width: 575px) {
+      display: inline-block;
+    }
+
+    li {
+      display: inline-block;
+      width: 25%;
+      padding: 15px 20px 0;
+      font-size: 22px;
+      color: $black;
+      min-width: 110px;
+
+      i {
+        font-size: 30px;
+      }
+
+      a {
+        font-size: 22px;
+        color: $black;
+        font-family: $inter;
+      }
+    }
+  }
+}

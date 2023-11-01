@@ -1,0 +1,144 @@
+#main {
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  padding-top: 80px;
+  background-color: $bg;
+
+  // @media (max-width: 1200px) {
+  //   padding-top: 200px;
+  // }
+
+  // @media (max-width: 991px) {
+  //   padding-top: 150px;
+  // }
+
+  @media (max-width: 575px) {
+    text-align: center;
+  }
+
+  &.black {
+    background-color: $black;
+
+    .pbg-pnl {
+      background-color: $lightblack;
+    }
+
+    .sidebar {
+      background-color: $lightblack;
+
+      ul li a {
+        &:hover {
+          color: $color;
+        }
+
+        .img-pnl {
+          img:first-child {
+            opacity: 0;
+          }
+
+          img:last-child {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    .grey-btn {
+      background-color: $black;
+
+      &:hover {
+        background-color: $color;
+      }
+    }
+
+    .profile-detail-pnl .txt-pnl {
+      background-color: $darkgrey;
+
+      a {
+        background-color: $black;
+
+        &:hover {
+          background-color: $color;
+          @include box-shadow(5px, 5px, 10px, $rgba);
+        }
+      }
+
+      .img-pnl .img img {
+        border-color: $darkgrey;
+      }
+    }
+
+    .nav-tabs .nav-item button {
+      color: $white;
+      opacity: 1;
+    }
+
+    h1.bg,
+    h2.bg,
+    .nav-tabs .nav-item button:hover,
+    .nav-tabs .nav-item button.active {
+      color: $color;
+    }
+
+    .hero-panel {
+      border-color: $white;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    span,
+    p,
+    a {
+      color: $white;
+    }
+
+    .featured-post .featured-post-inner .txt-pnl a:hover {
+      color: $color;
+    }
+
+    .social-list li a {
+      background-color: $darkgrey;
+
+      &:hover {
+        border-color: $border-dark;
+      }
+    }
+
+    .Product-post .Product-post-inner .txt-pnl {
+      background-color: $darkgrey;
+
+      .dark-btn-small {
+        color: $black;
+
+        &:hover {
+          color: $white;
+        }
+      }
+    }
+
+    .Product-post:hover {
+      @include box-shadow(5px, 5px, 10px, $rgba);
+    }
+
+    .Product-post.big:hover {
+      @include box-shadow(0px, 0px, 0px, $rgba);
+    }
+
+    .Product-post.big .absolute-pnl .user-list li span,
+    .Product-post .Product-post-inner .txt-pnl .user-list li span {
+      background-color: $black;
+    }
+
+    .reg-btn {
+      &:hover {
+        color: $white;
+        @include box-shadow(5px, 5px, 5px, $rgba);
+      }
+    }
+  }
+}

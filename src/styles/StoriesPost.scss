@@ -1,0 +1,192 @@
+.Stories-post {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 15px;
+  @include bd-radius(15px);
+  background-color: transparent;
+
+  @media(max-width:767px) {
+    max-width: 320px;
+    margin: 0 auto 30px;
+  }
+
+  .Stories-post-inner {
+    display: inline-block;
+    width: 100%;
+    background-color: transparent;
+    text-align: initial;
+    position: relative;
+    @include bd-radius(15px);
+
+    h2 {
+      color: $white;
+      margin-bottom: 15px;
+      font-weight: 600;
+      position: absolute;
+      left: 15px;
+      bottom: 60px;
+      z-index: 2;
+      right: 15px;
+      height: 70px;
+      overflow: hidden;
+
+      @media(max-width:1600px) {
+        font-size: 20px;
+      }
+
+      @media(max-width:1200px) {
+        font-size: 24px;
+      }
+
+      @media(max-width:991px) {
+        font-size: 20px;
+      }
+
+      @media(max-width:767px) {
+        font-size: 24px;
+      }
+
+      @media(max-width:575px) {
+        font-size: 19px;
+      }
+    }
+
+    ul {
+      display: inline-block;
+      width: 100%;
+      margin: 0;
+      position: absolute;
+      left: 15px;
+      bottom: 10px;
+      z-index: 2;
+
+      li {
+        display: inline-block;
+        width: 100%;
+        font-size: 14px;
+        color: $white;
+        margin: 0;
+        float: left;
+      }
+    }
+
+    .top-span {
+      position: absolute;
+      left: 15px;
+      right: 15px;
+      top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+
+      .story-btn {
+        font-weight: 700;
+        color: $black;
+        background: $color;
+        @include bd-radius(0px);
+        padding: 4px 15px 4px;
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+
+        &:hover {
+          box-shadow: 5px 5px 5px rgba(255, 201, 5, 0.5);
+        }
+
+        @media(max-width:1400px) {
+          padding: 4px 10px;
+          font-size: 14px;
+        }
+
+        @media(max-width:1200px) {
+          padding: 4px 15px;
+          font-size: 18px;
+        }
+
+        @media(max-width:575px) {
+          padding: 4px 10px;
+          font-size: 14px;
+        }
+      }
+
+      .span-logo {
+        padding: 0;
+        border-radius: 50%;
+        z-index: 2;
+        height: auto;
+        background-color: $white;
+        width: auto;
+
+        @media(max-width:1400px) {
+          max-width: 40px;
+        }
+
+        @media(max-width:1200px) {
+          max-width: unset;
+        }
+
+        @media(max-width:575px) {
+          max-width: 40px;
+        }
+
+        img {
+          margin: 0;
+        }
+      }
+    }
+
+    .img-pnl {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 50px;
+
+      &:before {
+        position: absolute;
+        content: "";
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        @include trans1;
+        @include bd-radius(12px);
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.01) 0%, rgba(0, 0, 0, 1) 100%);
+      }
+
+      img {
+        opacity: 1;
+        width: 100%;
+        @include bd-radius(15px 15px 0 0);
+      }
+
+      a,
+      img {
+        width: 100%;
+        @include bd-radius(15px);
+
+        &.post-logo {
+          width: auto;
+        }
+      }
+    }
+  }
+
+  &:hover {
+    .img-pnl {
+      padding-bottom: 0px;
+
+      &::before {
+        opacity: 0;
+      }
+
+      img {
+        opacity: 1;
+      }
+    }
+
+    h2 {
+      bottom: 100px;
+    }
+  }
+}
