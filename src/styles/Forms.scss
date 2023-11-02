@@ -10,8 +10,14 @@ textarea.form-control {
 
   &:focus {
     box-shadow: none;
-    border-color: $color;
+    border-color: $blue;
   }
+}
+
+form label {
+  color: $black;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 textarea,
@@ -20,6 +26,12 @@ textarea.form-control {
   max-width: 100%;
   min-height: 150px;
   max-height: 150px;
+}
+
+textarea.small,
+textarea.form-control.small {
+  min-height: 100px;
+  max-height: 100px;
 }
 
 .submit-btn,
@@ -47,4 +59,20 @@ input.submit-btn {
     border-color: $color;
   }
 
+}
+
+::-webkit-input-placeholder {
+  color: #cccccc !important;
+}
+
+::-moz-input-placeholder {
+  color: #cccccc !important;
+}
+
+::-ms-input-placeholder {
+  color: #cccccc !important;
+}
+
+::placeholder {
+  color: #cccccc !important;
 }

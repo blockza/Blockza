@@ -19,7 +19,7 @@ import Infinity from '@/assets/Img/Icons/infinity.png';
 import Wallet from '@/assets/Img/Icons/plug-wallet.png';
 import cup from '@/assets/Img/Icons/icon-cup-1.png';
 import cup1 from '@/assets/Img/Icons/icon-cup-3.png';
-import user from '@/assets/Img/Icons/icon-user-3.png';
+import userImg from '@/assets/Img/Icons/icon-user-3.png';
 import user1 from '@/assets/Img/Icons/icon-user-2.png';
 import feedback from '@/assets/Img/Icons/icon-feedback-3.png';
 import feedback1 from '@/assets/Img/Icons/icon-feedback-1.png';
@@ -29,6 +29,9 @@ import gift from '@/assets/Img/Icons/icon-gift.png';
 import { ConnectPlugWallet } from '@/components/utils/connection';
 import iconbook from '@/assets/Img/Icons/icon-book.png';
 import icongirl from '@/assets/Img/Icons/icon-girl-1.png';
+import { User } from '@/types/profile';
+import { getImage } from '@/components/utils/getImage';
+import logger from '@/lib/logger';
 
 export default function Connect({
   hideRewards,
@@ -42,6 +45,10 @@ export default function Connect({
   const [plugConnected, setPlugConnected] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [isLoggin, setIsLoggin] = React.useState<boolean>(false);
+  const [userId, setUserId] = React.useState<number | null>();
+  const [user, setUser] = React.useState<User | null>();
+  const [profileImg, setProfileImg] = React.useState<string | null>();
+  const [publicKey, setPublicKey] = React.useState<string | null>();
 
   const [client, setClient] = React.useState<AuthClient>();
 
@@ -144,7 +151,7 @@ export default function Connect({
 
     setIsLoading(false);
 
-    // console.log(principal);
+    // logger(principal);
     // const agent = new HttpAgent({ identity });
     // Using the interface description of our webapp, we create an actor that we use to call the service methods.
     // const webapp = Actor.createActor(webapp_idl, {
@@ -153,7 +160,6 @@ export default function Connect({
     // });
     // Call whoami which returns the principal (user id) of the current user.
     const principal = await webapp.whoami();
-    console.log(principal);
     // router.push('/write');
     // setPText(identity.toString());
   };
@@ -200,6 +206,16 @@ export default function Connect({
     setIsLoggin(true);
     const login = await methods.login();
   };
+  const updateImg = async (img: any) => {
+    if (img) {
+      const tempImg = await getImage(img);
+
+      setProfileImg(tempImg);
+    } else {
+      // setProfileFile(null);
+      setProfileImg(null);
+    }
+  };
   React.useEffect(() => {
     // const token = getToken();
     // if (window.ic) {
@@ -210,13 +226,72 @@ export default function Connect({
         const con = await auth.client.isAuthenticated();
         if (con) {
           const identity = await auth.client.getIdentity();
+          const pKey = await identity.getDelegation().toJSON().publicKey;
+          setPublicKey(pKey);
+
           setIdentity(identity);
         }
-        console.log('is authenticated', con);
       }
     };
     getIdentity();
   }, [auth.client]);
+
+  const getUser = async (res?: any) => {
+    let tempUser = null;
+    if (res) {
+      tempUser = await res.get_user_details([]);
+    } else {
+      tempUser = await auth.actor.get_user_details([]);
+    }
+    if (tempUser.ok) {
+      setUser(tempUser.ok[1]);
+      updateImg(tempUser.ok[1].profileImg[0]);
+    }
+  };
+
+  React.useEffect(() => {
+    if (auth.state === 'initialized') {
+      getUser();
+    } else {
+      methods.initAuth().then(async (res) => {
+        if (!res.success) {
+          getUser(res.actor);
+        } else {
+          getUser(res.actor);
+        }
+      });
+    }
+  }, []);
+  React.useEffect(() => {
+    if (auth.state === 'anonymous') {
+      // setIsOwner(false);
+    } else if (auth.state !== 'initialized') {
+    } else {
+      getUser();
+    }
+  }, [auth]);
+
+  // React.useEffect(() => {
+  //   if (auth.state === 'initialized') {
+  //     getUser();
+  //   } else {
+  //     methods.initAuth().then(async (res) => {
+  //       if (!res.success) {
+  //         // toast.error('Your session has expired please log in again', {
+  //         //   autoClose: 1900,
+  //         // });
+  //         // setTimeout(() => {
+  //         //   router.push('/');
+  //         // }, 3000);
+  //         getUser(res.actor);
+  //       } else {
+  //         getUser(res.actor);
+  //         logger(res, auth.actor);
+  //       }
+  //     });
+  //     logger('User not authenticated');
+  //   }
+  // }, []);
 
   React.useEffect(() => {
     methods.initAuth();
@@ -315,9 +390,9 @@ export default function Connect({
                       <Image src={icongirl} alt='icongirl' />
                     </div>
                     <div className='txt-pnl'>
-                      <h6>Username</h6>
+                      <h6>{user ? user.name : 'User Name'}</h6>
                       <span>
-                        <Image src={Infinity} alt='Infinity' /> 500
+                        <Image src={Infinity} alt='Infinity' /> 0
                       </span>
                     </div>
                   </div>
@@ -330,18 +405,22 @@ export default function Connect({
                   <Image src={icongirl} alt='Profileicon' />
                 </div>
                 <div>
-                  <h6>Username</h6>
-                  <p>0x717d...74a</p>
+                  <h6> {user ? user.name : 'User Name'}</h6>
+                  <p>
+                    {publicKey
+                      ? publicKey.slice(0, 5) + '...' + publicKey.slice(-3)
+                      : ''}
+                  </p>
                 </div>
                 <div className='total-icp'>
                   <p>Total ICP</p>
                   <span>
-                    <Image src={Infinity} alt='Infinity' /> 500
+                    <Image src={Infinity} alt='Infinity' /> 0
                   </span>
                 </div>
               </NavDropdown.Item>
               <Link href='/profiles' className='dropdown-item'>
-                <Image src={user} alt='user' />
+                <Image src={userImg} alt='user' />
                 <Image src={user1} alt='user' /> My Profile
               </Link>
               <Link href='/dashboardn' className='dropdown-item'>
@@ -420,7 +499,7 @@ export default function Connect({
               onClick={async () => {
                 if (client) {
                   const con = await client.isAuthenticated();
-                  console.log('is authenticated', con);
+                  logger('is authenticated', con);
                 }
               }}
             >

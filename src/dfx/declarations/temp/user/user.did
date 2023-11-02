@@ -1,0 +1,71 @@
+type anon_class_13_1 = 
+ service {
+   add_user: () -> (Result_2);
+   check_user_exists: (principal) -> (bool);
+   get_other_user_details: (principal) -> (Result_2) query;
+   get_user_details: (UserId) -> (Result_1) query;
+   update_user: (InputUser) -> (Result);
+ };
+type UserId = opt text;
+type User = 
+ record {
+   authorDescription: opt text;
+   authorInfo: opt text;
+   authorTitle: opt text;
+   bannerImg: opt ImageObject;
+   dob: opt text;
+   email: opt text;
+   facebook: opt text;
+   gender: opt text;
+   instagram: opt text;
+   linkedin: opt text;
+   name: opt text;
+   profileImg: opt ImageObject;
+   twitter: opt text;
+   website: opt text;
+ };
+type Result_2 = 
+ variant {
+   err: text;
+   ok: record {
+         text;
+         User;
+       };
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: record {
+         text;
+         User;
+         bool;
+       };
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: record {
+         text;
+         User;
+         opt User;
+       };
+ };
+type InputUser = 
+ record {
+   authorDescription: text;
+   authorInfo: text;
+   authorTitle: text;
+   bannerImg: opt ImageObject;
+   dob: text;
+   email: text;
+   facebook: text;
+   gender: text;
+   instagram: text;
+   linkedin: text;
+   name: text;
+   profileImg: opt ImageObject;
+   twitter: text;
+   website: text;
+ };
+type ImageObject = vec nat8;
+service : () -> anon_class_13_1

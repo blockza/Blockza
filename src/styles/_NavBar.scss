@@ -744,7 +744,11 @@
 }
 
 /* NavBar Dashboard */
-
+.spinner-white {
+  width: '1.5rem';
+  height: '1.5rem';
+  border-width: '0.3rem';
+}
 /* Black Theme */
 #main {
   &.black {

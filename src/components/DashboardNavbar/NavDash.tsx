@@ -37,7 +37,7 @@ export default function NavBarDash({ handleButtonClick }: any) {
                 className={`themebtn ${isThemeActive ? 'active' : ''}`}
                 onClick={() => {
                   toggleThemeClass();
-                  console.log(
+                  logger(
                     'NETWORK',
                     process.env.NEXT_PUBLIC_ENTRY_CANISTER_ID,
                     'NETWORK',

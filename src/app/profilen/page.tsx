@@ -44,6 +44,7 @@ import authMethods from '@/lib/auth';
 import { fileToCanisterBinaryStoreFormat } from '@/dfx/utils/image';
 import { getImage } from '@/components/utils/getImage';
 import { makeEntryActor } from '@/dfx/service/actor-locator';
+import logger from '@/lib/logger';
 
 export default function Profile() {
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function Profile() {
   const [animatedElements, setAnimatedElements] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [user, setUser] = useState<User | null>();
+  const [user, setUser] = useState<any>();
   // Both these are for profile Image
   const [tempImg, setTempImg] = useState({ imgUrl: '' });
   const [profileFile, setProfileFile] = useState<File | null>(null);
@@ -192,7 +193,7 @@ export default function Profile() {
       updateImg(tempUser.ok[1].bannerImg[0], 'banner');
       setIsOwner(tempUser.ok[2]);
     }
-    console.log('GET_USER_DETAILS', tempUser);
+    logger(tempUser, 'GET_USER_DETAILS');
   };
   useEffect(() => {
     if (auth.state === 'initialized') {
@@ -209,10 +210,10 @@ export default function Profile() {
           getUser(res.actor);
         } else {
           getUser(res.actor);
-          console.log(res, auth.actor);
+          logger(res, auth.actor);
         }
       });
-      console.log('User not authenticated');
+      logger('User not authenticated');
     }
   }, []);
   useEffect(() => {
@@ -509,7 +510,7 @@ export default function Profile() {
               onSubmit={async (values, { setSubmitting, resetForm }) => {
                 setSubmitting(true);
                 setUser(undefined);
-                console.log('SUBMITNIG');
+                logger('SUBMITNIG');
                 // TODO Just Using init auth for now, remove this and use session timeout and isAuthenticated after adding session Expiry
                 await methods.initAuth();
                 let fileArray = null;
@@ -533,7 +534,7 @@ export default function Profile() {
                   bannerImg: bannerArray ? [bannerArray] : [],
                   profileImg: fileArray ? [fileArray] : [],
                 });
-                console.log(newUser);
+                logger(newUser);
                 setUser(newUser.ok[1]);
                 updateImg(newUser.ok[1].profileImg[0], 'profile');
                 updateImg(newUser.ok[1].bannerImg[0], 'banner');
@@ -632,11 +633,12 @@ export default function Profile() {
                         animation='border'
                         // variant='secondary'
                         // size='sm'
-                        style={{
-                          width: '1.5rem',
-                          height: '1.5rem',
-                          borderWidth: '0.3rem',
-                        }}
+                        // style={{
+                        //   width: '1.5rem',
+                        //   height: '1.5rem',
+                        //   borderWidth: '0.3rem',
+                        // }}
+                        // className='spinner-black'
                       />
                     ) : (
                       ' Save Settings'

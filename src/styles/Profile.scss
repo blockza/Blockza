@@ -12,30 +12,50 @@
     position: relative;
     @include animation-anime(transup, 1s, linear);
 
-    @media(max-width:767px) {
+    @media (max-width: 767px) {
       padding: 65px 15px 20px;
     }
 
-    @media(max-width:575px) {
+    @media (max-width: 575px) {
       text-align: center;
     }
 
-    &:before {
+    .pr-banner {
       position: absolute;
-      content: "";
+      content: '';
       left: 0;
       right: 0;
       top: 0;
       z-index: 0;
       height: 120px;
-      background-color: $blue;
+      background-color: transparent;
       border-radius: 10px 10px 0 0;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px 10px 0 0;
+      }
 
       @media(max-width:575px) {
         height: 90px;
       }
     }
+    .img-pnl {
+      .img {
+        position: relative;
+        width: 150px;
+        margin: 0 auto;
+        height: 150px;
+        border-radius: 50%;
 
+        img {
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+        }
+      }
+    }
     p {
       font-size: 16px;
       color: $black;
@@ -55,7 +75,7 @@
   z-index: 2;
   align-items: center;
 
-  @media(max-width:575px) {
+  @media (max-width: 575px) {
     justify-content: center;
   }
 
@@ -66,7 +86,7 @@
     border-radius: 50%;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
 
-    @media(max-width:575px) {
+    @media (max-width: 575px) {
       width: 80px;
       height: 80px;
     }
@@ -76,15 +96,14 @@
     padding-left: 15px;
     padding-top: 30px;
 
-    @media(max-width:575px) {
+    @media (max-width: 575px) {
       padding-left: 10px;
     }
 
     h2 {
       font-weight: 600;
 
-
-      @media(max-width:575px) {
+      @media (max-width: 575px) {
         font-size: 22px;
         text-align: left;
       }
@@ -100,7 +119,7 @@
         padding: 5px;
         box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.05);
 
-        @media(max-width:575px) {
+        @media (max-width: 575px) {
           margin-left: 5px;
         }
 
@@ -118,7 +137,7 @@
     display: flex;
     margin-top: 30px;
 
-    @media(max-width:575px) {
+    @media (max-width: 575px) {
       display: inline-block;
       width: 100%;
     }
@@ -127,12 +146,12 @@
       display: inline-block;
       margin-left: 15px;
 
-      @media(max-width:767px) {
+      @media (max-width: 767px) {
         margin-left: 0;
         margin-right: 15px;
       }
 
-      @media(max-width:575px) {
+      @media (max-width: 575px) {
         margin: 0;
         margin-bottom: 15px;
         width: 100%;

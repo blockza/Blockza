@@ -42,6 +42,7 @@ import SocialList from '@/components/SocialList/SocialList';
 import ArticlesPost from '@/components/ArticlesPost/ArticlesPost';
 import { useConnectPlugWalletStore, useThemeStore } from '@/store/useStore';
 import authMethods from '@/lib/auth';
+import logger from '@/lib/logger';
 
 export default function SidebarHome() {
   const [isThemeActive, setIsThemeActive] = useState(false);
@@ -92,7 +93,6 @@ export default function SidebarHome() {
     }
   };
   const handleTabChange = (tab: string) => {
-    console.log(tab);
     setTab(tab);
   };
   // Dark Theme
@@ -133,7 +133,7 @@ export default function SidebarHome() {
     // window.ic.plug.isConnected();
     // }
     const getIdentity = async () => {
-      console.log('Identity was get');
+      logger('Identity was get');
       if (auth.client) {
         const con = await auth.client.isAuthenticated();
         setConnected(con);
@@ -208,7 +208,7 @@ export default function SidebarHome() {
                     // onClick={(e) => {
                     //   e.preventDefault();
                     // }}
-                    href='/NFTArticleQuiz'
+                    href='/addarticle'
                   >
                     <div className='img-pnl'>
                       <Image src={Articles1} alt='Articles' />
@@ -401,7 +401,7 @@ export default function SidebarHome() {
       </div>
 
       {/* Connect Modal */}
-      <Modal show={show} centered size='md' onHide={handleClose}>
+      <Modal show={show} centered onHide={handleClose}>
         <Modal.Body>
           <div className='flex-div connect-heading-pnl'>
             <i className='fa fa-question-circle-o'></i>

@@ -76,7 +76,7 @@ export default function Write() {
         image: fileArray,
         subscription: false,
       };
-      console.log(identity);
+      logger(identity);
       const entryActor = makeEntryActor({
         agentOptions: {
           identity,
@@ -110,7 +110,7 @@ export default function Write() {
         onSubmit={async (values, actions) => {
           // uploadEntry(values);
           // hello.greet(values.title).then((res) => {
-          //   console.log('GET GREETED KID::::::', res);
+          //   logger('GET GREETED KID::::::', res);
           // });
 
           const msg = await uploadEntry(values);

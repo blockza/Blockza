@@ -47,7 +47,6 @@ export default function Entry() {
       const entryActor = makeEntryActor();
       const tempEntry = await entryActor.getEntry(id);
       const tempImg = await getImage(tempEntry[0].image);
-      console.log(tempImg);
       setImage(tempImg);
       setEntry(tempEntry);
     };

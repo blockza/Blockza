@@ -27,7 +27,6 @@ export default function Entries() {
     const getEntries = async () => {
       const entryActor = makeEntryActor();
       const tempEntries = await entryActor.getAllEntries();
-      console.log('ENTRIES', tempEntries);
       setEntries(tempEntries);
     };
     getEntries();

@@ -1,4 +1,5 @@
 import { makeUserActor } from '@/dfx/service/actor-locator';
+import logger from '@/lib/logger';
 import { Actor } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
 import { JsonnableDelegationChain } from '@dfinity/identity';
@@ -76,7 +77,7 @@ const authMethods = ({
   };
 
   const login = async () => {
-    console.log('TRYING', process.env.DFX_NETWORK);
+    logger('TRYING', process.env.DFX_NETWORK);
     let ran = false;
     if (auth && auth.state === 'anonymous' && auth.client && handleClose) {
       await auth.client.login({
@@ -112,12 +113,12 @@ const authMethods = ({
       initAuth();
       ran = true;
     } else {
-      console.log('Login did not start');
+      logger('Login did not start');
     }
   };
   const logout = async () => {
     if (auth.state === 'initialized' && auth.client) {
-      console.log('LOGGIN OUT');
+      logger('LOGGIN OUT');
       await auth.client.logout();
 
       setAuth({
@@ -129,43 +130,25 @@ const authMethods = ({
     }
   };
   const authenticate = async (client: AuthClient) => {
-    // handleSessionTimeout();
-
     try {
       const actor = makeUserActor({
         agentOptions: {
           identity: client.getIdentity(),
         },
       });
-
       const user = await actor.add_user();
-      console.log(user, 'USING THIS USER');
-
-      // auth.update(() => ({
-      //   state: "initializing-crypto",
-      //   actor,
-      //   client,
-      // }));
       setAuth({
         state: 'initialized',
         actor,
         client,
       });
-      // if (handler) {
-      //   handler();
-      // }
       return actor;
-      // syncing required
     } catch (e) {
-      // auth.update(() => ({
-      //   state: 'error',
-      //   error: e.message || 'An error occurred',
-      // }));
       setAuth({
         ...auth,
         state: 'error',
       });
-      console.log('Error while authenticating', e);
+      logger(e, 'Error while authenticating');
     }
   };
 

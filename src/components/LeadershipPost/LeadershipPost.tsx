@@ -9,7 +9,7 @@ import Girl from '@/assets/Img/Icons/icon-woman.png';
 import { Table } from 'react-bootstrap';
 import Link from 'next/link';
 import Image from 'next/image';
-export default function LeadershipPost({ more }: { more: boolean }) {
+export default function LeadershipPost({ more }: { more?: boolean }) {
   return (
     <>
       <div className='leader-ship-pnl'>
@@ -83,7 +83,7 @@ export default function LeadershipPost({ more }: { more: boolean }) {
                     </div>
                   </td>
                 </tr>
-                {more ?
+                {more ? (
                   <>
                     <tr>
                       <td>
@@ -122,7 +122,8 @@ export default function LeadershipPost({ more }: { more: boolean }) {
                       <td>
                         +364,500 <Image src={infinity1} alt='Infinity' />
                       </td>
-                    </tr><tr>
+                    </tr>
+                    <tr>
                       <td>
                         <b>6</b>
                       </td>
@@ -140,7 +141,8 @@ export default function LeadershipPost({ more }: { more: boolean }) {
                       <td>
                         +364,500 <Image src={infinity1} alt='Infinity' />
                       </td>
-                    </tr><tr>
+                    </tr>
+                    <tr>
                       <td>
                         <b>7</b>
                       </td>
@@ -159,7 +161,9 @@ export default function LeadershipPost({ more }: { more: boolean }) {
                         +364,500 <Image src={infinity1} alt='Infinity' />
                       </td>
                     </tr>
-                  </> : <>
+                  </>
+                ) : (
+                  <>
                     <tr>
                       <td>
                         <b>1</b>
@@ -199,7 +203,7 @@ export default function LeadershipPost({ more }: { more: boolean }) {
                       </td>
                     </tr>
                   </>
-                }
+                )}
               </tbody>
             </Table>
           </div>

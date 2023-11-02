@@ -16,11 +16,11 @@ export default function Sidebar() {
     setTab(currentTab);
   }, []);
   const toggleHandle = (event: any) => {
-    console.log('HI');
+    logger('HI');
     settoggle(!toggle);
   };
   const handleTabChange = (tab: string) => {
-    console.log(tab);
+    logger(tab);
     setTab(tab);
   };
   return (

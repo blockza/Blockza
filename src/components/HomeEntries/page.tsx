@@ -31,10 +31,10 @@ export default function HomeEntries() {
   // React.useEffect(() => {
   //   const getAllEntries = async () => {
   //     const tempEntries = await getAllUsersEntries(10, 0);
-  //     console.log('Entries', tempEntries);
+  //     logger('Entries', tempEntries);
   //     setAllUsersEntries(tempEntries);
   //   };
-  //   // console.log(allUsersEntries);
+  //   // logger(allUsersEntries);
   //   getAllEntries();
   // }, [location]);
 

@@ -1,0 +1,92 @@
+.edit-banner-cntnr {
+  display: flex;
+  align-items: center;
+  color: $white;
+  position: relative;
+  border-radius: 15px;
+  img {
+    border-radius: 20px;
+    max-height: 220px;
+    opacity: 0.8;
+  }
+
+  label {
+    color: $white;
+    font-size: 20px;
+    position: absolute;
+    left: 0;
+    text-align: center;
+    top: 42%;
+    margin: 0;
+    line-height: 0;
+    right: 0;
+    text-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    &:hover {
+      color: $color;
+      label,
+      i {
+        color: $color;
+      }
+    }
+  }
+
+  i {
+    margin-right: 5px;
+  }
+}
+
+.edit-picture-cntnr {
+  background-color: transparent;
+  border-radius: 15px;
+  padding: 15px 0;
+  height: auto;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  max-width: 250px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 120px;
+  position: relative;
+
+  img {
+    border-radius: 15px;
+  }
+
+  label {
+    color: $white;
+    font-size: 20px;
+    position: absolute;
+    cursor: pointer;
+    left: 0;
+    text-align: center;
+    top: 49%;
+    margin: 0;
+    line-height: 0;
+    right: 0;
+    text-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+    &:hover {
+      color: $blue;
+
+      label,
+      i {
+        color: $blue;
+      }
+    }
+  }
+
+  i {
+    margin-right: 5px;
+  }
+}
+.goog-logo-link,
+.goog-te-gadget span {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  color: transparent !important;
+  font-size: 0;
+}
