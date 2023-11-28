@@ -83,7 +83,7 @@ export default function NFTArticle() {
                 </Breadcrumb>
               </Col>
               <Col xxl='7' xl='7' lg='12' md='12'>
-                <NFTArticlePost />
+                {/* <NFTArticlePost /> */}
                 <h3>
                   <Image src={iconrelated} alt='icon related' /> Related Posts
                 </h3>
@@ -100,7 +100,6 @@ export default function NFTArticle() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

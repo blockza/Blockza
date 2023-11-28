@@ -11,11 +11,13 @@ import ButtonLink from '@/components/links/ButtonLink';
 import { useConnectPlugWalletStore } from '@/store/useStore';
 import { Button, Modal, Nav, NavDropdown, Spinner } from 'react-bootstrap';
 import { JsonnableDelegationChain } from '@dfinity/identity';
-import { makeUserActor } from '@/dfx/service/actor-locator';
+import { makeLedgerCanister, makeUserActor } from '@/dfx/service/actor-locator';
 import Link from 'next/link';
 import Image from 'next/image';
 import authMethods from '@/lib/auth';
-import Infinity from '@/assets/Img/Icons/infinity.png';
+import infinity from '@/assets/Img/Icons/infinity.png';
+
+// import infinity from '@/assets/Img/Icons/icon-infinite.png';
 import Wallet from '@/assets/Img/Icons/plug-wallet.png';
 import cup from '@/assets/Img/Icons/icon-cup-1.png';
 import cup1 from '@/assets/Img/Icons/icon-cup-3.png';
@@ -32,6 +34,8 @@ import icongirl from '@/assets/Img/Icons/icon-girl-1.png';
 import { User } from '@/types/profile';
 import { getImage } from '@/components/utils/getImage';
 import logger from '@/lib/logger';
+import { AccountIdentifier } from '@dfinity/ledger-icp';
+import { Principal } from '@dfinity/principal';
 
 export default function Connect({
   hideRewards,
@@ -46,17 +50,22 @@ export default function Connect({
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [isLoggin, setIsLoggin] = React.useState<boolean>(false);
   const [userId, setUserId] = React.useState<number | null>();
+  const [expanded, setExpanded] = React.useState(false);
   const [user, setUser] = React.useState<User | null>();
   const [profileImg, setProfileImg] = React.useState<string | null>();
   const [publicKey, setPublicKey] = React.useState<string | null>();
 
   const [client, setClient] = React.useState<AuthClient>();
-
-  const { auth, setAuth, setIdentity } = useConnectPlugWalletStore((state) => ({
-    auth: state.auth,
-    setAuth: state.setAuth,
-    setIdentity: state.setIdentity,
-  }));
+  const pathname = usePathname();
+  const { auth, setAuth, setIdentity, setPrincipal, identity, principal } =
+    useConnectPlugWalletStore((state) => ({
+      auth: state.auth,
+      setAuth: state.setAuth,
+      setIdentity: state.setIdentity,
+      setPrincipal: state.setPrincipal,
+      identity: state.identity,
+      principal: state.principal,
+    }));
   const router = useRouter();
   const location = usePathname();
   const handleShow = () => setShow(true);
@@ -226,10 +235,10 @@ export default function Connect({
         const con = await auth.client.isAuthenticated();
         if (con) {
           const identity = await auth.client.getIdentity();
-          const pKey = await identity.getDelegation().toJSON().publicKey;
-          setPublicKey(pKey);
 
           setIdentity(identity);
+          const pKey = await identity.getDelegation().toJSON().publicKey;
+          setPublicKey(pKey);
         }
       }
     };
@@ -248,15 +257,19 @@ export default function Connect({
       updateImg(tempUser.ok[1].profileImg[0]);
     }
   };
-
+  const getII = async () => {
+    const identity = await auth.client.getIdentity();
+    const principal = await identity.getPrincipal();
+    setPrincipal(principal.toString());
+    setIdentity(identity);
+  };
   React.useEffect(() => {
     if (auth.state === 'initialized') {
       getUser();
+      getII();
     } else {
       methods.initAuth().then(async (res) => {
-        if (!res.success) {
-          getUser(res.actor);
-        } else {
+        if (res.success) {
           getUser(res.actor);
         }
       });
@@ -265,11 +278,13 @@ export default function Connect({
   React.useEffect(() => {
     if (auth.state === 'anonymous') {
       // setIsOwner(false);
+      setIdentity(null);
     } else if (auth.state !== 'initialized') {
     } else {
       getUser();
+      getII();
     }
-  }, [auth]);
+  }, [auth, pathname]);
 
   // React.useEffect(() => {
   //   if (auth.state === 'initialized') {
@@ -299,12 +314,18 @@ export default function Connect({
   return (
     <>
       {isLoading ? (
-        <Spinner animation='border' variant='secondary' size='sm' />
-      ) : // TODO REMOCE =
-      auth.state !== 'initialized' ? (
+        <div className='loader-container'>
+          <Spinner
+            animation='border'
+            variant='secondary'
+            size='sm'
+            className={`${hideUser ? 'hide-on-mobile' : ''} ${
+              hideRewards ? 'hide-on-desktop' : ''
+            }`}
+          />
+        </div>
+      ) : auth.state !== 'initialized' ? (
         <Button
-          // onClick={handleShow}
-          // onClick={connect}
           className={`link-btn ${hideUser ? 'hide-on-mobile' : ''} ${
             hideRewards ? 'hide-on-desktop' : ''
           }`}
@@ -313,54 +334,10 @@ export default function Connect({
           Sign In
         </Button>
       ) : (
-        // <Link href={`/profilen`} className='connect-btn'>
-        //   View Profile
-        // </Link>
         <>
-          {/* <div className='profile-btn'>
-            <NavDropdown
-              title={<Image src={Profileicon} alt='Profileicon' />}
-              id='basic-nav-dropdown'
-            >
-              <NavDropdown.Item>
-                <Link href={'/profilen'}>
-                  <div className='d-flex'>
-                    <div>
-                      <Image src={Profileicon} alt='Profileicon' />
-                    </div>
-                    <div>
-                      <h6>Username</h6>
-                      <p>0x717d...74a</p>
-                    </div>
-                  </div>
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href='javascript:void(0);'>
-                <i className='fa fa-globe'></i>Explore
-              </NavDropdown.Item>
-              <Link href='/dashboardn' className='dropdown-item'>
-                <i className='fa fa-th-large'></i>Dashboard
-              </Link>
-              <Link href='/settingsn' className='dropdown-item'>
-                <i className='fa fa-gear'></i> Settings
-              </Link>
-              <NavDropdown.Divider />
-              <NavDropdown.Item
-                onClick={async () => {
-                  await methods.logout();
-                  await methods.initAuth();
-                }}
-                className='disconnect-btn'
-              >
-                <i className='fa fa-sign-out'></i> Disconnect
-              </NavDropdown.Item>
-            </NavDropdown>
-          </div> */}
-
           <>
             <Nav.Link
-              href='javascript:void(0);'
+              href='/reward'
               className={`link-btn empty re ${
                 hideRewards ? 'hide-on-mobile' : ''
               } ${hideRewards ? 'hide-on-desktop' : ''}`}
@@ -383,16 +360,33 @@ export default function Connect({
             }`}
           >
             <NavDropdown
+              onSelect={() => console.log('hi')}
+              // active={true}
               title={
                 <>
                   <div className='link-btn logedin'>
                     <div className='img-pnl'>
-                      <Image src={icongirl} alt='icongirl' />
+                      {/* <Image src={icongirl} alt='icongirl' /> */}
+                      <div
+                        style={{
+                          position: 'relative',
+                          width: '45px',
+                          margin: '0 auto',
+                          height: '45px',
+                        }}
+                      >
+                        <Image
+                          src={profileImg ? profileImg : icongirl}
+                          className='backend-img'
+                          fill={true}
+                          alt='Profileicon'
+                        />
+                      </div>
                     </div>
                     <div className='txt-pnl'>
-                      <h6>{user ? user.name : 'User Name'}</h6>
+                      <h6>{user ? user?.name : 'User Name'}</h6>
                       <span>
-                        <Image src={Infinity} alt='Infinity' /> 0
+                        <Image src={infinity} alt='Infinity' /> 0
                       </span>
                     </div>
                   </div>
@@ -402,45 +396,105 @@ export default function Connect({
             >
               <NavDropdown.Item className='pr-link'>
                 <div>
-                  <Image src={icongirl} alt='Profileicon' />
+                  <div
+                    style={{
+                      position: 'relative',
+                      width: '60px',
+                      margin: '0 auto',
+                      height: '60px',
+                    }}
+                  >
+                    <Image
+                      src={profileImg ? profileImg : icongirl}
+                      className='backend-img'
+                      fill={true}
+                      alt='Profileicon'
+                    />
+                  </div>
                 </div>
                 <div>
-                  <h6> {user ? user.name : 'User Name'}</h6>
+                  <h6> {user ? user?.name : 'User Name'}</h6>
                   <p>
                     {publicKey
-                      ? publicKey.slice(0, 5) + '...' + publicKey.slice(-3)
+                      ? publicKey?.slice(0, 5) + '...' + publicKey?.slice(-3)
                       : ''}
                   </p>
                 </div>
                 <div className='total-icp'>
                   <p>Total ICP</p>
                   <span>
-                    <Image src={Infinity} alt='Infinity' /> 0
+                    <Image src={infinity} alt='Infinity' /> 0
                   </span>
                 </div>
               </NavDropdown.Item>
-              <Link href='/profiles' className='dropdown-item'>
-                <Image src={userImg} alt='user' />
-                <Image src={user1} alt='user' /> My Profile
-              </Link>
-              <Link href='/dashboardn' className='dropdown-item'>
-                <Image src={cup} alt='cup' />
-                <Image src={cup1} alt='cup' /> My Rewards
-              </Link>
-              <Link href='/settingsn' className='dropdown-item'>
-                <Image src={setting} alt='setting' />
-                <Image src={setting1} alt='setting' /> Settings
-              </Link>
-              <Link href='/settingsn' className='dropdown-item'>
-                <Image src={feedback} alt='Feedback' />
-                <Image src={feedback1} alt='Feedback' /> Feedback
-              </Link>
+              <NavDropdown.Item className='custom'>
+                <Link href='/profile'>
+                  <Image src={userImg} alt='user' />
+                  <Image src={user1} alt='user' /> My Profile
+                </Link>
+              </NavDropdown.Item>
+              <NavDropdown.Item className='custom'>
+                <Link
+                  // onClick={async () => {
+                  //   let ledgerActor = await makeLedgerCanister({
+                  //     agentOptions: {
+                  //       identity,
+                  //     },
+                  //   });
+
+                  //   let acc: any = AccountIdentifier.fromPrincipal({
+                  //     principal: identity.getPrincipal(),
+                  //     // subAccount: identity.getPrincipal(),
+                  //   });
+                  //   logger(principal)
+                  //   let balance = await ledgerActor.account_balance({
+                  //     account: acc.bytes,
+                  //   });
+                  //   let replicaPrincipal = Principal.fromText(
+                  //     'ae25j-iwln7-esrn6-abfzr-p2plk-ow2pg-n2iuh-7ebfd-3drqw-m4cuq-zae'
+                  //   );
+                  //   let replicaAcc: any = AccountIdentifier.fromPrincipal({
+                  //     principal: replicaPrincipal,
+                  //     // subAccount: identity.getPrincipal(),
+                  //   });
+                  //   let transfer = await ledgerActor.transfer({
+                  //     to: replicaAcc.bytes,
+                  //     fee: { e8s: 10000 },
+                  //     memo: 1,
+                  //     amount: { e8s: 1000000 },
+                  //     from_subaccount: [],
+                  //     created_at_time: [],
+                  //   });
+                  //   logger({ balance }, 'DA transfer');
+                  // }}
+                  href='/reward'
+                  // }
+                >
+                  <Image src={cup} alt='cup' />
+                  <Image src={cup1} alt='cup' /> My Rewards
+                </Link>
+              </NavDropdown.Item>
+              <NavDropdown.Item className='custom'>
+                <Link href='/profiledetails'>
+                  <Image src={setting} alt='setting' />
+                  <Image src={setting1} alt='setting' /> Settings
+                </Link>
+              </NavDropdown.Item>
+              <NavDropdown.Item className='custom'>
+                <Link href='/'>
+                  <Image src={feedback} alt='Feedback' />
+                  <Image src={feedback1} alt='Feedback' /> Feedback
+                </Link>
+              </NavDropdown.Item>
+
               <NavDropdown.Divider />
-              <Link href='/settingsn' className='dropdown-item blue'>
-                <Image src={gift} alt='Feedback' />
-                <Image src={gift} alt='Feedback' /> Refer Friends & Collect
-                Rewards
-              </Link>
+              <NavDropdown.Item className='custom'>
+                <Link href='/' className='dropdown-item blue'>
+                  <Image src={gift} alt='Feedback' />
+                  <Image src={gift} alt='Feedback' /> Refer Friends & Collect
+                  Rewards
+                </Link>
+              </NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item
                 onClick={async () => {
@@ -522,7 +576,7 @@ export default function Connect({
           <Button onClick={handleClose}>Cancel</Button>
         </Modal.Footer>
       </Modal> */}
-      <Modal show={show} centered onHide={handleClose}>
+      {/* <Modal show={show} centered onHide={handleClose}>
         <Modal.Body>
           <div className='flex-div connect-heading-pnl'>
             <i className='fa fa-question-circle-o'></i>
@@ -538,11 +592,11 @@ export default function Connect({
             </Button>
             <Button disabled={isLoggin} onClick={connect} className='grey-btn'>
               <p>Internet Identity</p>
-              <Image src={Infinity} alt='Infinity' />
+              <Image src={infinity} alt='Infinity' />
             </Button>
           </div>
         </Modal.Body>
-      </Modal>
+      </Modal> */}
     </>
   );
 }

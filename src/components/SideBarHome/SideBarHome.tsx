@@ -173,6 +173,7 @@ export default function SidebarHome() {
                 {connected ? 'Connected' : 'Connect'}
               </Button>
             </li>
+
             {connected && (
               <>
                 <li>
@@ -180,7 +181,8 @@ export default function SidebarHome() {
                     // onClick={(e) => {
                     //   e.preventDefault();
                     // }}
-                    href='/profiles'
+                    className={location === '/profile' ? 'active' : ''}
+                    href='/profile'
                   >
                     <div className='img-pnl'>
                       <Image src={iconuser1} alt='Search Profile' />
@@ -194,7 +196,7 @@ export default function SidebarHome() {
                     // onClick={(e) => {
                     //   e.preventDefault();
                     // }}
-                    href='/NFTArticleLeaderboard'
+                    href='/reward'
                   >
                     <div className='img-pnl'>
                       <Image src={cup1} alt='Search Cup' />
@@ -203,18 +205,19 @@ export default function SidebarHome() {
                     My Rewards
                   </Link>
                 </li>
+
                 <li>
                   <Link
                     // onClick={(e) => {
                     //   e.preventDefault();
                     // }}
-                    href='/addarticle'
+                    href='/profiledetails'
                   >
                     <div className='img-pnl'>
-                      <Image src={Articles1} alt='Articles' />
-                      <Image src={Articles2} alt='Articles' />
+                      <Image src={Settings1} alt='Settings' />
+                      <Image src={Settings2} alt='Settings' />
                     </div>
-                    My Articles
+                    Settings
                   </Link>
                 </li>
                 <li>
@@ -222,13 +225,13 @@ export default function SidebarHome() {
                     // onClick={(e) => {
                     //   e.preventDefault();
                     // }}
-                    href='/'
+                    href='/subscribers'
                   >
                     <div className='img-pnl'>
-                      <Image src={Settings1} alt='Settings' />
-                      <Image src={Settings2} alt='Settings' />
+                      <Image src={iconuser1} alt='Search Profile' />
+                      <Image src={iconuser2} alt='Search Profile' />
                     </div>
-                    Settings
+                    My Subscribers
                   </Link>
                 </li>
                 <li>
@@ -247,6 +250,20 @@ export default function SidebarHome() {
                 </li>
               </>
             )}
+            <li>
+              <Link
+                // onClick={(e) => {
+                //   e.preventDefault();
+                // }}
+                href='/allarticles'
+              >
+                <div className='img-pnl'>
+                  <Image src={Articles1} alt='Articles' />
+                  <Image src={Articles2} alt='Articles' />
+                </div>
+                {auth.state === 'initialized' && 'My '}Articles
+              </Link>
+            </li>
             <li>
               <Link
                 // onClick={(e) => {

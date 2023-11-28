@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { Row, Col, Tab, Tabs, Dropdown } from 'react-bootstrap';
+import { Row, Col, Tab, Tabs, Dropdown, Carousel } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -14,6 +14,7 @@ import stars from '@/assets/Img/Icons/icon-start.png';
 import press from '@/assets/Img/Icons/icon-press-release.png';
 import iconcompass from '@/assets/Img/Icons/icon-compass.png';
 import iconevents from '@/assets/Img/Icons/icon-event.png';
+import ss from '@/assets/Img/ss.png';
 import iconrss from '@/assets/Img/Icons/icon-rss.png';
 import PodcastPost from '@/components/PodcastPost/PodcastPost';
 import SurveyPost from '@/components/SurveyPost/SurveyPost';
@@ -28,6 +29,7 @@ import Footer from '@/components/Footer/Footer';
 import ExportPost from '@/components/ExportPost/ExportPost';
 import LeadershipPost from '@/components/LeadershipPost/LeadershipPost';
 import { useThemeStore } from '@/store/useStore';
+import Articles from '@/components/Articles';
 /**
  * SVGR Support
  * Caveat: No React Props Type.
@@ -109,12 +111,13 @@ export default function HomePage() {
           </div>
           <div className='section scroll-anime anime-down' id='news'>
             <Row>
-              <Col xxl='6' xl='6' lg='12' md='12' className='heding'>
+              <Col xxl='7' xl='6' lg='12' md='12' className='heding'>
                 <h4>
                   <Image src={iconrss} alt='Hot' /> NFTSTUDIO24 FEED
                 </h4>
                 <div className='spacer-20'></div>
-                <ul className='tabs-list'>
+                <Articles />
+                {/* <ul className='tabs-list'>
                   <li>
                     <Link href='#' className='active'>
                       All Content
@@ -155,8 +158,9 @@ export default function HomePage() {
                     </Dropdown>
                   </li>
                 </ul>
-                <div className='spacer-10'></div>
-                <ExportPost />
+                <div className='spacer-10'></div> */}
+                {/* <ExportPost /> */}
+
                 {/* <Tabs
                   defaultActiveKey='allcontent'
                   id='uncontrolled-tab-example'
@@ -200,7 +204,8 @@ export default function HomePage() {
                 </Tabs> */}
               </Col>
               <Col
-                xxl={{ span: 5, offset: 1 }}
+                // xxl={{ span: 5, offset: 1 }}
+                xxl='5'
                 xl='6'
                 lg='12'
                 className='ld-cntnr'
@@ -290,7 +295,6 @@ export default function HomePage() {
           {/* Partners Site Panel */}
         </div>
       </main>
-      <Footer />
     </>
   );
 }

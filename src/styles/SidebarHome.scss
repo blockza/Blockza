@@ -233,9 +233,11 @@
           align-items: center;
           max-width: 80%;
           border: none;
+
           &:disabled {
             opacity: 1;
           }
+
           span {
             width: auto;
             background-color: $blue;
@@ -416,6 +418,52 @@
       width: 100%;
     }
   }
+}
+
+.sidebar-home.dark .sidebar-inner,
+.sidebar-home.dark {
+  background-color: $darker;
+
+  .social-list {
+    display: none;
+  }
+
+  ul li a,
+  ul li button {
+    color: $white;
+    font-weight: 400;
+
+    &:before {
+      display: none;
+    }
+
+    &:after {
+      border-radius: 0;
+      background-image: none;
+      background-color: #666666;
+    }
+  }
+}
+
+
+.sidebar-home ul li.active a:before,
+.sidebar-home ul li.active button:before {
+  transform: translateX(0);
+}
+
+.sidebar-home ul li.active a:after,
+.sidebar-home ul li.active button:after {
+  right: 0;
+}
+
+.sidebar-home ul li.active a .img-pnl img:nth-of-type(1),
+.sidebar-home ul li.active button .img-pnl img:nth-of-type(1) {
+  opacity: 1;
+}
+
+.sidebar-home ul li.active a .img-pnl img:nth-of-type(2),
+.sidebar-home ul li.active button .img-pnl img:nth-of-type(2) {
+  opacity: 0;
 }
 
 /* Side Bar Ends Here

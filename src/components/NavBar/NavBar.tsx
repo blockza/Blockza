@@ -100,10 +100,8 @@ export default function NavBar() {
   };
   let once = false;
   useEffect(() => {
-    console.log('ONCE');
     if (!once) {
       once = true;
-      console.log('ONCE DID IT ');
 
       var addScript = document.createElement('script');
       addScript.setAttribute(
@@ -161,34 +159,42 @@ export default function NavBar() {
           </div>
           <Navbar.Collapse id='navbarScroll'>
             <Nav className='me-auto my-lg-0 my-2' navbarScroll>
-              <Link href='/' className='nav-link'>
+              <Link href='/' className='nav-link' onClick={toggleNavbar}>
                 <div className='img'>
                   <Image src={home1} alt='Home' />
                   <Image src={home2} alt='Home' />
                 </div>
                 Home
               </Link>
-              <Nav.Link href='javascript:void(0);'>
+              <Nav.Link href='javascript:void(0);' onClick={toggleNavbar}>
                 <div className='img'>
                   <Image src={folder1} alt='Directory' />
                   <Image src={folder2} alt='Directory' />
                 </div>
                 Web3 Directory
               </Nav.Link>
-              <Nav.Link href='javascript:void(0);'>
+              <Nav.Link href='javascript:void(0);' onClick={toggleNavbar}>
                 <div className='img'>
                   <Image src={cup1} alt='Diamond' />
                   <Image src={cup2} alt='Diamond' />
                 </div>
                 Grants <span>hot</span>
               </Nav.Link>
-              <Nav.Link href='javascript:void(0);' className='disablled'>
+              <Nav.Link
+                onClick={toggleNavbar}
+                href='javascript:void(0);'
+                className='disablled'
+              >
                 <div className='img'>
                   <Image src={book} alt='book' />
                 </div>
                 Investor Hub <sup>Coming Soon</sup>
               </Nav.Link>
-              <Nav.Link href='javascript:void(0);' className='disablled'>
+              <Nav.Link
+                onClick={toggleNavbar}
+                href='javascript:void(0);'
+                className='disablled'
+              >
                 <div className='img'>
                   <Image src={Bolt} alt='Bolt' />
                 </div>{' '}

@@ -20,19 +20,51 @@ module EntryType {
     description : Text;
     image : ImageObject;
     likes : Nat;
+    likedUsers : [Principal];
     views : Nat;
+    viewedUsers : [Principal];
     creation_time : Int;
     user : UserId;
+    category : [Text];
+    seoTitle : Text;
+    seoSlug : Text;
+    seoDescription : Text;
+    seoExcerpt : Text;
     subscription : Bool;
+    isDraft : Bool;
+    isPromoted : Bool;
+    minters : [Principal];
+    // promotionLikesTarget : Nat;
+    promotionICP : Float;
   };
   public type InputEntry = {
     title : Text;
     description : Text;
     image : ImageObject;
+    // user : UserId;
+    category : [Text];
+    seoTitle : Text;
+    seoSlug : Text;
+    seoDescription : Text;
+    seoExcerpt : Text;
+    subscription : Bool;
+    isDraft : Bool;
+    isPromoted : Bool;
+    // promotionLikesTarget : Nat;
+    promotionICP : Float;
+    // promotion: ;
+
+  };
+  public type ListEntryItem = {
+    title : Text;
+    image : ImageObject;
     likes : Nat;
     views : Nat;
-    // user : UserId;
-    subscription : Bool;
+    creation_time : Int;
+    user : UserId;
+    category : [Text];
+    isDraft : Bool;
+    minters : [Principal];
   };
   public type EntryStorage = Map.HashMap<EntryId, Entry>;
   public func generateNewRemoteObjectId() : EntryId {

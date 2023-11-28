@@ -8,7 +8,7 @@
   .profile-detail-body {
     background-color: $white;
     border-radius: 10px;
-    padding: 65px 30px 20px;
+    padding: 95px 30px 20px;
     position: relative;
     @include animation-anime(transup, 1s, linear);
 
@@ -27,7 +27,7 @@
       right: 0;
       top: 0;
       z-index: 0;
-      height: 120px;
+      height: 150px;
       background-color: transparent;
       border-radius: 10px 10px 0 0;
 
@@ -37,10 +37,11 @@
         border-radius: 10px 10px 0 0;
       }
 
-      @media(max-width:575px) {
+      @media (max-width: 575px) {
         height: 90px;
       }
     }
+
     .img-pnl {
       .img {
         position: relative;
@@ -56,6 +57,7 @@
         }
       }
     }
+
     p {
       font-size: 16px;
       color: $black;
@@ -135,7 +137,7 @@
 .edit-profile {
   ul {
     display: flex;
-    margin-top: 30px;
+    margin-top: 70px;
 
     @media (max-width: 575px) {
       display: inline-block;
@@ -157,7 +159,8 @@
         width: 100%;
       }
 
-      a {
+      a,
+      button {
         padding: 5px 10px;
         background-color: #f2f2f2;
         font-size: 18px;
@@ -177,7 +180,49 @@
             color: $white;
           }
         }
+
+        &.active {
+          background-color: $blue;
+          color: $white;
+
+          i {
+            color: $white;
+          }
+        }
       }
+    }
+  }
+}
+
+.default-btn {
+  // background-color: $blue;
+  background-color: #f2f2f2;
+  border: 1px solid #e1e1e1;
+
+  color: $black;
+
+  &:hover {
+    background-color: $blue;
+    color: $white;
+
+    i {
+      color: $white;
+    }
+  }
+}
+
+.description {
+  max-width: 600px;
+  margin-top: 15px;
+}
+
+.socials {
+  a {
+    margin-inline: 8px;
+    color: $blue;
+
+    i {
+      font-size: 25px;
     }
   }
 }
@@ -204,4 +249,23 @@
   min-height: 500px;
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.07);
   @include animation-anime(transright, 1s, linear);
+}
+
+.backend-img {
+  // max-width: unset !important;
+  border-radius: 50%;
+}
+
+.profile-articles {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .expert-post {
+    // max-width: 500px;
+  }
+
+  .backend-img {
+    max-width: unset !important;
+  }
 }

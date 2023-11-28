@@ -3,6 +3,7 @@ import * as React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import { siteConfig } from '@/constant/config';
 import '@/styles/App.scss';
+import 'tippy.js/dist/tippy.css';
 
 export const metadata: Metadata = {
   title: {
@@ -44,6 +45,7 @@ import { ToastContainer } from 'react-toastify';
 import SidebarHome from '@/components/SideBarHome/SideBarHome';
 import NavBar from '@/components/NavBar/NavBar';
 import { useThemeStore } from '@/store/useStore';
+import Footer from '@/components/Footer/Footer';
 export default function RootLayout({
   children,
 }: {
@@ -56,10 +58,10 @@ export default function RootLayout({
           href='https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
           rel='stylesheet'
         />
-        <link
+        {/* <link
           href='https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700&family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500;7..72,600;7..72,700;7..72,800&display=swap'
           rel='stylesheet'
-        />
+        /> */}
         <script src='http://localhost:8097'></script>
       </head>
       <body>
@@ -67,8 +69,13 @@ export default function RootLayout({
         <NavBar />
 
         {children}
+        <Footer />
 
         <ToastContainer theme='light' autoClose={3000} />
+        <script
+          src='https://kit.fontawesome.com/3fcb35e151.js'
+          crossOrigin='anonymous'
+        ></script>
       </body>
     </html>
   );

@@ -1,4 +1,9 @@
 export const idlFactory = ({ IDL }) => {
+  const Reward = IDL.Record({
+    'creation_time' : IDL.Int,
+    'isClaimed' : IDL.Bool,
+  });
+  const Rewards = IDL.Vec(Reward);
   const ImageObject = IDL.Vec(IDL.Nat8);
   const User = IDL.Record({
     'dob' : IDL.Opt(IDL.Text),
@@ -11,7 +16,9 @@ export const idlFactory = ({ IDL }) => {
     'email' : IDL.Opt(IDL.Text),
     'website' : IDL.Opt(IDL.Text),
     'facebook' : IDL.Opt(IDL.Text),
+    'joinedFrom' : IDL.Int,
     'gender' : IDL.Opt(IDL.Text),
+    'rewards' : Rewards,
     'bannerImg' : IDL.Opt(ImageObject),
     'authorTitle' : IDL.Opt(IDL.Text),
     'profileImg' : IDL.Opt(ImageObject),
@@ -45,13 +52,14 @@ export const idlFactory = ({ IDL }) => {
     'ok' : IDL.Tuple(IDL.Text, User, IDL.Opt(User)),
     'err' : IDL.Text,
   });
-  const anon_class_13_1 = IDL.Service({
+  const anon_class_15_1 = IDL.Service({
+    'add_reward' : IDL.Func([], [IDL.Bool], []),
     'add_user' : IDL.Func([], [Result_2], []),
     'check_user_exists' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'get_other_user_details' : IDL.Func([IDL.Principal], [Result_2], ['query']),
     'get_user_details' : IDL.Func([UserId], [Result_1], ['query']),
     'update_user' : IDL.Func([InputUser], [Result], []),
   });
-  return anon_class_13_1;
+  return anon_class_15_1;
 };
 export const init = ({ IDL }) => { return []; };

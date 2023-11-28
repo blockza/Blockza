@@ -5,6 +5,18 @@
   padding: 30px 20px 15px;
   border-radius: 15px;
   margin-bottom: 30px;
+
+  &.rlf {
+    .related-post .related-post-inner {
+      @media (max-width: 1400px) {
+        display: flex;
+      }
+
+      @media (max-width: 575px) {
+        display: inline-block;
+      }
+    }
+  }
 }
 
 .related-post {

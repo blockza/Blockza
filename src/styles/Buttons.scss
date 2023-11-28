@@ -58,6 +58,30 @@
   &.empty {
     background: transparent;
   }
+
+  &.small {
+    padding: 6px 15px 8px;
+  }
+
+  &.fill-not {
+    background-color: transparent;
+    color: $black;
+    font-weight: 400;
+    background: transparent;
+    border-color: #dee2e6;
+
+    &:hover {
+      background-color: #1e5fb3;
+      color: $white;
+      border-color: #1e5fb3;
+    }
+  }
+
+  &.fill {
+    background-color: #1e5fb3;
+    color: $white;
+    background-image: none;
+  }
 }
 
 .show-more-link {
@@ -77,7 +101,7 @@
 .gender-btn {
   display: inline-block;
   width: 100%;
-  height: 50px;
+  height: 45px;
   background-color: transparent;
   border: 1px solid #e9e9e9;
   color: #CCCCCC;
@@ -115,6 +139,14 @@
   color: #bababe;
   border-color: #e1e1e5;
 
+  &.gry {
+    color: #707070;
+
+    &:hover {
+      color: $white;
+    }
+  }
+
   img {
     margin-right: 5px;
   }
@@ -137,6 +169,11 @@
   &:hover {
     background-color: $black;
     color: $white;
+    border-color: $black;
+  }
+
+  &.sm {
+    padding: 8px 15px;
   }
 }
 

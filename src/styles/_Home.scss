@@ -35,7 +35,7 @@
 main {
   width: 100%;
   height: auto;
-  min-height: 100vh;
+  min-height: 1200px;
   padding-top: 80px;
   background-color: $bg;
 
@@ -50,12 +50,12 @@ main {
       @include animation-anime(transdown, 1s, linear);
     }
 
-    @media(max-width:991px) {
+    @media (max-width: 991px) {
       width: calc(100% - 60px);
       margin-left: 60px;
     }
 
-    @media(max-width:575px) {
+    @media (max-width: 575px) {
       width: 100%;
       margin-left: 0px;
       padding-left: 0;
@@ -80,7 +80,6 @@ main {
     }
   }
 }
-
 
 .disabled-link {
   pointer-events: none;
@@ -124,20 +123,19 @@ main {
   text-align: left;
 }
 
-
 .bdrd-pnl {
   position: relative;
 
   &::before {
     position: absolute;
-    content: "";
+    content: '';
     right: -10px;
     top: 0;
     bottom: 20px;
     width: 1px;
     background-color: $black;
 
-    @media(max-width:1200px) {
+    @media (max-width: 1200px) {
       display: none;
     }
   }
@@ -208,6 +206,10 @@ main {
   color: $black;
   font-weight: 600;
   text-transform: uppercase;
+
+  i {
+    font-size: 22px;
+  }
 
   @media (max-width: 1400px) {
     font-size: 16px;
@@ -301,3 +303,98 @@ main {
 
 /* Home Ends Here
 ================= */
+
+.article-carousle {
+  padding: 0 45px;
+  margin-bottom: 50px;
+
+  @media (max-width: 1400px) {
+    padding: 0;
+  }
+
+  @media (max-width: 1200px) {
+    padding: 0 45px;
+  }
+
+  @media (max-width: 767px) {
+    padding: 0 15px;
+  }
+
+  @media (max-width: 575px) {
+    padding: 0 0px;
+  }
+
+  .carousel-control-next,
+  .carousel-control-prev {
+    opacity: 1;
+    width: auto;
+    bottom: unset;
+    top: calc(50% - 22.5px);
+
+    span {
+      width: 45px;
+      height: 45px;
+      background-color: $blue;
+      border-radius: 50%;
+      opacity: 1;
+      background-size: 50%;
+      box-shadow: 0 0px 5px 1px rgba(0, 0, 0, 0.15);
+      @include trans1;
+
+      @media (max-width: 575px) {
+        width: 30px;
+        height: 30px;
+      }
+
+      &:hover {
+        box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.35);
+      }
+    }
+  }
+
+  .carousel-control-prev {
+    @media (max-width: 1400px) {
+      left: -10px;
+    }
+
+    @media (max-width: 1200px) {
+      left: 0;
+    }
+
+    @media (max-width: 575px) {
+      left: -5px;
+    }
+  }
+
+  .carousel-control-next {
+    @media (max-width: 1400px) {
+      right: -10px;
+    }
+
+    @media (max-width: 1200px) {
+      right: 0;
+    }
+
+    @media (max-width: 575px) {
+      right: -5px;
+    }
+  }
+
+  .carousel-indicators {
+    bottom: -45px;
+
+    button {
+      background-color: $blue;
+      width: 12px;
+      opacity: 1;
+      height: 12px;
+      border-radius: 50%;
+      border: 8px solid;
+      border-color: transparent;
+
+      &.active {
+        border-color: rgba(30, 95, 179, 0.5);
+      }
+    }
+  }
+}

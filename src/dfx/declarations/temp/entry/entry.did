@@ -1,0 +1,105 @@
+type anon_class_17_1 = 
+ service {
+   getAllEntries: () -> (vec record {
+                               Key;
+                               Entry;
+                             }) query;
+   getCategories: () -> (vec text) query;
+   getEntriesByCategory: (text) -> (vec record {
+                                          Key;
+                                          Entry;
+                                        }) query;
+   getEntriesList: (text) -> (vec record {
+                                    Key;
+                                    ListEntryItem;
+                                  }) query;
+   getEntry: (Key) -> (opt Entry) query;
+   getPromotedEntries: () -> (vec record {
+                                    Key;
+                                    Entry;
+                                  }) query;
+   getUserEntries: (UserId__1) -> (vec record {
+                                         Key;
+                                         Entry;
+                                       }) query;
+   getUserEntriesList: (text, bool) ->
+    (vec record {
+           Key;
+           ListEntryItem;
+         }) query;
+   insertEntry: (InputEntry, text, bool, text) -> (Result_1);
+   isMinted: (Key) -> (bool);
+   likeEntry: (Key, text) -> (Result);
+   mintEntry: (Key) -> (Result);
+ };
+type UserId__1 = principal;
+type UserId = principal;
+type Result_1 = 
+ variant {
+   err: text;
+   ok: record {
+         text;
+         EntryId;
+       };
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: record {
+         text;
+         bool;
+       };
+ };
+type ListEntryItem = 
+ record {
+   category: vec text;
+   creation_time: int;
+   image: ImageObject;
+   isDraft: bool;
+   likes: nat;
+   minters: vec principal;
+   title: text;
+   user: UserId;
+   views: nat;
+ };
+type Key = text;
+type InputEntry = 
+ record {
+   category: vec text;
+   description: text;
+   image: ImageObject;
+   isDraft: bool;
+   isPromoted: bool;
+   promotionICP: float64;
+   seoDescription: text;
+   seoExcerpt: text;
+   seoSlug: text;
+   seoTitle: text;
+   subscription: bool;
+   title: text;
+ };
+type ImageObject = vec nat8;
+type EntryId = text;
+type Entry = 
+ record {
+   category: vec text;
+   creation_time: int;
+   description: text;
+   image: ImageObject;
+   isDraft: bool;
+   isPromoted: bool;
+   likedUsers: vec principal;
+   likes: nat;
+   minters: vec principal;
+   promotionICP: float64;
+   seoDescription: text;
+   seoExcerpt: text;
+   seoSlug: text;
+   seoTitle: text;
+   subscription: bool;
+   title: text;
+   user: UserId;
+   viewedUsers: vec principal;
+   views: nat;
+ };
+service : () -> anon_class_17_1

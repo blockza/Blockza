@@ -10,6 +10,9 @@ import Debug "mo:base/Debug";
 import Bool "mo:base/Bool";
 import Result "mo:base/Result";
 import Time "mo:base/Time";
+import Array "mo:base/Array";
+import Nat "mo:base/Nat";
+import Int "mo:base/Int";
 import ImageType "../model/ImageType";
 shared ({ caller = initializer }) actor class () {
 
@@ -20,6 +23,11 @@ shared ({ caller = initializer }) actor class () {
   private let MAX_EMAIL_CHARS = 320;
 
   type ImageObject = ImageType.ImageObject;
+  type Reward = {
+    isClaimed : Bool;
+    creation_time : Int;
+  };
+  type Rewards = [Reward];
   public type User = {
     profileImg : ?ImageObject;
     bannerImg : ?ImageObject;
@@ -36,6 +44,7 @@ shared ({ caller = initializer }) actor class () {
     authorTitle : ?Text;
     authorDescription : ?Text;
     joinedFrom : Int;
+    rewards : Rewards;
 
     // // subscribers : ?Nat;
   };
@@ -57,6 +66,7 @@ shared ({ caller = initializer }) actor class () {
     // // subscribers : ?Nat;
   };
   public type UserId = ?Text;
+  private var sectek = "#cosa@erwe0ss1s<e}s*dfCc<e>c!dwa)<vvde>";
 
   public type Id = Principal;
   type Users = [(Id, User)];
@@ -67,6 +77,21 @@ shared ({ caller = initializer }) actor class () {
   stable var stable_users : Users = [];
 
   var userStorage = Map.fromIter<Id, User>(stable_users.vals(), stable_users.size(), Principal.equal, Principal.hash);
+
+  func emailExists(email : Text) : Bool {
+    // let users = Map.HashMap.entries<Id, User>(userStorage);
+    for ((_, user) : (Id, User) in userStorage.entries()) {
+      switch (user.email) {
+        case (?userEmail) {
+          if (userEmail == email) {
+            return true;
+          };
+        };
+        case null {};
+      };
+    };
+    return false;
+  };
 
   public shared ({ caller }) func add_user() : async Result.Result<(Text, User), Text> {
     // Return error if the user already exists
@@ -81,11 +106,15 @@ shared ({ caller = initializer }) actor class () {
         };
       };
     };
+    let currentTime = Time.now();
+    let lastFourDigits = currentTime % 10000; // This gives us the last four digits
+    let textNumber = Int.toText(lastFourDigits);
+    let result = "User" # textNumber;
     // Create new user with default name
     var tempUser = {
       profileImg = null;
       bannerImg = null;
-      name = ?"Mr John";
+      name = ?result;
       email = null;
       website = null;
       dob = null;
@@ -98,7 +127,7 @@ shared ({ caller = initializer }) actor class () {
       authorTitle = null;
       authorDescription = null;
       joinedFrom = (Time.now() / 1000000);
-
+      rewards = [];
       // subscribers = ?0;
     };
 
@@ -164,7 +193,6 @@ shared ({ caller = initializer }) actor class () {
 
     return #err("Something went wrong while getting user");
   };
-
   // Get User details by user passed as parameter
   public query func get_other_user_details(caller : Principal) : async Result.Result<(Text, User), Text> {
     // assert is_user(caller) != null;
@@ -183,6 +211,28 @@ shared ({ caller = initializer }) actor class () {
   public shared ({ caller }) func update_user(user : InputUser) : async Result.Result<(Text, User, ?User), Text> {
     let oldUser = is_user(caller);
     assert oldUser != null;
+    var tempRewareds : Rewards = [];
+
+    switch (oldUser) {
+      case (?isOldUser) {
+        tempRewareds := isOldUser.rewards;
+        switch (isOldUser.email) {
+          case (?email) {
+            if (user.email != email) {
+              let isEmail = emailExists(user.email);
+              if (isEmail) {
+                return #err("Email Already Exists");
+
+              };
+            };
+          };
+          case (null) {};
+        };
+      };
+      case (null) {
+        return #err("error while updating user");
+      };
+    };
 
     // var tempName = "";
     // var tempBio = "";
@@ -297,12 +347,53 @@ shared ({ caller = initializer }) actor class () {
       profileImg = tempProfileImg;
       bannerImg = tempBannerImg;
       joinedFrom = tempJoinedFrom;
+      rewards = tempRewareds;
     };
     let beforeUser = userStorage.replace(caller, tempUser);
     return #ok("User Updated Successfuly", tempUser, beforeUser)
 
   };
+  public shared func add_reward(caller : Principal, key : Text) : async Bool {
+    let oldUser = is_user(caller);
+    assert oldUser != null;
+    if (not (key == sectek)) {
+      return false;
+    };
+    switch (oldUser) {
+      case (?isUser) {
+        let oldRewards = isUser.rewards;
+        let newReward : Reward = {
+          creation_time = Time.now() / 1000000;
+          isClaimed = false;
+        };
+        let newRewards : Rewards = Array.append(oldRewards, [newReward]);
+        var tempUser = {
+          name = isUser.name;
+          email = isUser.email;
+          website = isUser.website;
+          dob = isUser.dob;
+          gender = isUser.gender;
+          facebook = isUser.facebook;
+          twitter = isUser.twitter;
+          instagram = isUser.instagram;
+          linkedin = isUser.linkedin;
+          authorInfo = isUser.authorInfo;
+          authorTitle = isUser.authorTitle;
+          authorDescription = isUser.authorDescription;
+          profileImg = isUser.profileImg;
+          bannerImg = isUser.bannerImg;
+          joinedFrom = isUser.joinedFrom;
+          rewards = newRewards;
+        };
+        let newEntry = userStorage.replace(caller, tempUser);
+        return true;
+      };
+      case (null) {
+        return false;
 
+      };
+    };
+  };
   system func preupgrade() {
     stable_users := Iter.toArray(userStorage.entries());
 

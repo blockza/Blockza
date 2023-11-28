@@ -1,5 +1,6 @@
-type anon_class_13_1 = 
+type anon_class_15_1 = 
  service {
+   add_reward: () -> (bool);
    add_user: () -> (Result_2);
    check_user_exists: (principal) -> (bool);
    get_other_user_details: (principal) -> (Result_2) query;
@@ -18,11 +19,19 @@ type User =
    facebook: opt text;
    gender: opt text;
    instagram: opt text;
+   joinedFrom: int;
    linkedin: opt text;
    name: opt text;
    profileImg: opt ImageObject;
+   rewards: Rewards;
    twitter: opt text;
    website: opt text;
+ };
+type Rewards = vec Reward;
+type Reward = 
+ record {
+   creation_time: int;
+   isClaimed: bool;
  };
 type Result_2 = 
  variant {
@@ -68,4 +77,4 @@ type InputUser =
    website: text;
  };
 type ImageObject = vec nat8;
-service : () -> anon_class_13_1
+service : () -> anon_class_15_1

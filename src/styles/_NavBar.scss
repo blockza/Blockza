@@ -45,7 +45,11 @@
       width: 100%;
     }
   }
-
+  .loader-container {
+    display: flex !important;
+    align-items: center !important;
+    margin: 10px;
+  }
   // Logo
   .navbar-brand {
     img {
@@ -589,6 +593,57 @@
       }
     }
   }
+  a.custom {
+    padding: 0;
+    a {
+      width: 100%;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 10px;
+      color: $black;
+      &.blue {
+        color: $blue;
+
+        img {
+          max-width: 30px;
+        }
+      }
+
+      img {
+        max-width: 20px;
+        margin-right: 5px;
+
+        &:last-child {
+          display: none;
+        }
+      }
+
+      &:last-child {
+        border-radius: 0 0 5px 5px;
+      }
+
+      i {
+        margin-right: 10px;
+        font-size: 22px;
+        transition: unset;
+      }
+
+      &:hover {
+        background-color: $blue;
+        color: $white;
+
+        img {
+          &:first-child {
+            display: none;
+          }
+
+          &:last-child {
+            display: inline-block;
+          }
+        }
+      }
+    }
+  }
 }
 
 // DropDown Menu
@@ -749,6 +804,7 @@
   height: '1.5rem';
   border-width: '0.3rem';
 }
+
 /* Black Theme */
 #main {
   &.black {
@@ -835,11 +891,13 @@
     display: none;
   }
 }
+
 @media (min-width: 992px) {
   .hide-on-desktop {
     display: none;
   }
 }
+
 .d-flex-mobee {
   display: flex;
 
@@ -849,5 +907,59 @@
         display: none !important;
       }
     }
+  }
+}
+
+.navbar #google_translate_element {
+  margin-right: 15px !important;
+
+  @media (max-width: 991px) {
+    margin-right: 0 !important;
+    margin-bottom: 15px;
+  }
+}
+
+select {
+  width: 100%;
+
+  option {
+    max-height: 100%;
+  }
+}
+
+#google_translate_element select.goog-te-gadget .goog-te-combo {
+  width: 100%;
+  margin-right: 15px;
+}
+
+main.dark {
+  background-color: $darker !important;
+}
+
+.navbar.dark {
+  background-color: $darker !important;
+  box-shadow: none;
+
+  .navbar-nav .nav-link {
+    color: $white;
+
+    sup {
+      color: $color;
+    }
+  }
+
+  .navbar-toggler {
+    &:after,
+    &:before {
+      background-color: $white;
+    }
+
+    span {
+      background-color: $white;
+    }
+  }
+
+  .social-list li a i {
+    color: $white;
   }
 }

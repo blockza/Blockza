@@ -15,16 +15,21 @@ import {
   FieldProps,
   Formik,
   Form as FormikForm,
+  FormikProps,
+  FormikValues,
   useFormikContext,
 } from 'formik';
 import { useConnectPlugWalletStore } from '@/store/useStore';
 import { User } from '@/types/profile';
-import { object, string } from 'yup';
+import { date, object, string } from 'yup';
 import { getImage } from '@/components/utils/getImage';
 import defaultBanner from '@/assets/Img/default-banner.jpg';
 import girl from '@/assets/Img/user-img.png';
 import authMethods from '@/lib/auth';
 import {
+  MAX_AUTHOR_INFO_CHARACTERS,
+  MAX_AUTHOR_META_DESC_CHARACTERS,
+  MAX_AUTHOR_TITLE_CHARACTERS,
   MAX_BIO_CHARACTERS,
   MAX_IMAGE_SIZE,
   MAX_NAME_CHARACTERS,
@@ -32,6 +37,7 @@ import {
 import { toast } from 'react-toastify';
 import { fileToCanisterBinaryStoreFormat } from '@/dfx/utils/image';
 import logger from '@/lib/logger';
+import { Logger } from 'sass';
 /**
  * SVGR Support
  * Caveat: No React Props Type.
@@ -39,8 +45,21 @@ import logger from '@/lib/logger';
  * You can override the next-env if the type is important to you
  * @see https://stackoverflow.com/questions/68103844/how-to-override-next-js-svg-module-declaration
  */
+function ScrollToError() {
+  const formik = useFormikContext();
+  const submitting = formik?.isSubmitting;
 
-export default function profiledetails() {
+  useEffect(() => {
+    const el = document.querySelector('.Mui-err');
+    (el?.parentElement ?? el)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+  }, [submitting]);
+  return null;
+}
+
+export default function ProfileDetails() {
   const [user, setUser] = useState<User | null>();
   // Both these are for profile Image
   const [tempImg, setTempImg] = useState({ imgUrl: '' });
@@ -50,15 +69,16 @@ export default function profiledetails() {
   // These are for Banner Image
   const [tempBannerImg, setTempBannerImg] = useState({ imgUrl: '' });
   const [bannerFile, setBannerFile] = useState<File | null>(null);
-  const [profileImg, setProfileImg] = useState<string | null>();
   const [bannerImg, setBannerImg] = useState<string | null>();
+  const [profileImg, setProfileImg] = useState<string | null>();
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentGender, setCurrentGender] = useState('Male');
+  const [isFormSubmitting, setIsFormSubmitting] = useState<boolean>(false);
   const router = useRouter();
-
-  const bannerRef = useRef();
+  const formRef = useRef<FormikProps<FormikValues>>(null);
+  // const bannerRef = useRef();
 
   const { auth, setAuth, setIdentity } = useConnectPlugWalletStore((state) => ({
     auth: state.auth,
@@ -90,26 +110,33 @@ export default function profiledetails() {
     //   .max(MAX_NAME_CHARACTERS, 'Name can not be more than 40 characters'),
     name: string()
       .required('Name is required')
+      .matches(/^[a-zA-Z\s]+$/, 'Only alphabets are allowed')
       .max(MAX_NAME_CHARACTERS, 'Name can not be more than 40 characters'),
-    email: string().email('Invalid Email').required('Email is required'),
-    website: string().url('Facebook Link must be a valid URL'),
-    dob: string().required('Birth Date is required'),
+    // email: string().email('Invalid Email').required('Email is required'),
+    email: string()
+      .required('Email is required')
+      .trim()
+      .matches(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/, 'Invalid Email'),
+    website: string().url('Website Link must be a valid URL'),
+    dob: date()
+      .required('Birth Date is required')
+      .max(new Date(), 'Date is not valid'),
     // gender: string().required('Gender is required'),
     facebook: string().url('Facebook Link must be a valid URL'),
     twitter: string().url('Twitter Link must be a valid URL'),
     instagram: string().url('Instagram Link must be a valid URL'),
     linkedin: string().url('Linkedin Link must be a valid URL'),
     authorInfo: string().max(
-      MAX_BIO_CHARACTERS,
-      `Author Info can not be more than ${MAX_BIO_CHARACTERS} characters`
+      MAX_AUTHOR_INFO_CHARACTERS,
+      `Author Info can not be more than ${MAX_AUTHOR_INFO_CHARACTERS} characters`
     ),
     authorTitle: string().max(
-      MAX_NAME_CHARACTERS,
-      `Author Title can not be more than ${MAX_NAME_CHARACTERS} characters`
+      MAX_AUTHOR_TITLE_CHARACTERS,
+      `Author Title can not be more than ${MAX_AUTHOR_TITLE_CHARACTERS} characters`
     ),
     authorDescription: string().max(
-      MAX_NAME_CHARACTERS,
-      `Author Description can not be more than ${MAX_NAME_CHARACTERS} characters`
+      MAX_AUTHOR_META_DESC_CHARACTERS,
+      `Author Description can not be more than ${MAX_AUTHOR_META_DESC_CHARACTERS} characters`
     ),
     // bio: string()
     //   // .min(20, 'Bio Should be at least 20 characters long')
@@ -138,7 +165,7 @@ export default function profiledetails() {
     }
     const validFileSize = img.size <= MAX_IMAGE_SIZE;
     if (!validFileSize) {
-      toast.error('Max allowed size is 100KB');
+      toast.error('Max allowed size is 600KB');
       return;
     }
     const imgUrl = URL.createObjectURL(img);
@@ -184,6 +211,7 @@ export default function profiledetails() {
     }
     if (tempUser.ok) {
       setUser(tempUser.ok[1]);
+      setCurrentGender(tempUser.ok[1].gender[0] ?? 'Male');
       updateImg(tempUser.ok[1].profileImg[0], 'profile');
       updateImg(tempUser.ok[1].bannerImg[0], 'banner');
       setIsOwner(tempUser.ok[2]);
@@ -244,15 +272,32 @@ export default function profiledetails() {
               </Head>
               <div className='section' id='top'>
                 <Row>
-                  <Col xl='12' lg='12' md='12'>
+                  {/* <Col xl='12' lg='12' md='12'>
                     <div className='flex-div'>
                       <h2>Edit profile</h2>
-                      <Link className='reg-btn blue empty' href='#'>
-                        Save
-                      </Link>
+                      <Button
+                        className='reg-btn blue empty'
+                        onClick={() => formRef.current?.handleSubmit()}
+                        disabled={isFormSubmitting}
+                      >
+                        {isFormSubmitting ? (
+                          <Spinner
+                            animation='border'
+                            // variant='secondary'
+                            // size='sm'
+                            style={{
+                              width: '1.2rem',
+                              height: '1.2rem',
+                              borderWidth: '0.2rem',
+                            }}
+                          />
+                        ) : (
+                          'Save'
+                        )}
+                      </Button>
                     </div>
                     <div className='spacer-20'></div>
-                  </Col>
+                  </Col> */}
                   <Col xl='12' lg='12' md='12'>
                     <div className='pbg-pnl text-left'>
                       <Form>
@@ -341,13 +386,11 @@ export default function profiledetails() {
                       initialValues={initialUser}
                       enableReinitialize={true}
                       validationSchema={userSchema}
-                      onSubmit={async (
-                        values,
-                        { setSubmitting, resetForm }
-                      ) => {
-                        setSubmitting(true);
-                        setUser(undefined);
-                        console.log('SUBMITNIG');
+                      innerRef={formRef}
+                      onSubmit={async (values, { resetForm }) => {
+                        setIsFormSubmitting(true);
+                        // setUser(undefined);
+                        logger('SUBMITNIG');
                         // TODO Just Using init auth for now, remove this and use session timeout and isAuthenticated after adding session Expiry
                         await methods.initAuth();
                         let fileArray = null;
@@ -362,7 +405,6 @@ export default function profiledetails() {
                             bannerFile
                           );
                         }
-                        console.log('WE TRIED THIs', values);
 
                         const newUser = await auth.actor.update_user({
                           name: values.name,
@@ -381,16 +423,24 @@ export default function profiledetails() {
                           bannerImg: bannerArray ? [bannerArray] : [],
                           profileImg: fileArray ? [fileArray] : [],
                         });
-                        console.log(newUser);
-                        setUser(newUser.ok[1]);
-                        updateImg(newUser.ok[1].profileImg[0], 'profile');
-                        updateImg(newUser.ok[1].bannerImg[0], 'banner');
-                        setSubmitting(false);
-                        // handleClose();
-                        resetForm();
-                        toast.success('User Updated Successfully');
-                        window.scrollTo(0, 0);
-                        router.push('/profiles');
+                        logger(newUser);
+                        if (newUser.ok) {
+                          setUser(newUser.ok[1]);
+                          updateImg(newUser.ok[1].profileImg[0], 'profile');
+                          updateImg(newUser.ok[1].bannerImg[0], 'banner');
+                          // handleClose();
+                          resetForm();
+                          toast.success('User Updated Successfully');
+                          // setSubmitting(false);
+                          setIsFormSubmitting(false);
+
+                          window.scrollTo(0, 0);
+                          router.push('/profile');
+                        } else {
+                          window.scrollTo(0, 0);
+                          setIsFormSubmitting(false);
+                          toast.error(newUser.err);
+                        }
                       }}
                     >
                       {({
@@ -405,6 +455,7 @@ export default function profiledetails() {
                         /* and other goodies */
                       }) => (
                         <FormikForm onSubmit={handleSubmit}>
+                          <ScrollToError />
                           {/* <Field name='name'>
                           {({ field, formProps }: any) => (
                             <Form.Group className='mb-2' controlId='name'>
@@ -427,7 +478,7 @@ export default function profiledetails() {
                           )}
                         </Field> */}
                           {/* <div className='text-danger my-1'>
-                          <ErrorMessage name='name' component='div' />
+                          <ErrorMessage className="Mui-err"name='name' component='div' />
                         </div>
                         <Field name='bio'>
                           {({ field, formProps }: any) => (
@@ -451,7 +502,7 @@ export default function profiledetails() {
                           )}
                         </Field>
                         <div className='text-danger my-1'>
-                          <ErrorMessage name='bio' component='div' />
+                          <ErrorMessage className="Mui-err"name='bio' component='div' />
                         </div>
                         <Field name='externalLink'>
                           {({ field, formProps }: any) => (
@@ -474,7 +525,7 @@ export default function profiledetails() {
                         </Field>
 
                         <div className='text-danger my-1'>
-                          <ErrorMessage name='externalLink' component='div' />
+                          <ErrorMessage className="Mui-err"name='externalLink' component='div' />
                         </div> */}
                           {/* <Button
                           className='submit-btn d-flex align-items-center justify-content-center'
@@ -497,184 +548,250 @@ export default function profiledetails() {
                           )}
                         </Button> */}
                           <div className='pbg-pnl text-left'>
-                            <Field name='name'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  {/* {console.log('Hi', field)} */}
-                                  <Form.Label>Name</Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    type='text'
-                                    name='name'
-                                    placeholder='Neha Ali'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
-                              <ErrorMessage name='name' component='div' />
+                            <div className='mb-4'>
+                              <Field name='name'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    {/* {console.log('Hi', field)} */}
+                                    <Form.Label>Name</Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      type='text'
+                                      name='name'
+                                      placeholder='Neha Ali'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='name'
+                                  component='div'
+                                />
+                              </div>
                             </div>
-                            <Field name='email'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>Email (required)</Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    type='text'
-                                    name='email'
-                                    placeholder='Johndoe@example.com'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
-                              <ErrorMessage name='email' component='div' />
+                            <div className='mb-4'>
+                              <Field name='email'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>Email (required)</Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      type='text'
+                                      name='email'
+                                      placeholder='Johndoe@example.com'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='email'
+                                  component='div'
+                                />
+                              </div>
                             </div>
-                            <Field name='website'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>Website</Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    type='text'
-                                    name='website'
-                                    placeholder='https://example.com'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
-                              <ErrorMessage name='website' component='div' />
+                            <div className='mb-4'>
+                              <Field name='website'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>Website</Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      type='text'
+                                      name='website'
+                                      placeholder='https://example.com'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='website'
+                                  component='div'
+                                />
+                              </div>
                             </div>
                           </div>
                           <div className='pbg-pnl text-left'>
-                            <Field name='dob'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>Birth Date</Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    type='date'
-                                    name='dob'
-                                    placeholder='https://example.com'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
-                              <ErrorMessage name='dob' component='div' />
+                            <div className='mb-4'>
+                              <Field name='dob'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>Birth Date</Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      type='date'
+                                      name='dob'
+                                      // max={new Date()}
+                                      // max={new Date().toJSON().slice(0, 10)}
+                                      placeholder='https://example.com'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='dob'
+                                  component='div'
+                                />
+                              </div>
                             </div>
                             <Form.Label>Gender</Form.Label>
                             <Row>
-                              <Col xxl='2' xl='2' lg='3' md='4' sm='4'>
-                                <Button
-                                  className={`gender-btn ${
-                                    currentGender === 'Male' ? 'active' : ''
-                                  }`}
-                                  onClick={() => setCurrentGender('Male')}
-                                >
-                                  Male
-                                </Button>
-                              </Col>
-                              <Col xxl='2' xl='2' lg='3' md='4' sm='4'>
-                                <Button
-                                  className={`gender-btn ${
-                                    currentGender === 'Female' ? 'active' : ''
-                                  }`}
-                                  onClick={() => setCurrentGender('Female')}
-                                >
-                                  Female
-                                </Button>
-                              </Col>
-                              <Col xxl='3' xl='3' lg='4' md='4' sm='4'>
-                                <Button
-                                  className={`gender-btn ${
-                                    currentGender === 'Non-binary'
-                                      ? 'active'
-                                      : ''
-                                  }`}
-                                  onClick={() => setCurrentGender('Non-binary')}
-                                >
-                                  Non-binary
-                                </Button>
+                              <Col xxl='12' xl='12' lg='12' md='12' sm='12'>
+                                <ul className='btn-list gender'>
+                                  <li>
+                                    <Button
+                                      className={`gender-btn ${
+                                        currentGender === 'Male' ? 'active' : ''
+                                      }`}
+                                      onClick={() => setCurrentGender('Male')}
+                                    >
+                                      Male
+                                    </Button>
+                                  </li>
+                                  <li>
+                                    <Button
+                                      className={`gender-btn ${
+                                        currentGender === 'Female'
+                                          ? 'active'
+                                          : ''
+                                      }`}
+                                      onClick={() => setCurrentGender('Female')}
+                                    >
+                                      Female
+                                    </Button>
+                                  </li>
+                                  <li>
+                                    <Button
+                                      className={`gender-btn ${
+                                        currentGender === 'Non-binary'
+                                          ? 'active'
+                                          : ''
+                                      }`}
+                                      onClick={() =>
+                                        setCurrentGender('Non-binary')
+                                      }
+                                    >
+                                      Non-binary
+                                    </Button>
+                                  </li>
+                                </ul>
                               </Col>
                             </Row>
                           </div>
                           <div className='pbg-pnl text-left'>
-                            <Field name='facebook'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>Facebook Profile URL </Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    type='text'
-                                    name='facebook'
-                                    placeholder='https://'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
-                              <ErrorMessage name='facebook' component='div' />
+                            <div className='mb-4'>
+                              <Field name='facebook'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>
+                                      Facebook Profile URL{' '}
+                                    </Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      type='text'
+                                      name='facebook'
+                                      placeholder='https://'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='facebook'
+                                  component='div'
+                                />
+                              </div>
                             </div>
-                            <Field name='twitter'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>Twitter Profile URL </Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    type='text'
-                                    name='twitter'
-                                    placeholder='https://'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
-                              <ErrorMessage name='twitter' component='div' />
+                            <div className='mb-4'>
+                              <Field name='twitter'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>
+                                      Twitter Profile URL{' '}
+                                    </Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      type='text'
+                                      name='twitter'
+                                      placeholder='https://'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='twitter'
+                                  component='div'
+                                />
+                              </div>
                             </div>
-                            <Field name='instagram'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>Instagram Profile URL</Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    name='instagram'
-                                    type='text'
-                                    placeholder='https://'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
-                              <ErrorMessage name='instagram' component='div' />
+                            <div className='mb-4'>
+                              <Field name='instagram'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>
+                                      Instagram Profile URL
+                                    </Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      name='instagram'
+                                      type='text'
+                                      placeholder='https://'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='instagram'
+                                  component='div'
+                                />
+                              </div>
                             </div>
-                            <Field name='linkedin'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>Linkedin Profile URL</Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    name='linkedin'
-                                    type='text'
-                                    placeholder='https://'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
-                              <ErrorMessage name='linkedin' component='div' />
+                            <div className='mb-4'>
+                              <Field name='linkedin'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>
+                                      Linkedin Profile URL
+                                    </Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      name='linkedin'
+                                      type='text'
+                                      placeholder='https://'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='linkedin'
+                                  component='div'
+                                />
+                              </div>
                             </div>
                           </div>
-                          <div className='pbg-pnl text-left'>
+                          {/* <div className='pbg-pnl text-left'>
                             <Field name='authorInfo'>
                               {({ field, formProps }: any) => (
                                 <Form.Group className='mb-4'>
@@ -691,80 +808,96 @@ export default function profiledetails() {
                               )}
                             </Field>
                             <div className='text-danger my-1'>
-                              <ErrorMessage name='linkedin' component='div' />
-                            </div>
-                          </div>
-                          <div className='pbg-pnl text-left'>
-                            <Field name='authorInfo'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>Author’s Info </Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    name='authorInfo'
-                                    as='textarea'
-                                    rows={3}
-                                    placeholder='Neha Ali'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>{' '}
-                            <div className='text-danger my-1'>
-                              <ErrorMessage name='authorInfo' component='div' />
-                            </div>
-                          </div>
-                          <div className='pbg-pnl text-left'>
-                            <Field name='authorTitle'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>
-                                    Title to use for Author page
-                                  </Form.Label>
-                                  <Form.Control
-                                    value={field.value}
-                                    onChange={handleChange}
-                                    name='authorTitle'
-                                    type='text'
-                                    placeholder='Title'
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
                               <ErrorMessage
-                                name='authorTitle'
+                                className='Mui-err'
+                                name='linkedin'
                                 component='div'
                               />
                             </div>
-                            <Field name='authorDescription'>
-                              {({ field, formProps }: any) => (
-                                <Form.Group className='mb-4'>
-                                  <Form.Label>
-                                    Meta description to use for Author pages
-                                  </Form.Label>
-                                  <Form.Control
-                                    as='textarea'
-                                    name='authorDescription'
-                                    rows={3}
-                                    value={field.value}
-                                    onChange={handleChange}
-                                  />
-                                </Form.Group>
-                              )}
-                            </Field>
-                            <div className='text-danger my-1'>
-                              <ErrorMessage
-                                name='authorDescription'
-                                component='div'
-                              />
+                          </div> */}
+                          <div className='pbg-pnl text-left'>
+                            <div className='mb-4'>
+                              <Field name='authorInfo'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>Author’s Info </Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      name='authorInfo'
+                                      as='textarea'
+                                      rows={3}
+                                      placeholder='Neha Ali'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>{' '}
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='authorInfo'
+                                  component='div'
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className='pbg-pnl text-left'>
+                            <div className='mb-4'>
+                              <Field name='authorTitle'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>
+                                      Title to use for Author page
+                                    </Form.Label>
+                                    <Form.Control
+                                      autoComplete='off'
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      name='authorTitle'
+                                      type='text'
+                                      placeholder='Title'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  name='authorTitle'
+                                  component='div'
+                                />
+                              </div>
+                            </div>
+                            <div className='mb-4'>
+                              <Field name='authorDescription'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    <Form.Label>
+                                      Meta description to use for Author pages
+                                    </Form.Label>
+                                    <Form.Control
+                                      as='textarea'
+                                      name='authorDescription'
+                                      rows={3}
+                                      value={field.value}
+                                      onChange={handleChange}
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  name='authorDescription'
+                                  component='div'
+                                />
+                              </div>
                             </div>
                             <Button
                               className='submit-btn d-flex align-items-center justify-content-center'
                               type='submit'
-                              disabled={isSubmitting}
+                              disabled={isFormSubmitting}
+                              style={{ maxWidth: '250px' }}
                             >
-                              {isSubmitting ? (
+                              {isFormSubmitting ? (
                                 <Spinner
                                   animation='border'
                                   // variant='secondary'
@@ -783,34 +916,11 @@ export default function profiledetails() {
                         </FormikForm>
                       )}
                     </Formik>
-                    <Form>
-                      {/* <Form.Group
-                      className='mb-4'
-                      controlId='exampleForm.ControlInput1'
-                    >
-                      <Form.Label>Email (required)</Form.Label>
-                      <Form.Control
-                        type='text'
-                        placeholder='Johndoe@example.com'
-                      />
-                    </Form.Group> */}
-                      {/* <Form.Group
-                      className='mb-4'
-                      controlId='exampleForm.ControlInput1'
-                    >
-                      <Form.Label>Website</Form.Label>
-                      <Form.Control
-                        type='text'
-                        placeholder='https://example.com'
-                      />
-                    </Form.Group> */}
-                    </Form>
                   </Col>
                 </Row>
               </div>
             </div>
           </main>
-          <Footer />
         </>
       )}
     </>

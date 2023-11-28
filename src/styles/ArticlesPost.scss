@@ -5,7 +5,7 @@
 
   &:before {
     position: absolute;
-    content: "";
+    content: '';
     left: 15px;
     right: 15px;
     bottom: -5px;
@@ -42,5 +42,11 @@
       width: 100%;
       overflow: hidden;
     }
+  }
+}
+.category {
+  cursor: pointer;
+  &.active {
+    color: black !important;
   }
 }

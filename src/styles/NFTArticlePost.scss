@@ -36,11 +36,23 @@
     }
 
     .d-flex.sm {
-      @media(max-width:575px) {
+      @media (max-width: 575px) {
         display: inline-block !important;
+        width: 100%;
 
         h6 {
           margin: 20px auto 10px;
+        }
+
+        h6,
+        .vote-comment-list,
+        .share-btn {
+          display: inline-block;
+        }
+
+        h6,
+        .share-btn {
+          margin-left: 15px;
         }
       }
     }
@@ -51,6 +63,10 @@
 
       @media (max-width: 1200px) {
         width: auto;
+      }
+
+      @media (max-width: 575px) {
+        width: 100%;
       }
 
       .share-btn {
@@ -83,7 +99,6 @@
         color: $grey;
         margin-bottom: 20px;
       }
-
     }
   }
 
@@ -145,7 +160,7 @@
   .count-description-pnl {
     display: flex;
     justify-content: space-between;
-    border-top: 1px solid;
+    // border-top: 1px solid;
     border-bottom: 1px solid;
     border-color: $border-color;
     padding-top: 20px;
@@ -153,10 +168,10 @@
     align-items: center;
     margin-bottom: 30px;
 
-    @media(max-width:1400px) {
+    @media (max-width: 1400px) {
       display: inline-block;
       width: 100%;
-      padding-top: 20px;
+      margin-top: 10px;
 
       .d-flex {
         justify-content: space-between;
@@ -164,9 +179,10 @@
       }
     }
 
-    @media(max-width:1200px) {
+    @media (max-width: 1200px) {
       display: flex;
       padding-top: 30px;
+      margin-top: 0px;
 
       .d-flex {
         justify-content: unset;
@@ -174,7 +190,7 @@
       }
     }
 
-    @media(max-width:767px) {
+    @media (max-width: 767px) {
       display: inline-block;
       width: 100%;
       padding-top: 20px;
@@ -192,15 +208,15 @@
       margin: 0;
       margin-top: 7px;
 
-      @media(max-width:1600px) {
+      @media (max-width: 1600px) {
         font-size: 14px;
       }
 
-      @media(max-width:1200px) {
+      @media (max-width: 1200px) {
         font-size: 16px;
       }
 
-      @media(max-width:575px) {
+      @media (max-width: 575px) {
         font-size: 14px;
       }
     }
@@ -218,17 +234,17 @@
       }
 
       &.quiz-list {
-        @media(max-width:1400px) {
+        @media (max-width: 1400px) {
           display: flex;
           justify-content: space-between;
         }
 
-        @media(max-width:1200px) {
+        @media (max-width: 1200px) {
           display: inline-block;
           justify-content: unset;
         }
 
-        @media(max-width:767px) {
+        @media (max-width: 767px) {
           display: flex;
           justify-content: space-between;
         }
@@ -239,27 +255,27 @@
           font-weight: 700;
           text-transform: uppercase;
 
-          @media(max-width:1600px) {
+          @media (max-width: 1600px) {
             font-size: 14px;
           }
 
-          @media(max-width:1400px) {
+          @media (max-width: 1400px) {
             width: 50%;
             padding: 0;
           }
 
-          @media(max-width:1200px) {
+          @media (max-width: 1200px) {
             width: auto;
             font-size: 16px;
             padding: 0 15px;
           }
 
-          @media(max-width:767px) {
+          @media (max-width: 767px) {
             width: 50%;
             padding: 0;
           }
 
-          @media(max-width:575px) {
+          @media (max-width: 575px) {
             font-size: 14px;
           }
 
@@ -269,11 +285,11 @@
             text-transform: uppercase;
             font-weight: 500;
 
-            @media(max-width:1600px) {
+            @media (max-width: 1600px) {
               font-size: 14px;
             }
 
-            @media(max-width:1200px) {
+            @media (max-width: 1200px) {
               font-size: 16px;
             }
           }
@@ -291,44 +307,42 @@
             margin-left: 10px;
           }
 
-
           &:first-child {
             border-right: 1px solid $border-color;
 
-            @media(max-width:767px) {
+            @media (max-width: 767px) {
               border: none;
             }
           }
 
           &:last-child {
-            @media(max-width:1400px) {
+            @media (max-width: 1400px) {
               text-align: right;
             }
 
-            @media(max-width:1200px) {
+            @media (max-width: 1200px) {
               text-align: left;
             }
 
-            @media(max-width:767px) {
+            @media (max-width: 767px) {
               text-align: right;
             }
           }
-
         }
       }
 
       &.vote-comment-list {
         margin-right: 25px;
 
-        @media(max-width:1600px) {
+        @media (max-width: 1600px) {
           margin-right: 15px;
         }
 
-        @media(max-width:1200px) {
+        @media (max-width: 1200px) {
           margin-right: 25px;
         }
 
-        @media(max-width:575px) {
+        @media (max-width: 575px) {
           margin-right: 0;
         }
 
@@ -341,22 +355,31 @@
           font-weight: 600;
           cursor: pointer;
 
-          @media(max-width:1600px) {
+          @media (max-width: 1600px) {
             font-size: 14px;
           }
 
-          @media(max-width:1200px) {
+          @media (max-width: 1200px) {
             font-size: 16px;
           }
 
-          @media(max-width:575px) {
+          @media (max-width: 575px) {
             font-size: 14px;
           }
 
           &:hover {
+            // opacity: 0.6;
+            background-color: #eeeeee;
+          }
+
+          &.liked {
             background-color: $color;
             color: $white;
             border-color: $color;
+          }
+
+          &.disabled {
+            pointer-events: none;
           }
 
           div {
@@ -365,15 +388,15 @@
             &:first-child {
               padding: 0 20px;
 
-              @media(max-width:1600px) {
+              @media (max-width: 1600px) {
                 padding: 0 10px;
               }
 
-              @media(max-width:1200px) {
+              @media (max-width: 1200px) {
                 padding: 0 20px;
               }
 
-              @media(max-width:575px) {
+              @media (max-width: 575px) {
                 padding: 0 10px;
               }
             }
@@ -385,6 +408,11 @@
         }
       }
     }
+  }
+  .count-top {
+    width: 100%;
+    height: 1px;
+    background-color: $black;
   }
 }
 
@@ -408,13 +436,14 @@
     padding-left: 10px;
     width: calc(100% - 40px);
 
-    h6 {
+    h6,
+    a {
       font-size: 14px;
       margin: 0;
       font-weight: 600;
       color: $black;
 
-      a {
+      button {
         font-size: 12px;
         display: inline-block;
         color: #ffffff;
@@ -467,12 +496,11 @@
     margin-bottom: 15px;
 
     &:not(:last-child) {
-      border-bottom: 1px solid;
+      border-bottom: 2px solid;
       border-color: $grey;
     }
   }
 }
-
 
 .hash-list {
   display: inline-block;
