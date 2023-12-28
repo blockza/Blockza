@@ -1,0 +1,79 @@
+type anon_class_19_1 = 
+ service {
+   addActivity: (UserId, text, ActivityType) -> (bool);
+   addAdminActivity: (UserId, text, AdminActivityType) -> (bool);
+   addComment: (InputComment, text, text) -> (Result_3);
+   getActivities: () -> (Result_2) query;
+   getAdminActivities: (UserId, text) -> (Result_1);
+   getComments: (text) -> (Result) query;
+ };
+type UserId = principal;
+type Result_3 = 
+ variant {
+   err: text;
+   ok: record {
+         Comment;
+         text;
+       };
+ };
+type Result_2 = 
+ variant {
+   err: text;
+   ok: record {
+         Activities;
+         text;
+       };
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: record {
+         AdminActivities;
+         text;
+       };
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: record {
+         Comments;
+         text;
+       };
+ };
+type InputComment = text;
+type Comments = vec Comment;
+type Comment = 
+ record {
+   content: text;
+   creation_time: int;
+   user: principal;
+ };
+type AdminActivityType = 
+ variant {
+   approve;
+   block;
+   reject;
+   unBlock;
+ };
+type AdminActivity = 
+ record {
+   activity_type: AdminActivityType;
+   target: text;
+   time: int;
+ };
+type AdminActivities = vec AdminActivity;
+type ActivityType = 
+ variant {
+   comment;
+   create;
+   like;
+   subscribe;
+ };
+type Activity = 
+ record {
+   activity_type: ActivityType;
+   target: text;
+   time: int;
+ };
+type Activities = vec Activity;
+service : () -> anon_class_19_1

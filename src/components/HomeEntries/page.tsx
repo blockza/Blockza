@@ -1,14 +1,9 @@
 'use client';
 
-import Head from 'next/head';
 import * as React from 'react';
-
-import Connect from '@/components/Connect/Connect';
 import '@/styles/globals.css';
 // import 'flowbite';
 import 'react-toastify/dist/ReactToastify.css';
-import '@/styles/styles.scss';
-
 import { useEntriesStore } from '@/store/useStore';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -40,8 +35,8 @@ export default function HomeEntries() {
 
   return (
     <div className='container'>
-      {allUsersEntries.map((entry: Entry) => {
-        return <HomeEntryCard entry={entry} />;
+      {allUsersEntries.map((entry: Entry,index:number) => {
+        return <HomeEntryCard entry={entry} key={index}/>;
       })}
     </div>
   );

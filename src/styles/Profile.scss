@@ -269,3 +269,19 @@
     max-width: unset !important;
   }
 }
+.activity-table {
+  th {
+    padding-inline: 15px;
+    p {
+      font-size: 20px;
+      font-weight: 500;
+      color: $blue;
+      margin: 0;
+    }
+  }
+  td {
+    padding-inline: 15px;
+
+    color: $darkgrey;
+  }
+}

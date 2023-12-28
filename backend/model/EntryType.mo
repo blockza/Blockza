@@ -8,11 +8,16 @@ import Buffer "mo:base/Buffer";
 import ImageType "ImageType";
 import Map "mo:base/HashMap";
 import Principal "mo:base/Principal";
+import Array "mo:base/Array";
 
 module EntryType {
   type ImageObject = ImageType.ImageObject;
   public type UserId = Principal;
-
+  public type EntryStatus = {
+    #approved;
+    #rejected;
+    #pending;
+  };
   public type EntryId = Text;
 
   public type Entry = {
@@ -25,6 +30,7 @@ module EntryType {
     viewedUsers : [Principal];
     creation_time : Int;
     user : UserId;
+    userName : Text;
     category : [Text];
     seoTitle : Text;
     seoSlug : Text;
@@ -34,13 +40,16 @@ module EntryType {
     isDraft : Bool;
     isPromoted : Bool;
     minters : [Principal];
+    status : EntryStatus;
     // promotionLikesTarget : Nat;
-    promotionICP : Float;
+    promotionICP : Nat;
+    promotionHistory : List.List<Int>;
   };
   public type InputEntry = {
     title : Text;
     description : Text;
     image : ImageObject;
+    userName : Text;
     // user : UserId;
     category : [Text];
     seoTitle : Text;
@@ -50,8 +59,8 @@ module EntryType {
     subscription : Bool;
     isDraft : Bool;
     isPromoted : Bool;
+    promotionICP : Nat;
     // promotionLikesTarget : Nat;
-    promotionICP : Float;
     // promotion: ;
 
   };
@@ -62,9 +71,12 @@ module EntryType {
     views : Nat;
     creation_time : Int;
     user : UserId;
+    userName : Text;
     category : [Text];
     isDraft : Bool;
     minters : [Principal];
+    status : EntryStatus;
+    isPromoted : Bool;
   };
   public type EntryStorage = Map.HashMap<EntryId, Entry>;
   public func generateNewRemoteObjectId() : EntryId {

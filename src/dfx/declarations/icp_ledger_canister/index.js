@@ -9,9 +9,12 @@ export { idlFactory } from './icp_ledger_canister.did.js';
  * process.env.CANISTER_ID_<CANISTER_NAME_UPPERCASE>
  * beginning in dfx 0.15.0
  */
+const newId =
+  process.env.DFX_NETWORK === 'ic'
+    ? 'ryjl3-tyaaa-aaaaa-aaaba-cai'
+    : process.env.CANISTER_ID_ICP_LEDGER_CANISTER;
 export const canisterId =
-  process.env.CANISTER_ID_ICP_LEDGER_CANISTER ||
-  process.env.NEXT_PUBLIC_ICP_LEDGER_CANISTER_CANISTER_ID;
+  newId || process.env.NEXT_PUBLIC_ICP_LEDGER_CANISTER_CANISTER_ID;
 
 export const createActor = (canisterId, options = {}) => {
   const agent = options.agent || new HttpAgent({ ...options.agentOptions });

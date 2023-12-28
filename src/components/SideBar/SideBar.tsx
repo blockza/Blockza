@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { sidebarItems } from '@/constant/dashboard';
-
+import logger from '@/lib/logger';
 export default function Sidebar() {
   const [toggle, settoggle] = React.useState(false);
   const [tab, setTab] = React.useState<string>('');
@@ -22,7 +22,8 @@ export default function Sidebar() {
   const handleTabChange = (tab: string) => {
     logger(tab);
     setTab(tab);
-  };
+  }
+
   return (
     <>
       {/* <div className={toggle ? "sidebar active" : "sidebar"} onClickOutside={(e) => toggleHandle(e)}> */}
@@ -36,8 +37,11 @@ export default function Sidebar() {
         </button>
         <ul>
           {sidebarItems.map(({ icon, name, route }) => {
+           
+            
             return (
               <li className={tab === route ? 'active' : 'pointer'} key={name}>
+               
                 <Link href={`${route}`} onClick={() => handleTabChange(route)}>
                   <div className='img-pnl'>
                     <Image src={icon} alt='Entires icon' />

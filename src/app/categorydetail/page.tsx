@@ -3,7 +3,7 @@ import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Row, Col, Button, Breadcrumb } from 'react-bootstrap';
+import { Row, Col, Breadcrumb } from 'react-bootstrap';
 import banner from '@/assets/Img/banner-1.png';
 import flame from '@/assets/Img/Icons/icon-flame-3.png';
 import smallpost1 from '@/assets/Img/Posts/Small-Post-1.png';

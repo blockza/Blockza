@@ -1,37 +1,21 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import {
-  Container,
-  Row,
-  Col,
-  Tab,
-  Tabs,
-  Dropdown,
-  Button,
-  Spinner,
-} from 'react-bootstrap';
+import { Row, Col, Button, Spinner } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import NavBar from '@/components/NavBar/NavBar';
-import SidebarHome from '@/components/SideBarHome/SideBarHome';
 import calander from '@/assets/Img/Icons/icon-calander.png';
 import achievements from '@/assets/Img/achievements.png';
 import girl from '@/assets/Img/Icons/icon-girl-1.png';
 import defaultBanner from '@/assets/Img/default-banner.jpg';
-
 import article from '@/assets/Img/Icons/icon-article-1.png';
 import Cup from '@/assets/Img/Icons/icon-cup-2.png';
-import comment from '@/assets/Img/Icons/icon-writer.png';
-import Footer from '@/components/Footer/Footer';
 import { useConnectPlugWalletStore, useThemeStore } from '@/store/useStore';
 import authMethods from '@/lib/auth';
-import logger from '@/lib/logger';
 import { User } from '@/types/profile';
 import { getImage } from '@/components/utils/getImage';
-import moment from 'moment';
 import { toast } from 'react-toastify';
 import { RiAlarmWarningFill } from 'react-icons/ri';
 import { utcToLocal } from '@/components/utils/utcToLocal';
@@ -39,6 +23,7 @@ import ProfileTabs from '@/components/ProfileTabs';
 import { makeSubscriberActor } from '@/dfx/service/actor-locator';
 import { canisterId as userCanisterId } from '@/dfx/declarations/user';
 import { Principal } from '@dfinity/principal';
+import { canisterId as commentCanisterId } from '@/dfx/declarations/comment';
 /**
  * SVGR Support
  * Caveat: No React Props Type.
@@ -67,15 +52,20 @@ export default function Profiles() {
   }));
 
   const handleClose = () => {};
-  const { auth, setAuth, setIdentity, identity } = useConnectPlugWalletStore(
+  const { auth, setAuth, setIdentity, identity ,principal} = useConnectPlugWalletStore(
     (state) => ({
       auth: state.auth,
       setAuth: state.setAuth,
       setIdentity: state.setIdentity,
       identity: state.identity,
+      principal : state.principal
     })
   );
-  const methods = authMethods({ auth, setAuth, setIsLoading, handleClose });
+  const methods = authMethods({
+    useConnectPlugWalletStore,
+    setIsLoading,
+    handleClose,
+  });
 
   function isElementInViewport(elem: any) {
     const scroll = window.pageYOffset || document.documentElement.scrollTop;
@@ -157,7 +147,8 @@ export default function Profiles() {
       });
       const subed = await subscriberActor.addSubscriber(
         authorId,
-        userCanisterId
+        userCanisterId,
+        commentCanisterId
       );
       await getSubscriber();
       setIsSubscribing(false);
@@ -165,6 +156,12 @@ export default function Profiles() {
       setIsSubscribing(false);
     }
   };
+  let copyProfileLink=(e:any)=>{
+    e.preventDefault();
+    let profileLink=`${window.location.href}?userId=${principal}`
+    window.navigator.clipboard.writeText(profileLink);
+    toast.success("Copied successfully.")
+  }
   useEffect(() => {
     if (auth.state === 'initialized') {
       getUser();
@@ -186,20 +183,14 @@ export default function Profiles() {
   }, []);
   useEffect(() => {
     if (auth.state === 'anonymous') {
+      setIsSubscribed(false);
+      setIsOwner(false);
       // setIsOwner(false);
     } else if (auth.state !== 'initialized') {
     } else {
       getUser();
     }
   }, [auth, userId]);
-
-  useEffect(() => {
-    animateSections();
-    window.addEventListener('scroll', animateSections);
-    return () => {
-      window.removeEventListener('scroll', animateSections);
-    };
-  }, []);
   useEffect(() => {
     if (identity && userId) {
       getSubscriber();
@@ -318,7 +309,7 @@ export default function Profiles() {
                                 </li>
                               )}
                               <li>
-                                <Link href='#'>
+                                <Link href='#' onClick={copyProfileLink}>
                                   <i className='fa fa-share-alt'></i>
                                 </Link>
                               </li>
@@ -414,6 +405,7 @@ export default function Profiles() {
                             ? identity.getPrincipal()
                             : null
                         }
+                        isOwner={isOwner}
                       />
                     </div>
                   </Col>

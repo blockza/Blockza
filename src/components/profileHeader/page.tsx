@@ -60,9 +60,11 @@ export default function ProfileHeader() {
               </div>
             </div>
             <div className='absolute bottom-0 flex w-full justify-center gap-4 '>
-              {['entries', 'collections'].map((x) => {
+              {['entries', 'collections'].map((x,index) => {
                 return (
+                  
                   <p
+                  key={index}
                     className={
                       tab === x
                         ? 'cursor-pointer border-b-2 border-b-blue-500 pb-2 font-semibold text-blue-500'
@@ -72,7 +74,7 @@ export default function ProfileHeader() {
                   >
                     {x.slice(0, 1).toUpperCase() + x.slice(1, x.length)}
                   </p>
-                );
+                  );
               })}
               {/* <p
                 className={

@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
 import Head from 'next/head';
 import {
   Row,
@@ -16,17 +15,12 @@ import {
 import girl from '@/assets/Img/user-img.png';
 import iconshare from '@/assets/Img/Icons/icon-share.png';
 import 'react-toastify/dist/ReactToastify.css';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import post1 from '@/assets/Img/placeholder-img.jpg';
 import Image from 'next/image';
 import Link from 'next/link';
 import parse from 'html-react-parser';
-import iconmedia from '@/assets/Img/Icons/icon-media.png';
-import media from '@/assets/Img/media.png';
-import Footer from '@/components/Footer/Footer';
 import { useConnectPlugWalletStore } from '@/store/useStore';
-import Infinity from '@/assets/Img/Icons/infinity.png';
-import Wallet from '@/assets/Img/Icons/plug-wallet.png';
 import authMethods from '@/lib/auth';
 import logger from '@/lib/logger';
 import {
@@ -35,7 +29,6 @@ import {
   FormikProps,
   Form as FormikForm,
   Field,
-  FieldProps,
   FormikValues,
   ErrorMessage,
   useFormikContext,
@@ -43,7 +36,7 @@ import {
   setNestedObjectValues,
 } from 'formik';
 import { Article } from '@/types/article';
-import { mixed, number, object, string } from 'yup';
+import { number, object, string } from 'yup';
 import { toast } from 'react-toastify';
 import { fileToCanisterBinaryStoreFormat } from '@/dfx/utils/image';
 import {
@@ -57,7 +50,10 @@ import { getImage } from '@/components/utils/getImage';
 import { AccountIdentifier } from '@dfinity/ledger-icp';
 import { Principal } from '@dfinity/principal';
 import { utcToLocal } from '@/components/utils/utcToLocal';
-import { FaTruckField } from 'react-icons/fa6';
+import Texteditor from '@/components/cutomeEditor/editor';
+import { canisterId as commentCanisterId } from '@/dfx/declarations/comment';
+import { canisterId as entryCanisterId } from '@/dfx/declarations/entry';
+import { E8S, GAS_FEE } from '@/constant/config';
 
 /**
  * SVGR Support
@@ -96,7 +92,9 @@ export default function AddArticle() {
   const [profileImg, setProfileImg] = useState<any>();
   const [confirmTransaction, setConfirmTransaction] = useState(false);
   const [user, setUser] = useState<any>();
+  const [value, setValue] = useState<any>('');
   const [draftArticleCreator, setDraftArticleCreator] = useState<any>();
+  const [wannaPromote, setWannaPromote] = useState(false);
   const [promotionValues, setPromotionValues] = useState({
     icp: 0,
     // likes: 0,
@@ -112,7 +110,8 @@ export default function AddArticle() {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const searchParams = useSearchParams();
 
-  const draftId = searchParams.get('draftId');
+  let draftId = searchParams.get('draftId'); // Editor controlls
+  const editor = useRef<any>();
 
   const { auth, setAuth, identity, principal } = useConnectPlugWalletStore(
     (state: any) => ({
@@ -122,13 +121,27 @@ export default function AddArticle() {
       principal: state.principal,
     })
   );
+  const defaultEntryActor = makeEntryActor({
+    agentOptions: {
+      identity,
+    },
+  });
   const router = useRouter();
   const formikRef = useRef<FormikProps<FormikValues>>(null);
+  let gasFee = GAS_FEE / E8S;
 
   const handleClose = () => {};
   const handleModalClose = () => {
+    if (isArticleSubmitting || isDraftSubmitting) {
+      return false;
+    }
     setShowModal(false);
     setConfirmTransaction(false);
+    setWannaPromote(false);
+    setIsPromoted(false);
+    setPromotionValues({
+      icp: 0,
+    });
   };
   const handlePreviewModalClose = () => {
     setShowPreviewModal(false);
@@ -136,7 +149,11 @@ export default function AddArticle() {
   const handleShowPreviewModal = () => {
     setShowPreviewModal(true);
   };
-  const methods = authMethods({ auth, setAuth, setIsLoading, handleClose });
+  const methods = authMethods({
+    useConnectPlugWalletStore,
+    setIsLoading,
+    handleClose,
+  });
   const updateImg = async (img: any, profile?: boolean) => {
     if (profile) {
       if (img) {
@@ -229,6 +246,7 @@ export default function AddArticle() {
   const categories = ['AI', 'BlockChain', 'Guide', 'GameReview'];
   const handleImageChange = (e: any) => {
     const img = e.target.files[0];
+    if (!img) return;
     const validType = isValidFileType(img && img.name.toLowerCase(), 'image');
     if (!validType) {
       toast.error('Not a valid image type');
@@ -240,10 +258,38 @@ export default function AddArticle() {
       return;
     }
     const imgUrl = URL.createObjectURL(img);
+    const objectURL = URL.createObjectURL(img);
+    const img2 = document.createElement('img');
+    img2.onload = function handleLoad() {
+      const targetAspectRatio = 9 / 4;
 
-    setTempPreviewImg(imgUrl);
-    setPreviewFile(img);
+      // Calculate the actual aspect ratio of the uploaded image
+      const actualAspectRatio = img2.width / img2.height;
+
+      // Set a tolerance value for acceptable differences in aspect ratio
+      const aspectRatioTolerance = 0.25; // You can adjust this value based on your needs
+
+      // Check if the actual aspect ratio is within the acceptable range
+      logger({ targetAspectRatio, actualAspectRatio }, 'key');
+      if (
+        actualAspectRatio < targetAspectRatio - aspectRatioTolerance ||
+        actualAspectRatio > targetAspectRatio + aspectRatioTolerance
+      ) {
+        toast.error(
+          'Please upload an image with a similar aspect ratio to 9 / 4 to avoid stretching.'
+        );
+      } else {
+        setTempPreviewImg(imgUrl);
+        setPreviewFile(img);
+      }
+
+      URL.revokeObjectURL(objectURL);
+    };
+    img2.src = objectURL;
+    // setTempPreviewImg(imgUrl);
+    // setPreviewFile(img);
   };
+
   const clearPost = () => {
     formikRef.current?.resetForm();
     const newKey = editorKey * 45;
@@ -262,17 +308,7 @@ export default function AddArticle() {
   };
   // Form
 
-  const uploadEntry = async (
-    values: FormikValues,
-    actions: FormikHelpers<FormikValues>
-  ) => {
-    if (articleContent?.length <= 0) {
-      return toast.error('You can not save an empty article');
-    }
-
-    if (selectedCategory.length === 0) {
-      return toast.error('Please select at least one  category');
-    }
+  const uploadEntry = async (values: FormikValues) => {
     let previewArray = null;
     if (previewFile !== null) {
       previewArray = await fileToCanisterBinaryStoreFormat(previewFile);
@@ -288,6 +324,25 @@ export default function AddArticle() {
     }
     await methods.initAuth();
 
+    const entryActor = makeEntryActor({
+      agentOptions: {
+        identity,
+      },
+    });
+    let rewardConfig = await entryActor.get_reward();
+    logger(rewardConfig);
+    let reward = parseFloat(rewardConfig.master);
+    let platform = parseFloat(rewardConfig.platform);
+    let admin = parseFloat(rewardConfig.admin);
+
+    let promotionE8S = promotionValues.icp * E8S;
+    // TODO ADJUST THIS
+    let gasInICP = gasFee * 5;
+    let gasInE8S = gasInICP * E8S;
+    let promotedICP = promotionE8S + gasInE8S;
+    logger({ gasInE8S, promotedICP });
+    // let promotedICP = (reward / 100) * (promotionValues.icp * E8S);
+
     const article = {
       title: values.title,
       description: articleContent,
@@ -299,35 +354,32 @@ export default function AddArticle() {
       subscription: true,
       image: previewArray,
       isDraft: isArticleDraft,
-      isPromoted,
+      isPromoted: false,
+      userName: user.name[0],
       // promotionLikesTarget: promotionValues.likes,
-      promotionICP: promotionValues.icp,
+      promotionICP: 0,
     };
     if (isArticleDraft) {
     }
-
-    const entryActor = makeEntryActor({
-      agentOptions: {
-        identity,
-      },
-    });
+    let reviewMsg = confirmTransaction
+      ? 'Your Promoted Article has been sent for review'
+      : 'Your Article has been sent for review';
     if (draftId) {
       if (isArticleDraft) {
         article.isPromoted = false;
         article.promotionICP = 0;
       }
       entryActor
-        .insertEntry(article, userCanisterId, true, draftId)
+        .insertEntry(article, userCanisterId, true, draftId, commentCanisterId)
         .then((res: any) => {
           if (isArticleDraft) {
             article.isPromoted = false;
             article.promotionICP = 0;
 
-            logger(res, 'draft Saved successfully');
-            toast.success('Draft Saved successfully');
+            if (!confirmTransaction) toast.success('Draft Saved successfully');
           } else {
             logger(res, 'draft Published successfully');
-            toast.success('Article Published successfully');
+            toast.success(reviewMsg);
           }
           if (isArticleDraft) {
             setIsDraftSubmitting(false);
@@ -359,16 +411,16 @@ export default function AddArticle() {
         article.promotionICP = 0;
       }
       entryActor
-        .insertEntry(article, userCanisterId, false, '')
+        .insertEntry(article, userCanisterId, false, '', commentCanisterId)
         .then((res: any) => {
           logger(res, 'article Added successfully');
+          draftId = res.ok[1];
           if (isArticleDraft) {
-            toast.success('Draft Saved successfully');
+            if (!confirmTransaction) toast.success('Draft Saved successfully');
             setArticleStatus(false);
-
             router.replace(`/addarticle?draftId=${res.ok[1]}`);
           } else {
-            toast.success('Article created successfully');
+            toast.success(reviewMsg);
             setArticleStatus(true);
 
             clearPost();
@@ -395,7 +447,6 @@ export default function AddArticle() {
         });
     }
 
-    logger(article, 'Article Added successfully');
     /* // setUser(newUser.ok[1]);
     // updateImg(newUser.ok[1].profileImg[0], 'profile');
     // updateImg(newUser.ok[1].bannerImg[0], 'banner');
@@ -423,72 +474,192 @@ export default function AddArticle() {
     await formikRef.current?.handleSubmit();
     // }
   };
+  const validateAndShowModal = async () => {
+    if (articleContent?.length <= 0) {
+      return toast.error('You can not save an empty article');
+    }
 
+    if (selectedCategory.length === 0) {
+      return toast.error('Please select at least one  category');
+    }
+    let previewArray = null;
+    if (previewFile !== null) {
+      previewArray = await fileToCanisterBinaryStoreFormat(previewFile);
+    } else if (draftPreviewImg !== null) {
+      previewArray = draftPreviewImg;
+    } else {
+      return toast.error('Please select a featured Image');
+    }
+    const errors = await formikRef.current?.validateForm();
+    if (errors && Object.keys(errors).length === 0) {
+      // Form is valid, do any success call
+      setShowModal(true);
+
+      // setShowModal(true);
+    } else {
+      formikRef.current?.setTouched(
+        setNestedObjectValues<FormikTouched<FormikValues>>(errors, true)
+      );
+    }
+  };
   const handlePublish = async () => {
     setIsArticleDraft(false);
     formikRef.current?.handleSubmit();
     // const returniii = await formikRef.current?.validateForm();
     // logger(returniii, 'GOT VALIDATE');
-    // const errors = await formikRef.current?.validateForm();
-    // if (errors && Object.keys(errors).length === 0) {
-    //   // Form is valid, do any success call
-    //   setShowModal(true);
-
-    //   // setShowModal(true);
-    // } else {
-    //   formikRef.current?.setTouched(
-    //     setNestedObjectValues<FormikTouched<FormikValues>>(errors, true)
-    //   );
-    // }
   };
   const handleTransaction = async () => {
-    setIsArticleSubmitting(true);
-    setIsArticleDraft(false);
-    let ledgerActor = await makeLedgerCanister({
-      agentOptions: {
-        identity,
-      },
-    });
+    try {
+      setIsArticleSubmitting(true);
+      setIsArticleDraft(true);
 
-    let acc: any = AccountIdentifier.fromPrincipal({
-      principal: identity.getPrincipal(),
-      // subAccount: identity.getPrincipal(),
-    });
+      let ledgerActor = await makeLedgerCanister({
+        agentOptions: {
+          identity,
+        },
+      });
+      let acc: any = AccountIdentifier.fromPrincipal({
+        principal: identity.getPrincipal(),
+        // subAccount: identity.getPrincipal(),
+      });
 
-    let balance = await ledgerActor.account_balance({
-      account: acc.bytes,
-    });
-    let replicaPrincipal = Principal.fromText(
-      'ae25j-iwln7-esrn6-abfzr-p2plk-ow2pg-n2iuh-7ebfd-3drqw-m4cuq-zae'
-    );
-    let replicaAcc: any = AccountIdentifier.fromPrincipal({
-      principal: replicaPrincipal,
-      // subAccount: identity.getPrincipal(),
-    });
-    let transfer = await ledgerActor.transfer({
-      to: replicaAcc.bytes,
-      fee: { e8s: 10000 },
-      memo: 1,
-      amount: { e8s: promotionValues.icp * 100000000 },
-      from_subaccount: [],
-      created_at_time: [],
-    });
-    if (transfer.Ok) {
-      formikRef?.current?.handleSubmit();
-      logger({ balance, transfer });
-      // setConfirmTransaction(false);
-    } else if (transfer.Err) {
-      if (transfer.Err.InsufficientFunds) {
-        toast.error(`Insufficient funds, ${'s'}`);
-      } else {
-        toast.error(
-          'An error occurred in the transaction please refresh the page and try again'
-        );
+      let balance = await ledgerActor.account_balance({
+        account: acc.bytes,
+      });
+      logger(balance, 'weeeee');
+      let rewardConfig = await defaultEntryActor.get_reward();
+      logger(rewardConfig);
+      let promotion = parseFloat(rewardConfig.master);
+      let platform = parseFloat(rewardConfig.platform);
+      let admin = parseFloat(rewardConfig.admin);
+      let total = promotion + platform + admin;
+      if (total !== 100) {
+        setIsArticleSubmitting(false);
+        setIsDraftSubmitting(false);
+        handleModalClose();
+        return toast.error('error during transaction');
       }
+      // let promotedICP = (reward / 100) * promotionValues.icp;
+      let promotionE8S = promotionValues.icp * E8S;
+      let promotionICP = (promotion / 100) * promotionE8S;
+      let platformICP = (platform / 100) * promotionE8S;
+      let adminICP = (admin / 100) * promotionE8S;
+      let balanceICP = parseInt(balance.e8s) / E8S;
+      let gasInE8s = GAS_FEE;
+      // TODO ADJUST THIS
+      let gasInICP = gasFee * 5;
+      let gasInE8S = gasInICP * E8S;
+      let requiredICP = balanceICP + gasInICP;
+      let approvingPromotionE8S = promotionE8S + gasInE8S;
+      logger({ balance, balanceICP });
+      if (balance.e8s < approvingPromotionE8S) {
+        setIsArticleDraft(false);
+        setConfirmTransaction(false);
+        setIsArticleSubmitting(false);
+        return toast.error(
+          `Insufficient balance to promote. Current Balance: ${balanceICP}`
+        );
+      } else {
+      }
+      let masterPrincipal = Principal.fromText(
+        process.env.NEXT_PUBLIC_MASTER_WALLET as string
+      );
+      let masterAcc: any = AccountIdentifier.fromPrincipal({
+        principal: masterPrincipal,
+        // subAccount: identity.getPrincipal(),
+      });
+      let platformPrincipal = Principal.fromText(
+        process.env.NEXT_PUBLIC_PLATFORM_WALLET as string
+      );
+      let platformAcc: any = AccountIdentifier.fromPrincipal({
+        principal: platformPrincipal,
+        // subAccount: identity.getPrincipal(),
+      });
+      let adminPrincipal = Principal.fromText(
+        process.env.NEXT_PUBLIC_ADMIN_WALLET as string
+      );
+      let adminAcc: any = AccountIdentifier.fromPrincipal({
+        principal: adminPrincipal,
+        // subAccount: identity.getPrincipal(),
+      });
+      if (!entryCanisterId) return toast.error('Error in transaction');
+      let entryPrincipal = Principal.fromText(entryCanisterId);
+      let approval = await ledgerActor.icrc2_approve({
+        amount: approvingPromotionE8S,
+        spender: {
+          owner: entryPrincipal,
+          subaccount: [],
+        },
+        fee: [GAS_FEE],
+        memo: [],
+        from_subaccount: [],
+        created_at_time: [],
+        expected_allowance: [],
+        expires_at: [],
+      });
+      if (approval.Ok) {
+        setIsArticleDraft(false);
+        setTimeout(() => {
+          formikRef?.current?.handleSubmit();
+        }, 100);
+      }
+      logger(approval, 'APPPPPROVEEEE');
       setIsArticleSubmitting(false);
-      setConfirmTransaction(false);
+      setIsArticleDraft(false);
+      // ledgerActor
+      //   .transfer({
+      //     to: masterAcc.bytes,
+      //     fee: { e8s: gasInE8s },
+      //     memo: 1,
+      //     amount: { e8s: promotionICP },
+      //     from_subaccount: [],
+      //     created_at_time: [],
+      //   })
+      //   .then(async (res: any) => {
+      //     ledgerActor
+      //       .transfer({
+      //         to: platformAcc.bytes,
+      //         fee: { e8s: gasInE8s },
+      //         memo: 1,
+      //         amount: { e8s: platformICP },
+      //         from_subaccount: [],
+      //         created_at_time: [],
+      //       })
+      //       .then(async (res: any) => {
+      //         let transfer = await ledgerActor.transfer({
+      //           to: adminAcc.bytes,
+      //           fee: { e8s: gasInE8s },
+      //           memo: 1,
+      //           amount: { e8s: adminICP },
+      //           from_subaccount: [],
+      //           created_at_time: [],
+      //         });
+      //         if (transfer.Ok) {
+      //           setIsArticleDraft(false);
+      //           setTimeout(() => {
+      //             formikRef?.current?.handleSubmit();
+      //           }, 100);
+      //           logger({ balance, transfer });
+      //           // setConfirmTransaction(false);
+      //         } else if (transfer.Err) {
+      //           if (transfer.Err.InsufficientFunds) {
+      //             toast.error(`Insufficient funds.`);
+      //           } else {
+      //             toast.error(
+      //               'An error occurred in the transaction please refresh the page and try again'
+      //             );
+      //           }
+      //           setIsArticleSubmitting(false);
+      //           setConfirmTransaction(false);
+      //         }
+      //         logger({ transfer }, 'DA transfer');
+      //       });
+      //   });
+    } catch (e) {
+      console.error(e);
+      setIsArticleSubmitting(false);
+      setIsArticleDraft(false);
     }
-    logger({ transfer }, 'DA transfer');
   };
 
   const getUser = async (res?: any) => {
@@ -503,6 +674,8 @@ export default function AddArticle() {
       updateImg(tempUser.ok[1].profileImg[0], true);
     }
   };
+  // editor config
+
   useEffect(() => {
     if (auth.state === 'anonymous') {
       router.push('/');
@@ -521,6 +694,7 @@ export default function AddArticle() {
       // getII();
     }
   }, [auth]);
+
   return (
     <>
       <main id='main'>
@@ -543,10 +717,10 @@ export default function AddArticle() {
                       //   logger('GET GREETED KID::::::', res);
                       // });
 
-                      await uploadEntry(values, actions);
+                      await uploadEntry(values);
                     }}
                   >
-                    {({ errors, touched, handleChange }) => (
+                    {({ errors, touched, handleChange, handleBlur }) => (
                       <FormikForm
                         className='flex w-full flex-col items-center justify-center'
                         // onChange={(e) => handleImageChange(e)}
@@ -563,6 +737,7 @@ export default function AddArticle() {
                                 placeholder='Enter title here'
                                 autoComplete='off'
                                 value={field.value}
+                                onInput={handleBlur}
                                 onChange={(e) => {
                                   formikRef?.current?.setFieldValue(
                                     'seoTitle',
@@ -587,35 +762,10 @@ export default function AddArticle() {
                           />
                         </div>
                         <div className='full-div my-3'>
-                          {/* <Image src={media} alt='Media' /> */}
-                          <Editor
-                            onEditorChange={(e) => {
-                              setArticleContent(e);
-                            }}
-                            apiKey='b7qxcjq0278booyzwv8umu13oowd7bet1oxjydazlwgsj2rq'
-                            key={editorKey}
-                            onChange={(e) => {}}
+                          <Texteditor
+                            initialValue={articleContent}
                             value={articleContent}
-                            // onEditorChange={}
-                            init={() => ({
-                              plugins:
-                                'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-                              toolbar:
-                                'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                              tinycomments_mode: 'embedded',
-                              tinycomments_author: 'Author name',
-                              mergetags_list: [
-                                { value: 'First.Name', title: 'First Name' },
-                                { value: 'Email', title: 'Email' },
-                              ],
-                              ai_request: (request: any, respondWith: any) =>
-                                respondWith.string(() =>
-                                  Promise.reject(
-                                    'See docs to implement AI Assistant'
-                                  )
-                                ),
-                            })}
-                            // initialValue={initialArticleContent}
+                            onChangefn={setArticleContent}
                           />
                         </div>
                         <Field name='seoTitle'>
@@ -640,6 +790,7 @@ export default function AddArticle() {
                                 placeholder='Title'
                                 value={field.value}
                                 onChange={handleChange}
+                                onInput={handleBlur}
                                 name='seoTitle'
                               />
                             </Form.Group>
@@ -674,6 +825,7 @@ export default function AddArticle() {
                                 placeholder=''
                                 value={field.value}
                                 onChange={handleChange}
+                                onInput={handleBlur}
                                 name='seoSlug'
                               />
                             </Form.Group>
@@ -696,6 +848,7 @@ export default function AddArticle() {
                                 rows={3}
                                 value={field.value}
                                 onChange={handleChange}
+                                onInput={handleBlur}
                                 name='seoDescription'
                               />
                             </Form.Group>
@@ -721,6 +874,7 @@ export default function AddArticle() {
                                 rows={3}
                                 value={field.value}
                                 onChange={handleChange}
+                                onInput={handleBlur}
                                 name='seoExcerpt'
                               />
                             </Form.Group>
@@ -805,7 +959,15 @@ export default function AddArticle() {
                   </Accordion.Item>
                   <div className='linkeee'>
                     <div className='flex-div'>
-                      <Button className='red-link' onClick={clearPost}>
+                      <Button
+                        className={`red-link  ${
+                          isDraftSubmitting || isArticleSubmitting
+                            ? 'disabledBtn'
+                            : ''
+                        }`}
+                        disabled={isDraftSubmitting || isArticleSubmitting}
+                        onClick={clearPost}
+                      >
                         Move To Trash
                       </Button>
                       <Button
@@ -853,8 +1015,8 @@ export default function AddArticle() {
                             eventKey: 'Mostused',
                             title: 'Most used',
                           },
-                        ].map(({ eventKey, title }) => (
-                          <Tab eventKey={eventKey} title={title}>
+                        ].map(({ eventKey, title }, index) => (
+                          <Tab eventKey={eventKey} title={title} key={index}>
                             {categories.map((category, index) => (
                               <p
                                 className={`category ${
@@ -949,144 +1111,6 @@ export default function AddArticle() {
           </div>
         </div>
       </main>
-      <Modal show={showModal} centered onHide={handleModalClose}>
-        <Modal.Body>
-          {/* <div className='full-div'>
-            <Button className='grey-btn'>
-              <p>Plug Wallet</p>
-              <Image src={Wallet} alt='Wallet' />
-            </Button>
-            <Link
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-              href='/entriesn'
-              className='grey-btn'
-            >
-              <p>Internet Identity</p>
-              <Image src={Infinity} alt='Infinity' />
-            </Link>
-          </div> */}
-          {confirmTransaction ? (
-            <>
-              <div className='flex-div connect-heading-pnl mb-3'>
-                {/* <i className='fa fa-question-circle-o'></i> */}
-                <p></p>
-                <p className='text-bold h5 fw-bold m-0'>Confirm Transaction</p>
-                <i
-                  onClick={() => {
-                    setConfirmTransaction(false);
-                    // handleModalClose();
-                  }}
-                  className='fa fa-close'
-                ></i>
-                {/* <Button
-                  className='close-btn'
-                ></Button> */}
-              </div>
-              <div>
-                <p className='text-center'>
-                  Are you sure you want to promote your article for{' '}
-                  {promotionValues.icp} ICP tokens ?
-                </p>
-              </div>
-              <div className='d-flex justify-content-center'>
-                <Button
-                  className='publish-btn'
-                  disabled={isArticleSubmitting || isDraftSubmitting}
-                  onClick={handleTransaction}
-                  // type='submit'
-                >
-                  {isArticleSubmitting ? <Spinner size='sm' /> : 'Confirm'}
-                </Button>
-              </div>
-            </>
-          ) : (
-            <Formik
-              initialValues={initialPromoteVales}
-              // innerRef={formikRef}
-              // enableReinitialize
-              validationSchema={promotionSchema}
-              onSubmit={async (values, actions) => {
-                setPromotionValues({
-                  icp: values.ICP,
-                  // likes: values.likesCount,
-                });
-
-                setIsPromoted(true);
-                logger(values, 'SAT VALUES');
-                setConfirmTransaction(true);
-                // formikRef.current?.handleSubmit();
-                // await uploadEntry(values, actions);
-              }}
-            >
-              {({ errors, touched, handleChange }) => (
-                <FormikForm
-                  className='flex w-full flex-col items-center justify-center'
-                  // onChange={(e) => handleImageChange(e)}
-                >
-                  <Field name='icp'>
-                    {({ field, formProps }: any) => (
-                      <Form.Group
-                        className='mb-2'
-                        controlId='exampleForm.ControlInput1'
-                      >
-                        <Form.Label>ICP</Form.Label>
-                        <Form.Control
-                          type='number'
-                          placeholder='Enter ICP Amount'
-                          value={field.value}
-                          onChange={handleChange}
-                          name='ICP'
-                        />
-                      </Form.Group>
-                    )}
-                  </Field>
-                  <div className='text-danger mb-2'>
-                    <ErrorMessage
-                      className='Mui-err'
-                      name='ICP'
-                      component='div'
-                    />
-                  </div>
-                  {/* <Field name='likesCount'>
-                  {({ field, formProps }: any) => (
-                    <Form.Group
-                      className='mb-2'
-                      controlId='exampleForm.ControlInput1'
-                    >
-                      <Form.Label>Total likes reach count</Form.Label>
-                      <Form.Control
-                        type='number'
-                        placeholder='Enter ICP Amount'
-                        value={field.value}
-                        onChange={handleChange}
-                        name='likesCount'
-                      />
-                    </Form.Group>
-                  )}
-                </Field>
-                <div className='text-danger mb-2'>
-                  <ErrorMessage
-                    className='Mui-err'
-                    name='likesCount'
-                    component='div'
-                  />
-                </div> */}
-                  <Button
-                    className='publish-btn'
-                    disabled={isArticleSubmitting || isDraftSubmitting}
-                    // onClick={handlePublish}
-                    type='submit'
-                  >
-                    {isArticleSubmitting ? <Spinner size='sm' /> : 'Publish'}
-                  </Button>
-                </FormikForm>
-              )}
-            </Formik>
-          )}
-        </Modal.Body>
-      </Modal>
       <Modal size='lg' show={showPreviewModal} onHide={handlePreviewModalClose}>
         <Modal.Body>
           <div className='article-detail-pnl'>
@@ -1135,13 +1159,13 @@ export default function AddArticle() {
                       By {user?.name[0] ?? ''}{' '}
                     </Link>
                     {/* <Button>
-                      <Image src={iconcap} alt='Cap' /> Expert
-                    </Button> */}
+              <Image src={iconcap} alt='Cap' /> Expert
+            </Button> */}
                     {/* {entry?.isPromoted && (
-                    <Button>
-                      <Image src={iconcap} alt='Cap' /> Expert
-                    </Button>
-                  )} */}
+            <Button>
+              <Image src={iconcap} alt='Cap' /> Expert
+            </Button>
+          )} */}
                   </h6>
                   <p>
                     Content Felow of <b>NFTStudio24</b>
@@ -1149,7 +1173,7 @@ export default function AddArticle() {
                   <span className='small'>
                     {' '}
                     {/* {user
-                    ?  */}
+            ?  */}
                     {utcToLocal('', 'MMMM Do, YYYY, hh:mm A')}
                     {/* : 'Oct 19, 2023, 23:35'} */}
                   </span>
@@ -1158,23 +1182,23 @@ export default function AddArticle() {
               <div className='count-description-pnl'>
                 <div className='d-flex sm'>
                   {/* {auth.state === 'initialized' && (
-                  <MintButton
-                    isMinted={isMinted}
-                    isMinting={isMinting}
-                    mintNft={mintNft}
-                    entry={entry}
-                    commentsLength={userArticleComments.length}
-                    tempLike={tempLike}
-                  />
-                )} */}
+          <MintButton
+            isMinted={isMinted}
+            isMinting={isMinting}
+            mintNft={mintNft}
+            entry={entry}
+            commentsLength={userArticleComments.length}
+            tempLike={tempLike}
+          />
+        )} */}
                   {/* <VoteButton
-                  isLiked={isLiked}
-                  isLiking={isLiking}
-                  handleLikeEntry={handleLikeEntry}
-                  entry={entry}
-                  commentsLength={userArticleComments.length}
-                  tempLike={tempLike}
-                /> */}
+          isLiked={isLiked}
+          isLiking={isLiking}
+          handleLikeEntry={handleLikeEntry}
+          entry={entry}
+          commentsLength={userArticleComments.length}
+          tempLike={tempLike}
+        /> */}
 
                   <Link href='#' className='share-btn'>
                     Share <Image src={iconshare} alt='share' />
@@ -1189,8 +1213,8 @@ export default function AddArticle() {
               <div className='spacer-20'></div>
             </div>
             <ul className='hash-list'>
-              {selectedCategory.map((category: string) => (
-                <li>
+              {selectedCategory.map((category: string, index: number) => (
+                <li key={index}>
                   <span>#</span> {category}
                 </li>
               )) ?? ''}
@@ -1201,3 +1225,220 @@ export default function AddArticle() {
     </>
   );
 }
+// {/* <Modal show={showModal} centered onHide={handleModalClose}>
+// <Modal.Body>
+//   {/* <div className='full-div'>
+//     <Button className='grey-btn'>
+//       <p>Plug Wallet</p>
+//       <Image src={Wallet} alt='Wallet' />
+//     </Button>
+//     <Link
+//       onClick={(e) => {
+//         e.preventDefault();
+//       }}
+//       href='/entriesn'
+//       className='grey-btn'
+//     >
+//       <p>Internet Identity</p>
+//       <Image src={Infinity} alt='Infinity' />
+//     </Link>
+//   </div> */}
+//   {!wannaPromote ? (
+//     <>
+//       <div className='flex-div connect-heading-pnl mb-3'>
+//         {/* <i className='fa fa-question-circle-o'></i> */}
+//         <p></p>
+//         <p className='text-bold h5 fw-bold m-0'>Promote Article</p>
+//         <i
+//           style={{
+//             cursor: 'pointer',
+//           }}
+//           onClick={handleModalClose}
+//           className='fa fa-close'
+//         ></i>
+//         {/* <Button
+//         className='close-btn'
+//       ></Button> */}
+//       </div>
+//       <div>
+//         <p className='text-center'>
+//           Do you want to promote your article?
+//         </p>
+//       </div>
+//       <div className='d-flex justify-content-center gap-3'>
+//         <Button
+//           className='default-btn'
+//           disabled={isArticleSubmitting || isDraftSubmitting}
+//           onClick={() => {
+//             handleModalClose();
+//             handlePublish();
+//           }}
+//           // type='submit'
+//         >
+//           Promote Later
+//         </Button>
+//         <Button
+//           className='publish-btn'
+//           disabled={isArticleSubmitting || isDraftSubmitting}
+//           onClick={() => {
+//             setWannaPromote(true);
+//           }}
+//           // type='submit'
+//         >
+//           {/* {isArticleSubmitting ? <Spinner size='sm' /> : 'Yes'} */}
+//           Promote Now
+//         </Button>
+//       </div>
+//     </>
+//   ) : confirmTransaction ? (
+//     <>
+//       <div className='flex-div connect-heading-pnl mb-3'>
+//         {/* <i className='fa fa-question-circle-o'></i> */}
+//         <p></p>
+//         <p className='text-bold h5 fw-bold m-0'>Confirm Transaction</p>
+//         {/* <i onClick={handleModalClose} className='fa fa-close'></i> */}
+//         <i
+//           style={{
+//             cursor: 'pointer',
+//           }}
+//           onClick={handleModalClose}
+//           className='fa fa-close'
+//         ></i>
+//         {/* <Button
+//           className='close-btn'
+//         ></Button> */}
+//       </div>
+//       <div>
+//         <p className='text-center'>
+//           Are you sure you want to promote your article for{' '}
+//           {promotionValues.icp + gasFee * 5} ICP tokens ?
+//         </p>
+//         <p className='text-secondary mb-0'>
+//           Transaction fee: {gasFee * 5} ICP
+//         </p>
+//         <p className='text-secondary mb-1'>
+//           <span
+//             style={{
+//               border: '2px',
+//             }}
+//           >
+//             Promotion amount: {promotionValues.icp} ICP
+//           </span>
+//         </p>
+//         <div
+//           style={{
+//             height: 1,
+//             backgroundColor: 'gray',
+//             width: '40%',
+//           }}
+//         ></div>
+//         <p className='text-secondary mt-1 mb-0'>
+//           Total: {promotionValues.icp + gasFee * 5} ICP
+//         </p>
+//       </div>
+//       <div className='d-flex justify-content-center'>
+//         <Button
+//           className='publish-btn'
+//           disabled={isArticleSubmitting || isDraftSubmitting}
+//           onClick={handleTransaction}
+//           // type='submit'
+//         >
+//           {isArticleSubmitting ? <Spinner size='sm' /> : 'Confirm'}
+//         </Button>
+//       </div>
+//     </>
+//   ) : (
+//     <Formik
+//       initialValues={initialPromoteVales}
+//       // innerRef={formikRef}
+//       // enableReinitialize
+//       validationSchema={promotionSchema}
+//       onSubmit={async (values, actions) => {
+//         setPromotionValues({
+//           icp: values.ICP,
+//           // likes: values.likesCount,
+//         });
+
+//         setIsPromoted(true);
+//         logger(values, 'SAT VALUES');
+//         setConfirmTransaction(true);
+//         // formikRef.current?.handleSubmit();
+//         // await uploadEntry(values, actions);
+//       }}
+//     >
+//       {({ errors, touched, handleChange }) => (
+//         <FormikForm
+//           className='flex w-full flex-col items-center justify-center'
+//           // onChange={(e) => handleImageChange(e)}
+//         >
+//           <Field name='icp'>
+//             {({ field, formProps }: any) => (
+//               <Form.Group
+//                 className='mb-2'
+//                 controlId='exampleForm.ControlInput1'
+//               >
+//                 <div className='d-flex justify-content-between w-100'>
+//                   <Form.Label>ICP</Form.Label>
+//                   <i
+//                     style={{
+//                       cursor: 'pointer',
+//                     }}
+//                     onClick={handleModalClose}
+//                     className='fa fa-close'
+//                   ></i>
+//                 </div>
+
+//                 <Form.Control
+//                   type='number'
+//                   placeholder='Enter ICP Amount'
+//                   value={field.value}
+//                   onChange={handleChange}
+//                   name='ICP'
+//                 />
+//               </Form.Group>
+//             )}
+//           </Field>
+//           <div className='text-danger mb-2'>
+//             <ErrorMessage
+//               className='Mui-err'
+//               name='ICP'
+//               component='div'
+//             />
+//           </div>
+//           {/* <Field name='likesCount'>
+//           {({ field, formProps }: any) => (
+//             <Form.Group
+//               className='mb-2'
+//               controlId='exampleForm.ControlInput1'
+//             >
+//               <Form.Label>Total likes reach count</Form.Label>
+//               <Form.Control
+//                 type='number'
+//                 placeholder='Enter ICP Amount'
+//                 value={field.value}
+//                 onChange={handleChange}
+//                 name='likesCount'
+//               />
+//             </Form.Group>
+//           )}
+//         </Field>
+//         <div className='text-danger mb-2'>
+//           <ErrorMessage
+//             className='Mui-err'
+//             name='likesCount'
+//             component='div'
+//           />
+//         </div> */}
+//           <Button
+//             className='publish-btn'
+//             disabled={isArticleSubmitting || isDraftSubmitting}
+//             type='submit'
+//           >
+//             {isArticleSubmitting ? <Spinner size='sm' /> : 'Publish'}
+//           </Button>
+//         </FormikForm>
+//       )}
+//     </Formik>
+//   )}
+// </Modal.Body>
+// </Modal>

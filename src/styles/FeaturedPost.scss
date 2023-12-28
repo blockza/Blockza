@@ -116,9 +116,21 @@
             width: 20px;
             height: 20px;
           }
+          img.myimg{
+            margin-right: 0 !important;
+          }
         }
       }
+p a.mylink {
+  border: none !important;
+  padding: 0 !important;
+  
+  &:hover {
+    background-color: unset !important;
+    color: unset !important;
+  }
 
+}
       a {
         width: 100%;
         background-color: transparent;

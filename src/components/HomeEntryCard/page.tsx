@@ -1,21 +1,16 @@
 'use client';
 
-import Head from 'next/head';
 import * as React from 'react';
-
-import Connect from '@/components/Connect/Connect';
 import 'react-toastify/dist/ReactToastify.css';
-
-import { useEntriesStore } from '@/store/useStore';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { Entry } from '@/types/dashboard';
 
 export default function HomeEntryCard({ entry }: any) {
-  const { allUsersEntries, setAllUsersEntries } = useEntriesStore((state) => ({
-    allUsersEntries: state.allUsersEntries,
-    setAllUsersEntries: state.setAllUsersEntries,
-  }));
+  // const { allUsersEntries, setAllUsersEntries } = useEntriesStore((state) => ({
+  //   allUsersEntries: state.allUsersEntries,
+  //   setAllUsersEntries: state.setAllUsersEntries,
+  // }));
   const location = usePathname();
   const router = useRouter();
 

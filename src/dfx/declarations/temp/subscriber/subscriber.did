@@ -1,0 +1,29 @@
+type anon_class_18_1 = 
+ service {
+   addSubscriber: (principal, text, text) -> (Result_1);
+   getSubscribers: () -> (Result) query;
+   isSubscriber: (principal) -> (bool) query;
+ };
+type Subscribers = vec Subscriber;
+type Subscriber = 
+ record {
+   subscribed_on: int;
+   user: principal;
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: record {
+         Subscriber;
+         text;
+       };
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: record {
+         Subscribers;
+         text;
+       };
+ };
+service : () -> anon_class_18_1

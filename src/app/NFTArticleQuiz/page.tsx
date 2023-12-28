@@ -3,15 +3,10 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { Row, Col, Breadcrumb } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
-import { usePathname, useRouter } from 'next/navigation';
+import {  useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import iconrelated from '@/assets/Img/Icons/icon-related.png';
-import NavBar from '@/components/NavBar/NavBar';
-import SidebarHome from '@/components/SideBarHome/SideBarHome';
-import Footer from '@/components/Footer/Footer';
-import LeadershipPost from '@/components/LeadershipPost/LeadershipPost';
-import NFTArticlePost from '@/components/NFTArticlePost/NFTArticlePost';
 import RelatedPost from '@/components/RelatedPost/RelatedPost';
 import QuizPost from '@/components/QuizPost/QuizPost';
 /**

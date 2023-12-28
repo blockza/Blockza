@@ -1,4 +1,4 @@
-const entriesSlice = (set) => ({
+const entriesSlice = (set, get) => ({
   entries: [],
 
   setEntries: (input) => set((state) => ({ entries: input })),

@@ -1,35 +1,15 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import {
-  Row,
-  Col,
-  Table,
-  Dropdown,
-  Form,
-  Breadcrumb,
-  Button,
-  Spinner,
-} from 'react-bootstrap';
-import Image from 'next/image';
-import Link from 'next/link';
-import loader from '@/assets/Img/Icons/icon-loader.png';
-import arrows from '@/assets/Img/Icons/icon-arrows.png';
-import post1 from '@/assets/Img/Posts/small-post-10.png';
-import post2 from '@/assets/Img/Posts/small-post-11.png';
-import post3 from '@/assets/Img/Posts/small-post-12.png';
-import post4 from '@/assets/Img/Posts/small-post-13.png';
-import post5 from '@/assets/Img/Posts/small-post-14.png';
-import post6 from '@/assets/Img/Posts/small-post-15.png';
+import { Row, Col, Form, Button, Spinner } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import { usePathname, useRouter } from 'next/navigation';
 import { useConnectPlugWalletStore } from '@/store/useStore';
-import { makeEntryActor } from '@/dfx/service/actor-locator';
+import { makeEntryActor, makeUserActor } from '@/dfx/service/actor-locator';
 import logger from '@/lib/logger';
 import { getImage } from '@/components/utils/getImage';
-import { utcToLocal } from '@/components/utils/utcToLocal';
-// import { usePopper } from 'react-popper';
-import Tippy from '@tippyjs/react';
+import { ArticlesList } from '@/components/ArticlesList';
+import { EntrySizeMap } from '@/types/dashboard';
 
 /**
  * SVGR Support
@@ -39,199 +19,7 @@ import Tippy from '@tippyjs/react';
  * @see https://stackoverflow.com/questions/68103844/how-to-override-next-js-svg-module-declaration
  */
 
-function Items({
-  currentItems,
-  currentTab,
-}: {
-  currentItems: any[];
-  currentTab: string;
-}) {
-  // const tooltipRef = useRef<HTMLDivElement | null>(null);
-  // const boxRef = useRef<HTMLDivElement | null>(null);
-  // const [showTip, setShowTip] = useState(false);
-
-  // const { styles, attributes } = usePopper(boxRef.current, tooltipRef.current);
-  return (
-    <>
-      <Col xl='12' lg='12'>
-        <div className='full-div'>
-          <div className='table-container lg'>
-            <div className='table-inner-container'>
-              <Table striped hover className='article-table'>
-                <thead>
-                  <tr>
-                    <th>
-                      <p>
-                        Title <Image className='arw' src={arrows} alt='arrow' />
-                      </p>
-                    </th>
-                    <th>Author</th>
-                    <th>Categories</th>
-                    <th>
-                      <p>
-                        Date <Image className='arw' src={arrows} alt='arrow' />
-                      </p>
-                    </th>
-                    {currentTab === 'Minted' && <th>Minted</th>}
-                    <th className='text-center'>
-                      <div className='d-flex align-items-center justify-content-center'>
-                        <Image src={loader} alt='loader' /> Status
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.map((article) => (
-                    <tr key={article.entryId}>
-                      <td>
-                        <Link
-                          href={
-                            article.isDraft
-                              ? `/addarticle?draftId=${article.entryId}`
-                              : `/article?articleId=${article.entryId}`
-                          }
-                        >
-                          <div className='d-flex align-items-start'>
-                            {article.image ? (
-                              <div
-                                style={{
-                                  minWidth: 89,
-                                  height: 46,
-                                  position: 'relative',
-                                  marginRight: 10,
-                                }}
-                              >
-                                <Image
-                                  src={article.image}
-                                  fill
-                                  sizes='(max-width: 2000px) 89px,46px'
-                                  alt='Post'
-                                />
-                              </div>
-                            ) : (
-                              <Image src={post1} alt='Post' />
-                            )}
-                            <p style={{ maxWidth: 480 }}>
-                              {article.title.slice(0, 75)}
-                              {article.title.length > 75 && '...'}{' '}
-                              {article.isDraft && <span>| Draft </span>}
-                            </p>
-                          </div>
-                        </Link>
-                      </td>
-                      <td>
-                        <Link href={`/profile?userId=${article.userId}`}>
-                          <p>{article?.user.name}</p>
-                        </Link>
-                      </td>
-                      <td>
-                        <Tippy
-                          content={
-                            article?.categories?.length > 0 ? (
-                              <div className='categories'>
-                                {article.categories.map(
-                                  (category: string, index: number) => (
-                                    <p className='category'>
-                                      {category}
-                                      {!(
-                                        index ===
-                                        article.categories.length - 1
-                                      ) && ', '}
-                                    </p>
-                                  )
-                                )}
-                              </div>
-                            ) : (
-                              ''
-                            )
-                          }
-                        >
-                          <p>
-                            {article.categories[0] + ' '}{' '}
-                            {article.categories.length > 1 &&
-                              '+' + (article.categories.length - 1) + ' more'}
-                          </p>
-                        </Tippy>
-                        {/* <div ref={boxRef}></div>
-                          <div
-                            ref={tooltipRef}
-                            className='my-tooltip'
-                            style={styles.popper}
-                            {...attributes.popper}
-                          >
-                            Lorem ipsum dolor sit, amet consectetur adipisicing
-                            elit. Beatae, modi?
-                          </div> */}
-                      </td>
-                      <td>
-                        <span className='w-100'>Created At</span>
-                        {/* 2023/11/08 at 06:52 pm */}
-                        <span>
-                          {utcToLocal(
-                            article.creation_time,
-                            'YYYY/MM/DD  hh:mm a'
-                          )}
-                        </span>
-                      </td>
-                      {currentTab === 'Minted' && (
-                        <td>
-                          {/* 2023/11/08 at 06:52 pm */}
-                          <span>
-                            {article?.minters?.length
-                              ? article?.minters?.length + 1
-                              : '0'}
-                          </span>
-                        </td>
-                      )}
-
-                      <td className='text-center'>
-                        <div className='d-flex align-items-center gap-1'>
-                          <span
-                            className={`circle-span m-0 ${
-                              article.isDraft ? 'red' : 'green'
-                            }`}
-                          ></span>
-                          <p> {article.isDraft ? 'Draft' : 'Minted'}</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                  {/* <tr>
-                      <td>
-                        <div className='d-flex align-items-start'>
-                          <Image src={post2} alt='Post' />
-                          <p>
-                            6 NFT Projects currently popular on the Tezos
-                            marketplace{' '}
-                          </p>
-                        </div>
-                      </td>
-                      <td>
-                        <p>NFTStudio24</p>
-                      </td>
-                      <td>
-                        <p>News</p>
-                      </td>
-                      <td>
-                        <span className='w-100'>Last Modified</span>
-                        <span>2023/11/08 at 06:52 pm</span>
-                      </td>
-                      <td className='text-center'>
-                        <span className='circle-span green'></span>
-                      </td>
-                    </tr>
-                          */}
-                </tbody>
-              </Table>
-            </div>
-          </div>
-        </div>
-      </Col>
-    </>
-  );
-}
-
-export default function AllArticles() {
+export default function Reward() {
   const [entriesList, setEntriesList] = useState([]);
   const [processedList, setProcessedList] = useState<any[]>([]);
   const [isGetting, setIsGetting] = useState(true);
@@ -240,9 +28,24 @@ export default function AllArticles() {
   const [userArticleList, setUserArticleList] = useState<any[]>([]);
   const [activeListName, setActiveListName] = useState('All');
   const [activeList, setActiveList] = useState<any[]>([]);
+  const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [userDraftList, setUserDraftList] = useState<any[]>([]);
+  const [oldAuth, setOldAuth] = useState('');
   const [forcePaginate, setForcePaginate] = useState(0);
+
+  const [showLoader, setShowLoader] = useState(true);
+  // const [entriesSize, setEntriesSize] = useState(0);
+  // const [userEnriesSize, setUserEnriesSize] = useState(0);
+  const [entriesSize, setEntriesSize] = useState<any>({
+    all: 0,
+    user: 0,
+    draft: 0,
+  });
+  const [settings, setSettings] = useState({
+    type: 'All',
+  });
+
   const router = useRouter();
   const pathName = usePathname();
   const { auth, setAuth, identity } = useConnectPlugWalletStore(
@@ -253,10 +56,24 @@ export default function AllArticles() {
     })
   );
 
+  const entryActorDefault = makeEntryActor({
+    agentOptions: {
+      identity,
+    },
+  });
+
   let itemsPerPage = 6;
   const endOffset = itemOffset + itemsPerPage;
-  let currentItems = activeList.slice(itemOffset, endOffset);
-  let pageCount = Math.ceil(activeList.length / itemsPerPage);
+  const entrySizeMap: EntrySizeMap = {
+    All: 'all',
+    Minted: 'all',
+    Draft: 'draft',
+    Mine: 'user',
+    MyMinted: 'user',
+  };
+
+  const entrySizeKey = entrySizeMap[activeListName] || 'all';
+  const pageCount = Math.ceil(entriesSize[entrySizeKey] / itemsPerPage);
 
   const getCategories = async () => {
     const entryActor = makeEntryActor({
@@ -271,6 +88,11 @@ export default function AllArticles() {
     if (tempEntriesList.length === 0) {
       return [];
     }
+    const userActor = makeUserActor({
+      agentOptions: {
+        identity,
+      },
+    });
     const refinedPromise = await Promise.all(
       tempEntriesList.map(async (entry: any) => {
         let image = null;
@@ -279,9 +101,7 @@ export default function AllArticles() {
         }
         const userId = entry[1].user.toString();
 
-        const user = await auth.actor.get_user_details([userId]);
-        logger(entry);
-        // let
+        const user = await userActor.get_user_details([userId]);
         let newItem = {
           entryId: entry[0],
           creation_time: entry[1].creation_time,
@@ -289,10 +109,15 @@ export default function AllArticles() {
           categories: entry[1].category,
           title: entry[1].title,
           isDraft: entry[1].isDraft,
-          user: user.ok[1],
+          isPromoted: entry[1].isPromoted,
+          userName: entry[1].userName,
           minters: entry[1].minters,
           userId,
+          status: entry[1].status,
         };
+        if (user.ok) {
+          newItem.userName = user.ok[1].name ?? entry[1].userName;
+        }
         return newItem;
       })
     );
@@ -307,18 +132,21 @@ export default function AllArticles() {
         identity,
       },
     });
-    logger(categ, 'Getting for this');
-    const tempList = await entryActor.getEntriesList(categ);
+    const resp = await entryActor.getEntriesList(
+      categ,
+      false,
+      search,
+      forcePaginate * itemsPerPage,
+      6
+    );
+    let amount = parseInt(resp.amount);
+    setEntriesSize((prev: any) => ({
+      ...prev,
+      all: amount,
+    }));
+    const tempList = resp.entries;
     setEntriesList(tempList);
-    setActiveList(tempList);
     logger(tempList, 'Entries List');
-
-    // logger(
-    //   tempList.slice(0, itemsPerPage),
-    //   'Entries List fetched from canister'
-    // );
-    // const myEntries = await getRefinedList(tempList.slice(0, itemsPerPage));
-    // setProcessedList(myEntries);
     return tempList;
   };
 
@@ -332,80 +160,146 @@ export default function AllArticles() {
         identity,
       },
     });
-    const tempList = await entryActor.getUserEntriesList(
-      all ? all : selectedCategory,
-      draft
+    const resp = await entryActor.getUserEntriesList(
+      all ? 'All' : selectedCategory,
+      draft,
+      search,
+      forcePaginate * itemsPerPage,
+      6
     );
+    const tempList = resp.entries;
+    // setEntriesSize();
+    let amount = parseInt(resp.amount);
+
     if (draft) {
       setUserDraftList(tempList);
+      setEntriesSize((prev: any) => ({
+        ...prev,
+        draft: amount,
+      }));
     } else {
+      setEntriesSize((prev: any) => ({
+        ...prev,
+        user: amount,
+      }));
       setUserArticleList(tempList);
     }
     logger(tempList, 'JUST SAT THIS');
     if (reset) {
-      setActiveList(tempList);
-
-      // const myEntries = await getRefinedList(tempList);
-      // setProcessedList(myEntries);
-      // setActiveListName(draft ? 'Draft' : 'User');
-      return;
+      return tempList;
     }
-    return;
+    return tempList;
     // logger(myEntries, 'Entries List fetched from canister');
   };
-
+  const getEntriesSize = async () => {
+    const entryActor = makeEntryActor({
+      agentOptions: {
+        identity,
+      },
+    });
+    let size = await entryActor.getEntriesLength();
+    // setEntriesSize(parseInt(size));
+    logger(size, ' SIZEE');
+  };
   // Invoke when user click to request another page.
   const handlePageClick = async (event: any) => {
     setIsGetting(true);
+
     setForcePaginate(event.selected);
-    const newOffset = (event.selected * itemsPerPage) % activeList.length;
     // setItemOffset(newOffset);
-    const newItems = activeList.slice(newOffset, newOffset + itemsPerPage);
-    const tempList = await getRefinedList(newItems);
-    logger({ newOffset, activeList, newItems, tempList }, 'EEEEVENTTT');
+    // if ()
+    let list: any = [];
+    if (activeListName === 'All' || activeListName === 'Minted') {
+      const newOffset = (event.selected * itemsPerPage) % entriesSize.all;
+      const resp = await entryActorDefault.getEntriesList(
+        selectedCategory,
+        false,
+        search,
+        newOffset,
+        itemsPerPage
+      );
+      list = resp.entries;
+    } else if (activeListName === 'Mine' || activeListName === 'MyMinted') {
+      const newOffset = (event.selected * itemsPerPage) % entriesSize.user;
+
+      const resp = await entryActorDefault.getUserEntriesList(
+        selectedCategory,
+        false,
+        search,
+        newOffset,
+        itemsPerPage
+      );
+      list = resp.entries;
+    } else if (activeListName === 'Draft') {
+      const newOffset = (event.selected * itemsPerPage) % entriesSize.draft;
+      const resp = await entryActorDefault.getUserEntriesList(
+        selectedCategory,
+        true,
+        search,
+        newOffset,
+        itemsPerPage
+      );
+      list = resp.entries;
+    }
+    // const newItems = tempList2.slice(newOffset, newOffset + itemsPerPage);
+    const tempList = await getRefinedList(list);
+    // logger({ newOffset, list, newItems: 'hi', tempList }, 'EEEEVENTTT');
     setProcessedList(tempList);
     setIsGetting(false);
   };
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = async (tab: string) => {
     setIsGetting(true);
     setSelectedCategory('All');
     setActiveListName(tab);
     setForcePaginate(0);
+    let list = [];
     if (tab === 'All' || tab === 'Minted') {
-      getEntriesList('All');
-    } else if (tab === 'Mine') {
-      getUserEntries(true, false, 'All');
+      list = await getEntriesList('All');
+    } else if (tab === 'Mine' || tab === 'MyMinted') {
+      list = await getUserEntries(true, false, 'All');
     } else if (tab === 'Draft') {
-      getUserEntries(true, true, 'All');
+      list = await getUserEntries(true, true, 'All');
     }
+    const tempList = await getRefinedList(list);
+    setProcessedList(tempList);
     setIsGetting(false);
   };
 
-  const filter = () => {
+  const filter = async () => {
+    setForcePaginate(0);
+    let list = [];
     if (activeListName == 'All' || activeListName == 'Minted') {
-      getEntriesList();
+      list = await getEntriesList();
     } else if (activeListName === 'Mine') {
-      getUserEntries(true);
+      list = await getUserEntries(true);
     } else if (activeListName === 'Draft') {
-      getUserEntries(true, true);
+      list = await getUserEntries(true, true);
+    }
+    const tempRefList = await getRefinedList(list);
+    setProcessedList(tempRefList);
+  };
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      filter();
     }
   };
 
   // useEffect(() => {}, [selectedCategory]);
 
-  useEffect(() => {
-    if (auth.client) {
-      const tempFun = async () => {
-        setIsGetting(true);
-        const tempList = await getRefinedList(currentItems);
-        logger(tempList, 'Entries   THIS IS ITTT');
-        setProcessedList(tempList);
-        setIsGetting(false);
-      };
+  // useEffect(() => {
+  //   if (auth.client) {
+  //     const tempFun = async () => {
+  //       setIsGetting(true);
+  //       const tempList = await getRefinedList(currentItems);
+  //       logger(tempList, 'Entries   THIS IS ITTT');
+  //       setProcessedList(tempList);
+  //       setIsGetting(false);
+  //     };
 
-      tempFun();
-    }
-  }, [entriesList, activeList]);
+  //     tempFun();
+  //   }
+  // }, [entriesList, activeList]);
 
   useEffect(() => {
     // if ()
@@ -413,34 +307,39 @@ export default function AllArticles() {
     getCategories();
   }, []);
 
-  useEffect(() => {
-    if (auth.client) {
-      const tempFun = async () => {
-        setIsGetting(true);
-        const tempList = await getRefinedList(currentItems);
-        setProcessedList(tempList);
-        setIsGetting(false);
-      };
+  // useEffect(() => {
+  //   if (auth.client) {
+  //     const tempFun = async () => {
+  //       setIsGetting(true);
+  //       const tempList = await getRefinedList(currentItems);
+  //       setProcessedList(tempList);
+  //       setIsGetting(false);
+  //     };
 
-      tempFun();
-    }
-  }, [auth, pathName]);
+  //     tempFun();
+  //   }
+  // }, [auth, pathName]);
 
   useEffect(() => {
+    logger({ auth: auth.state, identity }, 'current auth');
     if (identity) {
-      setSelectedCategory('Mine');
-      setActiveListName('Mine');
-      getUserEntries();
-      handleTabChange('Mine');
-      getUserEntries(false, true);
+      if (auth.state !== oldAuth) {
+        getUserEntries();
+        handleTabChange('Mine');
+        getUserEntries(false, true);
+        setOldAuth(auth.state);
+        getEntriesList();
+      }
     } else if (auth.state === 'anonymous') {
-      setSelectedCategory('All');
-      setActiveListName('All');
       handleTabChange('All');
-
-      getEntriesList();
     }
   }, [identity, pathName, auth]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>
@@ -469,8 +368,14 @@ export default function AllArticles() {
 
                         <div>
                           <div className='search-post-pnl'>
-                            <input type='text' placeholder='Search Posts' />
-                            <button>
+                            <input
+                              type='text'
+                              value={search}
+                              onChange={(e) => setSearch(e.target.value)}
+                              placeholder='Search Posts'
+                              onKeyDown={handleSearch}
+                            />
+                            <button onClick={filter}>
                               <i className='fa fa-search'></i>
                             </button>
                           </div>
@@ -487,11 +392,10 @@ export default function AllArticles() {
                                 activeListName === 'All' ? 'active' : ''
                               }
                             >
-                              <p>All</p>({entriesList.length})
+                              <p>All</p>({entriesSize.all})
                             </span>
                           </li>
                         )}
-
                         {auth.state === 'initialized' && (
                           <li>
                             <span
@@ -500,27 +404,40 @@ export default function AllArticles() {
                                 activeListName === 'Mine' ? 'active' : ''
                               }
                             >
-                              <p> All </p>({userArticleList?.length ?? '0'})
+                              <p> All </p>({entriesSize.user})
                             </span>
                           </li>
                         )}
-                        <li>
-                          <span
-                            onClick={() => handleTabChange('Minted')}
-                            className={
-                              activeListName === 'Minted' ? 'active' : ''
-                            }
-                          >
-                            <p>Minted article</p>({entriesList.length})
-                          </span>
-                        </li>
+                        {auth.state !== 'initialized' && (
+                          <li>
+                            <span
+                              onClick={() => handleTabChange('Minted')}
+                              className={
+                                activeListName === 'Minted' ? 'active' : ''
+                              }
+                            >
+                              <p>Minted articles</p>({entriesSize.all})
+                            </span>
+                          </li>
+                        )}{' '}
+                        {auth.state === 'initialized' && (
+                          <li>
+                            <span
+                              onClick={() => handleTabChange('MyMinted')}
+                              className={
+                                activeListName === 'MyMinted' ? 'active' : ''
+                              }
+                            >
+                              <p>Minted articles</p>({entriesSize.user})
+                            </span>
+                          </li>
+                        )}
                         {/* <li>
-                          <Link href='/'>
-                            <p>Pending</p>
-                            (8)
-                          </Link>
-                        </li> */}
-
+                            <Link href='/'>
+                              <p>Pending</p>
+                              (8)
+                            </Link>
+                          </li> */}
                         {auth.state === 'initialized' && (
                           <li>
                             <span
@@ -529,7 +446,7 @@ export default function AllArticles() {
                                 activeListName === 'Draft' ? 'active' : ''
                               }
                             >
-                              <p> Drafts </p>({userDraftList?.length ?? '0'})
+                              <p> Drafts </p>({entriesSize.draft ?? '0'})
                             </span>
                           </li>
                         )}
@@ -539,13 +456,13 @@ export default function AllArticles() {
                       <div className='full-div'>
                         <ul className='filter-list'>
                           {/* <li>
-                            <Form.Select aria-label='All Dates'>
-                              <option>All Dates</option>
-                              <option value='1'>All Dates</option>
-                              <option value='2'>All Dates</option>
-                              <option value='3'>All Dates</option>
-                            </Form.Select>
-                          </li> */}
+                              <Form.Select aria-label='All Dates'>
+                                <option>All Dates</option>
+                                <option value='1'>All Dates</option>
+                                <option value='2'>All Dates</option>
+                                <option value='3'>All Dates</option>
+                              </Form.Select>
+                            </li> */}
                           <li>
                             <Form.Select
                               aria-label='All Categories'
@@ -555,8 +472,10 @@ export default function AllArticles() {
                               }
                             >
                               <option value={'All'}>All Categories</option>
-                              {categories.map((category) => (
-                                <option value={category}>{category}</option>
+                              {categories.map((category, index) => (
+                                <option value={category} key={index}>
+                                  {category}
+                                </option>
                               ))}
                             </Form.Select>
                           </li>
@@ -582,12 +501,12 @@ export default function AllArticles() {
                         />
                       </div>
                     </Col>
-                    {isGetting ? (
+                    {isGetting || showLoader ? (
                       <div className='d-flex justify-content-center w-full'>
                         <Spinner />
                       </div>
                     ) : processedList.length > 0 ? (
-                      <Items
+                      <ArticlesList
                         currentTab={activeListName}
                         currentItems={processedList}
                       />

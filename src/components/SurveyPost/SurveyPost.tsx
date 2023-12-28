@@ -8,6 +8,7 @@ import user from '@/assets/Img/Profile/user.png';
 import iconcap from '@/assets/Img/Icons/icon-cap.png';
 import iconshare from '@/assets/Img/Icons/icon-share.png';
 import infinite from '@/assets/Img/Icons/infinity.png';
+import icpimage from '@/assets/Img/coin-image.png'
 export default function SurveyPost() {
   return (
     <>
@@ -31,7 +32,7 @@ export default function SurveyPost() {
             <Image src={survey} alt="Survey" />
             <p>NFTStudio24 Survey</p>
             <h3>Major Attractions in Web3</h3>
-            <h4><Image src={infinite} alt="infinite" /> +500 ICP</h4>
+            <h4><Image src={icpimage} alt="infinite" /> +500 ICP</h4>
             <ul>
               <li>
                 <Image src={iconclock} alt="infinite" /> 15 minutes

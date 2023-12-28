@@ -142,7 +142,7 @@ export default function AllArticles() {
                     </div>
                   </Col>
                   <Col xxl="3" xl="4" lg="12" md="12" sm="12">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3312.850950794357!2d151.20525597661134!3d-33.86773191900508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b9597300d6dd%3A0x85247df2880c3db5!2sThe%20Fullerton%20Hotel%20Sydney!5e0!3m2!1sen!2s!4v1700478933415!5m2!1sen!2s" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3312.850950794357!2d151.20525597661134!3d-33.86773191900508!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b9597300d6dd%3A0x85247df2880c3db5!2sThe%20Fullerton%20Hotel%20Sydney!5e0!3m2!1sen!2s!4v1700478933415!5m2!1sen!2s"  loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                   </Col>
                   <Col xxl="12" xl="12" lg="12" md="12" sm="12">
                     <div className="spacer-40"></div>

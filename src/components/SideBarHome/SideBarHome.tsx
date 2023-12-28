@@ -34,10 +34,8 @@ import News2 from '@/assets/Img/Icons/icon-news-3.png';
 import iconlogo from '@/assets/Img/Icons/icon-logo.png';
 import Infinity from '@/assets/Img/Icons/infinity.png';
 import Wallet from '@/assets/Img/Icons/plug-wallet.png';
-import Connect from '@/components/Connect/Connect';
-import { useParams, usePathname, useRouter } from 'next/navigation';
-import { sidebarItems } from '@/constant/dashboard';
-import { Button, Modal } from 'react-bootstrap';
+import { usePathname, useRouter } from 'next/navigation';
+import { Button, Modal, Spinner } from 'react-bootstrap';
 import SocialList from '@/components/SocialList/SocialList';
 import ArticlesPost from '@/components/ArticlesPost/ArticlesPost';
 import { useConnectPlugWalletStore, useThemeStore } from '@/store/useStore';
@@ -55,6 +53,8 @@ export default function SidebarHome() {
   const [tab, setTab] = React.useState<string>('');
   const router = useRouter();
   const location = usePathname();
+
+  const route = location.split('/')[1];
   const sidebarRef = React.useRef<HTMLElement | null>();
 
   const { auth, setAuth, setIdentity } = useConnectPlugWalletStore((state) => ({
@@ -73,8 +73,7 @@ export default function SidebarHome() {
   };
 
   const methods = authMethods({
-    auth,
-    setAuth,
+    useConnectPlugWalletStore,
     setIsLoading: setIsConnectLoading,
     handleClose: handleConnectClose,
   });
@@ -147,305 +146,320 @@ export default function SidebarHome() {
     setTab(currentTab);
   }, []);
   return (
-    <>
-      <div
-        ref={sidebarRef as React.RefObject<HTMLDivElement>}
-        className={toggle ? 'sidebar-home active' : 'sidebar-home'}
-      >
-        <div className='sidebar-inner'>
-          <button className='toggler' onClick={toggleHandle}>
-            <div>
-              <span></span>
-              <span></span>
-              <span></span>
+    route != 'blocked' &&
+    route != 'superadmin' && (
+      <>
+        <div
+          ref={sidebarRef as React.RefObject<HTMLDivElement>}
+          className={toggle ? 'sidebar-home active' : 'sidebar-home'}
+        >
+          <div className='sidebar-inner'>
+            <button className='toggler' onClick={toggleHandle}>
+              <div>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </button>
+            <ul>
+              <li>
+                <Button
+                  onClick={connect}
+                  className='connect-btn'
+                  disabled={isConnectLoading || connected}
+                >
+                  <span>
+                    <Image src={iconlogo} alt='Logo' />
+                  </span>
+                  {isConnectLoading ? (
+                    <Spinner size='sm' className='ms-4 text-primary' />
+                  ) : connected ? (
+                    'Connected'
+                  ) : (
+                    'Connect'
+                  )}
+                </Button>
+              </li>
+
+              {connected && (
+                <>
+                  <li>
+                    <Link
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      // }}
+                      className={location === '/profile' ? 'active' : ''}
+                      href='/profile'
+                    >
+                      <div className='img-pnl'>
+                        <Image src={iconuser1} alt='Search Profile' />
+                        <Image src={iconuser2} alt='Search Profile' />
+                      </div>
+                      Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      // }}
+                      className={location === '/reward' ? 'active' : ''}
+                      href='/reward'
+                    >
+                      <div className='img-pnl'>
+                        <Image src={cup1} alt='Search Cup' />
+                        <Image src={cup2} alt='Search Cup' />
+                      </div>
+                      My Rewards
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      // }}
+                      className={location === '/profiledetails' ? 'active' : ''}
+                      href='/profiledetails'
+                    >
+                      <div className='img-pnl'>
+                        <Image src={Settings1} alt='Settings' />
+                        <Image src={Settings2} alt='Settings' />
+                      </div>
+                      Settings
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      // }}
+                      className={location === '/subscribers' ? 'active' : ''}
+                      href='/subscribers'
+                    >
+                      <div className='img-pnl'>
+                        <Image src={iconuser1} alt='Search Profile' />
+                        <Image src={iconuser2} alt='Search Profile' />
+                      </div>
+                      My Subscribers
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      // }}
+
+                      href='/'
+                    >
+                      <div className='img-pnl'>
+                        <Image src={feedback1} alt='feedback' />
+                        <Image src={feedback2} alt='feedback' />
+                      </div>
+                      Feedback
+                    </Link>
+                  </li>
+                </>
+              )}
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  className={location === '/allarticles' ? 'active' : ''}
+                  href='/allarticles'
+                >
+                  <div className='img-pnl'>
+                    <Image src={Articles1} alt='Articles' />
+                    <Image src={Articles2} alt='Articles' />
+                  </div>
+                  {auth.state === 'initialized' && 'My '}Articles
+                </Link>
+              </li>
+              <li>
+                <Link
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                  className={location === '/search' ? 'active' : ''}
+                  href='/search'
+                >
+                  <div className='img-pnl'>
+                    <Image src={Search1} alt='Search icon' />
+                    <Image src={Search2} alt='Search icon' />
+                  </div>
+                  Search
+                </Link>
+              </li>
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  href='/#top'
+                >
+                  <div className='img-pnl'>
+                    <Image src={Top1} alt='Top icon' />
+                    <Image src={Top2} alt='Top icon' />
+                  </div>
+                  Top
+                </Link>
+              </li>
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  href='/#news'
+                >
+                  <div className='img-pnl'>
+                    <Image src={News1} alt='News Icon' />
+                    <Image src={News2} alt='News Icon' />
+                  </div>
+                  News
+                </Link>
+              </li>
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  href='/#news'
+                >
+                  <div className='img-pnl'>
+                    <Image src={Coins1} alt='Coins Icon' />
+                    <Image src={Coins2} alt='Coins Icon' />
+                  </div>
+                  Coins
+                </Link>
+              </li>
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  href='/'
+                >
+                  <div className='img-pnl'>
+                    <Image src={Insight1} alt='Insight Icon' />
+                    <Image src={Insight2} alt='Insight Icon' />
+                  </div>
+                  Insights
+                </Link>
+              </li>
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  href='/'
+                >
+                  <div className='img-pnl'>
+                    <Image src={Research1} alt='Research Icon' />
+                    <Image src={Research2} alt='Research Icon' />
+                  </div>
+                  Research
+                </Link>
+              </li>
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  href='/'
+                >
+                  <div className='img-pnl'>
+                    <Image src={reports1} alt='reports Icon' />
+                    <Image src={reports2} alt='reports Icon' />
+                  </div>
+                  Reports
+                </Link>
+              </li>
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  href='/'
+                >
+                  <div className='img-pnl'>
+                    <Image src={directory1} alt='directory Icon' />
+                    <Image src={directory2} alt='directory Icon' />
+                  </div>
+                  Directory
+                </Link>
+              </li>
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  href='/#podcast'
+                >
+                  <div className='img-pnl'>
+                    <Image src={podcast1} alt='podcast Icon' />
+                    <Image src={podcast2} alt='podcast Icon' />
+                  </div>
+                  Podcast
+                </Link>
+              </li>
+              <li>
+                <Link
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  // }}
+                  href='/'
+                >
+                  <div className='img-pnl'>
+                    <i className='fa fa-ellipsis-h'></i>
+                  </div>
+                  More
+                </Link>
+              </li>
+            </ul>
+            <SocialList />
+          </div>
+          {location === '/' && (
+            <div className='trending-side-panel'>
+              <div className='spacer-20'></div>
+              <h4>
+                trending Stories <i className='fa fa-angle-down'></i>
+              </h4>
+              <ArticlesPost />
             </div>
-          </button>
-          <ul>
-            <li>
-              <Button
-                onClick={connect}
-                className='connect-btn'
-                disabled={isConnectLoading || connected}
-              >
-                <span>
-                  <Image src={iconlogo} alt='Logo' />
-                </span>
-                {connected ? 'Connected' : 'Connect'}
-              </Button>
-            </li>
-
-            {connected && (
-              <>
-                <li>
-                  <Link
-                    // onClick={(e) => {
-                    //   e.preventDefault();
-                    // }}
-                    className={location === '/profile' ? 'active' : ''}
-                    href='/profile'
-                  >
-                    <div className='img-pnl'>
-                      <Image src={iconuser1} alt='Search Profile' />
-                      <Image src={iconuser2} alt='Search Profile' />
-                    </div>
-                    Profile
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    // onClick={(e) => {
-                    //   e.preventDefault();
-                    // }}
-                    href='/reward'
-                  >
-                    <div className='img-pnl'>
-                      <Image src={cup1} alt='Search Cup' />
-                      <Image src={cup2} alt='Search Cup' />
-                    </div>
-                    My Rewards
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    // onClick={(e) => {
-                    //   e.preventDefault();
-                    // }}
-                    href='/profiledetails'
-                  >
-                    <div className='img-pnl'>
-                      <Image src={Settings1} alt='Settings' />
-                      <Image src={Settings2} alt='Settings' />
-                    </div>
-                    Settings
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    // onClick={(e) => {
-                    //   e.preventDefault();
-                    // }}
-                    href='/subscribers'
-                  >
-                    <div className='img-pnl'>
-                      <Image src={iconuser1} alt='Search Profile' />
-                      <Image src={iconuser2} alt='Search Profile' />
-                    </div>
-                    My Subscribers
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    // onClick={(e) => {
-                    //   e.preventDefault();
-                    // }}
-                    href='/'
-                  >
-                    <div className='img-pnl'>
-                      <Image src={feedback1} alt='feedback' />
-                      <Image src={feedback2} alt='feedback' />
-                    </div>
-                    Feedback
-                  </Link>
-                </li>
-              </>
-            )}
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/allarticles'
-              >
-                <div className='img-pnl'>
-                  <Image src={Articles1} alt='Articles' />
-                  <Image src={Articles2} alt='Articles' />
-                </div>
-                {auth.state === 'initialized' && 'My '}Articles
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/'
-              >
-                <div className='img-pnl'>
-                  <Image src={Search1} alt='Search icon' />
-                  <Image src={Search2} alt='Search icon' />
-                </div>
-                Search
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/#top'
-              >
-                <div className='img-pnl'>
-                  <Image src={Top1} alt='Top icon' />
-                  <Image src={Top2} alt='Top icon' />
-                </div>
-                Top
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/#news'
-              >
-                <div className='img-pnl'>
-                  <Image src={News1} alt='News Icon' />
-                  <Image src={News2} alt='News Icon' />
-                </div>
-                News
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/#news'
-              >
-                <div className='img-pnl'>
-                  <Image src={Coins1} alt='Coins Icon' />
-                  <Image src={Coins2} alt='Coins Icon' />
-                </div>
-                Coins
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/'
-              >
-                <div className='img-pnl'>
-                  <Image src={Insight1} alt='Insight Icon' />
-                  <Image src={Insight2} alt='Insight Icon' />
-                </div>
-                Insights
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/'
-              >
-                <div className='img-pnl'>
-                  <Image src={Research1} alt='Research Icon' />
-                  <Image src={Research2} alt='Research Icon' />
-                </div>
-                Research
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/'
-              >
-                <div className='img-pnl'>
-                  <Image src={reports1} alt='reports Icon' />
-                  <Image src={reports2} alt='reports Icon' />
-                </div>
-                Reports
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/'
-              >
-                <div className='img-pnl'>
-                  <Image src={directory1} alt='directory Icon' />
-                  <Image src={directory2} alt='directory Icon' />
-                </div>
-                Directory
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/#podcast'
-              >
-                <div className='img-pnl'>
-                  <Image src={podcast1} alt='podcast Icon' />
-                  <Image src={podcast2} alt='podcast Icon' />
-                </div>
-                Podcast
-              </Link>
-            </li>
-            <li>
-              <Link
-                // onClick={(e) => {
-                //   e.preventDefault();
-                // }}
-                href='/'
-              >
-                <div className='img-pnl'>
-                  <i className='fa fa-ellipsis-h'></i>
-                </div>
-                More
-              </Link>
-            </li>
-          </ul>
-          <SocialList />
+          )}
         </div>
-        {location === '/' && (
-          <div className='trending-side-panel'>
-            <div className='spacer-20'></div>
-            <h4>
-              trending Stories <i className='fa fa-angle-down'></i>
-            </h4>
-            <ArticlesPost />
-          </div>
-        )}
-      </div>
 
-      {/* Connect Modal */}
-      <Modal show={show} centered onHide={handleClose}>
-        <Modal.Body>
-          <div className='flex-div connect-heading-pnl'>
-            <i className='fa fa-question-circle-o'></i>
-            <p>Connect Wallet</p>
-            <Button className='close-btn' onClick={handleClose}>
-              <i className='fa fa-close'></i>
-            </Button>
-          </div>
-          <div className='full-div'>
-            <Button className='grey-btn'>
-              <p>Plug Wallet</p>
-              <Image src={Wallet} alt='Wallet' />
-            </Button>
-            <Link
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-              href='/entriesn'
-              className='grey-btn'
-            >
-              <p>Internet Identity</p>
-              <Image src={Infinity} alt='Infinity' />
-            </Link>
-          </div>
-        </Modal.Body>
-      </Modal>
-      {/* Connect Modal */}
-    </>
+        {/* Connect Modal */}
+        <Modal show={show} centered onHide={handleClose}>
+          <Modal.Body>
+            <div className='flex-div connect-heading-pnl'>
+              <i className='fa fa-question-circle-o'></i>
+              <p>Connect Wallet</p>
+              <Button className='close-btn' onClick={handleClose}>
+                <i className='fa fa-close'></i>
+              </Button>
+            </div>
+            <div className='full-div'>
+              <Button className='grey-btn'>
+                <p>Plug Wallet</p>
+                <Image src={Wallet} alt='Wallet' />
+              </Button>
+              <Link
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+                href='/entriesn'
+                className='grey-btn'
+              >
+                <p>Internet Identity</p>
+                <Image src={Infinity} alt='Infinity' />
+              </Link>
+            </div>
+          </Modal.Body>
+        </Modal>
+        {/* Connect Modal */}
+      </>
+    )
   );
 }

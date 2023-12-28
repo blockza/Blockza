@@ -3,7 +3,10 @@ import logger from '@/lib/logger';
 import { Actor } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
 import { JsonnableDelegationChain } from '@dfinity/identity';
+import { ConnectPlugWalletSlice, ConnectStore } from '@/types/store';
 import React from 'react';
+import { create } from 'zustand';
+import { Principal } from '@dfinity/principal';
 
 interface AuthState {
   state: string;
@@ -12,42 +15,23 @@ interface AuthState {
 }
 interface methodsProps {
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-  setAuth: React.Dispatch<React.SetStateAction<object>>;
-  auth: AuthState;
+  useConnectPlugWalletStore: ReturnType<typeof create>;
   client?: AuthClient;
   handleClose?: () => void;
 }
-interface initProps {
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setAuth: React.Dispatch<React.SetStateAction<object>>;
-  auth: AuthState;
-  // client: AuthClient | null;
-  // handleClose: () => void;
-}
-interface loginProps {
-  // setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setAuth: React.Dispatch<React.SetStateAction<object>>;
-  auth: AuthState;
-  // client: AuthClient | null;
-  handleClose: () => void;
-}
-interface authProps {
-  setAuth: React.Dispatch<React.SetStateAction<object>>;
-  auth: AuthState;
-  client: AuthClient;
-}
 
-interface timeoutProps {
-  setAuth: React.Dispatch<React.SetStateAction<object>>;
-  auth: AuthState;
-}
 const authMethods = ({
   setIsLoading,
-  setAuth,
-  auth,
+  useConnectPlugWalletStore,
   handleClose,
   client,
 }: methodsProps) => {
+  const { auth, setAuth, setUserAuth } = useConnectPlugWalletStore((state) => ({
+    auth: (state as ConnectPlugWalletSlice).auth,
+    setAuth: (state as ConnectPlugWalletSlice).setAuth,
+    setUserAuth: (state as ConnectPlugWalletSlice).setUserAuth,
+  }));
+
   //
   const initAuth = async () => {
     const client = await AuthClient.create({
@@ -89,7 +73,7 @@ const authMethods = ({
         // `http://localhost:8000?canisterId=${process.env.INTERNET_IDENTITY_CANISTER_ID}#authorize`,
         onSuccess: () => {
           authenticate(auth.client as AuthClient);
-          handleClose();
+          
         },
         onError: () => {
           handleClose();
@@ -126,27 +110,105 @@ const authMethods = ({
         actor: null,
         client: null,
       });
+      setUserAuth({
+        name: '',
+        status: false,
+        role: '',
+        principalText: '',
+        principalArray: null,
+        userPerms: null,
+      });
       // router.push('/');
     }
   };
+  const getPerms = (role: any) => {
+    let userPerms = {
+      userManagement: false,
+      articleManagement: false,
+      adminManagement: false,
+    };
+    if (role.hasOwnProperty('authorized')) {
+      userPerms = {
+        adminManagement: false,
+        userManagement: false,
+        articleManagement: false,
+      };
+    } else if (role.hasOwnProperty('user_admin')) {
+      userPerms = {
+        adminManagement: false,
+        userManagement: true,
+        articleManagement: false,
+      };
+    } else if (role.hasOwnProperty('article_admin')) {
+      userPerms = {
+        adminManagement: false,
+        userManagement: false,
+        articleManagement: true,
+      };
+    } else if (role.hasOwnProperty('sub_admin')) {
+      userPerms = {
+        adminManagement: false,
+        userManagement: true,
+        articleManagement: true,
+      };
+    } else if (role.hasOwnProperty('admin')) {
+      userPerms = {
+        adminManagement: true,
+        userManagement: true,
+        articleManagement: true,
+      };
+    }
+    return userPerms;
+  };
   const authenticate = async (client: AuthClient) => {
     try {
+      const myIdentity = client.getIdentity();
       const actor = makeUserActor({
         agentOptions: {
-          identity: client.getIdentity(),
+          identity: myIdentity,
         },
       });
-      const user = await actor.add_user();
+      const resp = await actor.add_user();
+      if (resp.ok) {
+        const user = resp.ok[1];
+        const userPrincipalArray = myIdentity.getPrincipal();
+        const userPrincipalText = userPrincipalArray.toString();
+        let userPerms = getPerms(user.role);
+        logger({ user, userPerms, userPrincipalText }, 'DAA USERAA');
+        // logger(user.role == { authorized: null });
+        setUserAuth({
+          name: user.name,
+          status: user.isBlocked,
+          role: user.role,
+          principalText: userPrincipalText,
+          principalArray: userPrincipalArray,
+          userPerms,
+        });
+        if (handleClose) 
+        handleClose();
+      }
       setAuth({
         state: 'initialized',
         actor,
         client,
       });
+      if (handleClose) 
+      handleClose();
       return actor;
     } catch (e) {
       setAuth({
         ...auth,
         state: 'error',
+      });
+      if (handleClose) 
+      handleClose();
+      setUserAuth({
+        name: '',
+        status: false,
+        role: '',
+        principalText: '',
+        principalArray: null,
+        userPerms: null,
       });
       logger(e, 'Error while authenticating');
     }

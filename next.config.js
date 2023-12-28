@@ -13,6 +13,10 @@ const EnvPlugin = new webpack.EnvironmentPlugin({
   ASSETS_ID: 'bd3sg-teaaa-aaaaa-qaaba-cai',
   PROJECT_ID: '2NxypsJ5XEQ07prpeSQFPCqfpqc',
   PROJECT_SECRET: 'c388aa5fea94beee3f2b4795309d5480',
+  EMIAL_SECRET: '100eccae-b8cf-4bfc-99d8-54b85a27e60c',
+  EMIAL: 'Ali.shan@ammag.tech',
+  MASTER_WALLET:
+    's25sy-rsnmo-ud3bs-gepqx-rfa7b-hnnp4-s5d27-zwtr7-uovzz-qgloj-wae',
 });
 
 const nextConfig = {

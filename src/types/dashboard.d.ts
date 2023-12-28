@@ -28,3 +28,17 @@ export interface CollectionObject {
   0: string;
   1: RawCollection;
 }
+export interface EntrySizeMap {
+  All: string;
+  Minted: string;
+  Draft: string;
+  Mine: string;
+  [key: string]: string; // Add this index signature
+}
+
+export interface EntriesSizeObject {
+  all: string;
+  draft: string;
+  user: string;
+  [key: string]: string; // Add this index signature
+}

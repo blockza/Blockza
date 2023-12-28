@@ -1,7 +1,6 @@
-import React, { CSSProperties, useEffect, useRef, useState } from 'react';
+import React, {  useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Navigation } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import ExportPost from '@/components/ExportPost/ExportPost';
 import { useConnectPlugWalletStore } from '@/store/useStore';
@@ -9,14 +8,12 @@ import iconfilter from '@/assets/Img/Icons/icon-filter.png';
 import { makeEntryActor } from '@/dfx/service/actor-locator';
 import logger from '@/lib/logger';
 import {
-  Button,
   Carousel,
   Col,
   Dropdown,
   Nav,
   Row,
   Tab,
-  Tabs,
 } from 'react-bootstrap';
 
 export default function Articles() {
@@ -226,8 +223,8 @@ export default function Articles() {
                         activeIndex={index}
                         onSelect={handleSelect}
                       >
-                        {entriesByCategory?.map((entry) => (
-                          <Carousel.Item>
+                        {entriesByCategory?.map((entry,index) => (
+                          <Carousel.Item key={index}>
                             <div>
                               <ExportPost
                                 key={entry[0]}
@@ -240,7 +237,7 @@ export default function Articles() {
                       </Carousel>
                     ) : (
                       <div className='d-flex justify-content-center w-full'>
-                        No Articles Found
+                        <p className='mt-5 text-center' style={{fontWeight:"600"}}>No Articles Found</p>
                       </div>
                     )}
                   </Tab.Pane>
@@ -253,8 +250,8 @@ export default function Articles() {
                       onSelect={handleSelect}
                     >
                       {entries?.length > 0 &&
-                        entries?.map((entry) => (
-                          <Carousel.Item>
+                        entries?.map((entry,index) => (
+                          <Carousel.Item key={index}>
                             <div>
                               <ExportPost
                                 key={entry[0]}
@@ -266,7 +263,7 @@ export default function Articles() {
                         ))}
                     </Carousel>
                   ) : (
-                    <>no entries found</>
+                    <div className='mt-5'><p className='mt-5 text-center' style={{fontWeight:"600"}}> No entries found</p></div>
                   )}
                 </Tab.Pane>
                 {/* <Tab.Pane eventKey='second'>Second tab content</Tab.Pane> */}

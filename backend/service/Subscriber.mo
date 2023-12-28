@@ -13,6 +13,7 @@ import Buffer "mo:base/Buffer";
 import Result "mo:base/Result";
 import EntryType "../model/EntryType";
 import EntryStoreHelper "../helper/EntryStoreHelper";
+import UserType "../model/UserType";
 
 shared ({ caller = initializer }) actor class () {
 
@@ -25,6 +26,7 @@ shared ({ caller = initializer }) actor class () {
   type InputSubscriber = Text;
   type Subscribers = [Subscriber];
   type SubscribersStore = [(Key, Subscribers)];
+  type ActivityType = UserType.ActivityType;
 
   stable var stable_subscribers : SubscribersStore = [];
   var subscribersStorage = Map.fromIter<Key, Subscribers>(stable_subscribers.vals(), 0, Principal.equal, Principal.hash);
@@ -51,13 +53,15 @@ shared ({ caller = initializer }) actor class () {
     };
     // return false;
   };
-
-  public shared ({ caller }) func addSubscriber(author : Principal, userCanisterId : Text) : async Result.Result<(Subscriber, Text), Text> {
+  public shared ({ caller }) func addSubscriber(author : Principal, userCanisterId : Text, commentCanisterId : Text) : async Result.Result<(Subscriber, Text), Text> {
     assert not Principal.isAnonymous(caller);
     // assert inputComment
     try {
       let userCanister = actor (userCanisterId) : actor {
         check_user_exists : (caller : Principal) -> async Bool;
+      };
+      let commentCanister = actor (commentCanisterId) : actor {
+        addActivity : (user : Principal, target : Text, activityType : ActivityType) -> async Bool;
       };
 
       let isUser = await userCanister.check_user_exists(caller);
@@ -66,6 +70,7 @@ shared ({ caller = initializer }) actor class () {
         user = caller;
         subscribed_on = Time.now() / 1000000;
       };
+      let authorId = Principal.toText(author);
       let maybeOldSubscribers = subscribersStorage.get(author);
       switch (maybeOldSubscribers) {
         case (?oldSubscribers) {
@@ -87,6 +92,7 @@ shared ({ caller = initializer }) actor class () {
             case (null) {
               let newSubscribers = Array.append<Subscriber>(oldSubscribers, [newSubscriber]);
               subscribersStorage.put(author, newSubscribers);
+              let activitied = commentCanister.addActivity(caller, authorId, #subscribe);
               return #ok(newSubscriber, "Subsribed Successfully")
 
             };
@@ -96,6 +102,7 @@ shared ({ caller = initializer }) actor class () {
         case (null) {
           let newSubscribers = [newSubscriber];
           subscribersStorage.put(author, newSubscribers);
+          let activitied = commentCanister.addActivity(caller, authorId, #subscribe);
           return #ok(newSubscriber, "Subsribed Successfully #1")
           // return false;
         };

@@ -1,18 +1,16 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import Head from 'next/head';
-import { Container, Row, Col, Tab, Nav } from 'react-bootstrap';
+import { Row, Col, Tab, Nav } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-
 import comment from '@/assets/Img/Icons/icon-writer.png';
-import { useConnectPlugWalletStore, useThemeStore } from '@/store/useStore';
-import authMethods from '@/lib/auth';
+import { useConnectPlugWalletStore } from '@/store/useStore';
 import logger from '@/lib/logger';
 import { makeEntryActor } from '@/dfx/service/actor-locator';
 import ExportPost from '@/components/ExportPost/ExportPost';
+import ActivityTab from '@/components/ActivityTab';
 /**
  * SVGR Support
  * Caveat: No React Props Type.
@@ -21,15 +19,22 @@ import ExportPost from '@/components/ExportPost/ExportPost';
  * @see https://stackoverflow.com/questions/68103844/how-to-override-next-js-svg-module-declaration
  */
 const articleTabName = 'Articles';
+const activityTabName = 'Activity';
 const tabs = [
-  'Reviews',
+  activityTabName,
   'Comments',
   'Favorite Posts',
   'Favorite product Communities',
   articleTabName,
 ];
 
-export default function ProfileTabs({ userId }: any) {
+export default function ProfileTabs({
+  userId,
+  isOwner,
+}: {
+  userId: any;
+  isOwner: boolean;
+}) {
   const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -37,17 +42,15 @@ export default function ProfileTabs({ userId }: any) {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [userEntries, setUserEntries] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { isBlack } = useThemeStore((state) => ({
-    isBlack: state.isBlack,
-  }));
+  // const { isBlack } = useThemeStore((state) => ({
+  //   isBlack: state.isBlack,
+  // }));
   const handleClose = () => {};
   const divRef = useRef<HTMLDivElement | null>(null);
-  const { auth, setAuth, identity } = useConnectPlugWalletStore((state) => ({
+  const { auth, identity } = useConnectPlugWalletStore((state) => ({
     auth: state.auth,
-    setAuth: state.setAuth,
     identity: state.identity,
   }));
-  const methods = authMethods({ auth, setAuth, setIsLoading, handleClose });
   const getUserEntries = async (category?: string | null) => {
     try {
       const entryActor = makeEntryActor({
@@ -106,6 +109,25 @@ export default function ProfileTabs({ userId }: any) {
       divRef.current.scrollLeft = newScroll;
     }
   };
+  const backword = () => {
+    if (divRef.current) {
+      const scrollAmount = -200; // You can adjust this value
+      const maxScroll = divRef.current.clientWidth - divRef.current.scrollWidth;
+
+      // Calculate the new scroll position
+      const newScroll = scrollAmount - scrollPosition;
+
+      if (newScroll <= maxScroll) {
+        // If we reach the end, reset the scroll position
+        setScrollPosition(100);
+      } else {
+        setScrollPosition(newScroll);
+      }
+
+      // Set the new scroll position
+      divRef.current.scrollLeft = newScroll;
+    }
+  };
   const handleMouseUp = () => {
     setIsDragging(false);
   };
@@ -126,11 +148,25 @@ export default function ProfileTabs({ userId }: any) {
     <>
       <Tab.Container
         id='left-tabs-example'
-        defaultActiveKey={'Reviews'}
+        defaultActiveKey={'Activity'}
         onSelect={handleTabChange}
       >
         <Row>
           <Col sm={12} className='d-flex'>
+            <ul className='tabs-list filter'>
+              <li>
+                <Link
+                  href={'#'}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    backword();
+                  }}
+                  className='arrow-link'
+                >
+                  <i className='fa fa-angle-left'></i>
+                </Link>
+              </li>
+            </ul>
             <Nav
               variant='tabs'
               className='tabs-fill scrollable-tabs'
@@ -141,7 +177,15 @@ export default function ProfileTabs({ userId }: any) {
               onMouseLeave={handleMouseLeave}
             >
               {tabs.map((tab, index) => {
-                return (
+                return tab === activityTabName ? (
+                  isOwner ? (
+                    <Nav.Item key={index}>
+                      <Nav.Link style={{ whiteSpace: 'nowrap' }} eventKey={tab}>
+                        {tab}
+                      </Nav.Link>
+                    </Nav.Item>
+                  ) : null
+                ) : (
                   <Nav.Item key={index}>
                     <Nav.Link style={{ whiteSpace: 'nowrap' }} eventKey={tab}>
                       {tab}
@@ -210,35 +254,43 @@ export default function ProfileTabs({ userId }: any) {
           </Col>
           <Col sm={12}>
             <Tab.Content>
-              {/* {categories.map((c, i) => (
-               
-              ))} */}
-              {tabs.map((c, i) => (
-                <Tab.Pane key={i} eventKey={c}>
-                  <div>
-                    {c !== articleTabName ? (
-                      <div className='profile-comment-pnl'>
-                        <Image src={comment} alt='comment' />
+              {tabs.map((c, i) =>
+                c == activityTabName ? (
+                  isOwner ? (
+                    <Tab.Pane key={i} eventKey={c}>
+                      <div>
+                        <ActivityTab />
                       </div>
-                    ) : (
-                      <div className='profile-articles mt-3'>
-                        {userEntries &&
-                          userEntries.map((entry) => {
-                            return (
-                              <ExportPost
-                                key={entry[0]}
-                                entry={entry[1]}
-                                entryId={entry[0] as string}
-                              />
-                            );
-                          })}
-                      </div>
-                    )}
-                  </div>
-                </Tab.Pane>
-              ))}
-
-              {/* <Tab.Pane eventKey='second'>Second tab content</Tab.Pane> */}
+                    </Tab.Pane>
+                  ) : null
+                ) : (
+                  <Tab.Pane key={i} eventKey={c}>
+                    <div>
+                      {c !== articleTabName ? (
+                        <div className='profile-comment-pnl'>
+                          <Image src={comment} alt='comment' />
+                        </div>
+                      ) : (
+                        <div className='profile-articles mt-3'>
+                          {userEntries.length ==0 && <div className='profile-comment-pnl'>
+                          <Image src={comment} alt='comment' />
+                        </div>}
+                          {userEntries &&
+                            userEntries.map((entry) => {
+                              return (
+                                <ExportPost
+                                  key={entry[0]}
+                                  entry={entry[1]}
+                                  entryId={entry[0] as string}
+                                />
+                              );
+                            })}
+                        </div>
+                      )}
+                    </div>
+                  </Tab.Pane>
+                )
+              )}
             </Tab.Content>
           </Col>
         </Row>

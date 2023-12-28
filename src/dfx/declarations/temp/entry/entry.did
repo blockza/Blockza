@@ -1,5 +1,7 @@
-type anon_class_17_1 = 
+type anon_class_22_1 = 
  service {
+   approveArticle: (text, text, Key, bool) -> (Result_2);
+   call_me: (text, principal, Permission) -> (bool);
    getAllEntries: () -> (vec record {
                                Key;
                                Entry;
@@ -9,31 +11,92 @@ type anon_class_17_1 =
                                           Key;
                                           Entry;
                                         }) query;
-   getEntriesList: (text) -> (vec record {
-                                    Key;
-                                    ListEntryItem;
-                                  }) query;
+   getEntriesList: (text, bool, text, nat, nat) ->
+    (record {
+       amount: nat;
+       entries: vec record {
+                      Key;
+                      ListEntryItem;
+                    };
+     }) query;
    getEntry: (Key) -> (opt Entry) query;
-   getPromotedEntries: () -> (vec record {
-                                    Key;
-                                    Entry;
-                                  }) query;
-   getUserEntries: (UserId__1) -> (vec record {
-                                         Key;
-                                         Entry;
-                                       }) query;
-   getUserEntriesList: (text, bool) ->
+   getFilteredList: (text, opt text) ->
     (vec record {
            Key;
            ListEntryItem;
          }) query;
-   insertEntry: (InputEntry, text, bool, text) -> (Result_1);
+   getPromotedEntries: (nat) -> (vec record {
+                                       Key;
+                                       Entry;
+                                     }) query;
+   getReviewEntries: (text, text, EntryStatus__1, text, nat, nat) ->
+    (record {
+       amount: nat;
+       entries: vec record {
+                      Key;
+                      ListEntryItem;
+                    };
+     });
+   getUserEntries: (UserId__1) -> (vec record {
+                                         Key;
+                                         Entry;
+                                       }) query;
+   getUserEntriesList: (text, bool, text, nat, nat) ->
+    (record {
+       amount: nat;
+       entries: vec record {
+                      Key;
+                      ListEntryItem;
+                    };
+     }) query;
+   get_em: () -> (TransactionHistory) query;
+   get_like_reward: () -> (nat) query;
+   get_reward: () -> (RewardConfig) query;
+   insertEntry: (InputEntry, text, bool, text, text) -> (Result_1);
    isMinted: (Key) -> (bool);
-   likeEntry: (Key, text) -> (Result);
-   mintEntry: (Key) -> (Result);
+   likeEntry: (Key, text, text) -> (Result);
+   mintEntry: (Key, text) -> (Result);
+   searchEntry: (text, text, nat, nat) ->
+    (record {
+       amount: int;
+       entries: vec record {
+                      Key;
+                      Entry;
+                    };
+       total: int;
+     });
+   updateDraft: (Key) -> (Result);
+   update_like_reward: (text, LikeReward) -> (LikeReward);
+   update_reward: (text, RewardConfig) -> (RewardConfig);
  };
 type UserId__1 = principal;
 type UserId = principal;
+type TransactionHistoryItem = 
+ record {
+   admin: nat;
+   creation_time: int;
+   platform: nat;
+   user: principal;
+ };
+type TransactionHistory = 
+ opt record {
+       TransactionHistoryItem;
+       List_1;
+     };
+type RewardConfig = 
+ record {
+   admin: nat;
+   master: nat;
+   platform: nat;
+ };
+type Result_2 = 
+ variant {
+   err: text;
+   ok: record {
+         text;
+         Entry;
+       };
+ };
 type Result_1 = 
  variant {
    err: text;
@@ -50,18 +113,39 @@ type Result =
          bool;
        };
  };
+type Permission = 
+ variant {
+   assign_role;
+   manage_article;
+   manage_user;
+   write;
+ };
+type List_1 = 
+ opt record {
+       TransactionHistoryItem;
+       List_1;
+     };
 type ListEntryItem = 
  record {
    category: vec text;
    creation_time: int;
    image: ImageObject;
    isDraft: bool;
+   isPromoted: bool;
    likes: nat;
    minters: vec principal;
+   status: EntryStatus;
    title: text;
    user: UserId;
+   userName: text;
    views: nat;
  };
+type List = 
+ opt record {
+       int;
+       List;
+     };
+type LikeReward = nat;
 type Key = text;
 type InputEntry = 
  record {
@@ -70,15 +154,28 @@ type InputEntry =
    image: ImageObject;
    isDraft: bool;
    isPromoted: bool;
-   promotionICP: float64;
+   promotionICP: nat;
    seoDescription: text;
    seoExcerpt: text;
    seoSlug: text;
    seoTitle: text;
    subscription: bool;
    title: text;
+   userName: text;
  };
 type ImageObject = vec nat8;
+type EntryStatus__1 = 
+ variant {
+   approved;
+   pending;
+   rejected;
+ };
+type EntryStatus = 
+ variant {
+   approved;
+   pending;
+   rejected;
+ };
 type EntryId = text;
 type Entry = 
  record {
@@ -91,15 +188,18 @@ type Entry =
    likedUsers: vec principal;
    likes: nat;
    minters: vec principal;
-   promotionICP: float64;
+   promotionHistory: List;
+   promotionICP: nat;
    seoDescription: text;
    seoExcerpt: text;
    seoSlug: text;
    seoTitle: text;
+   status: EntryStatus;
    subscription: bool;
    title: text;
    user: UserId;
+   userName: text;
    viewedUsers: vec principal;
    views: nat;
  };
-service : () -> anon_class_17_1
+service : () -> anon_class_22_1

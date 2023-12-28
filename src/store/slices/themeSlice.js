@@ -1,4 +1,4 @@
-const themeSlice = (set) => ({
+const themeSlice = (set, get) => ({
   isBlack: false,
   isOpen: '',
 

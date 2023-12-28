@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import Post from '@/assets/Img/Posts/post.png';
-import defaultUser from '@/assets/Img/user.png';
 import iconcap from '@/assets/Img/Icons/icon-cap.png';
 import iconrise from '@/assets/Img/Icons/icon-rise.png';
 import infinity from '@/assets/Img/Icons/icon-infinite2.png';
-import iconcomment from '@/assets/Img/Icons/icon-comment.png';
+import icpimage from '@/assets/Img/coin-image.png'
 import Link from 'next/link';
 import Image from 'next/image';
 import girl from '@/assets/Img/user-img.png';
-import { Navigation } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import logger from '@/lib/logger';
 import { useConnectPlugWalletStore } from '@/store/useStore';
 import { getImage } from '@/components/utils/getImage';
 import { User } from '@/types/profile';
 import parse from 'html-react-parser';
-import { Button } from 'react-bootstrap';
+import { Button, Spinner } from 'react-bootstrap';
+import promotedIcon from '@/assets/Img/promoted-icon.png';
+import PromotedSVG from '@/components/PromotedSvg/Promoted';
+
 export default function ExportPost({
   entry,
   entryId,
@@ -94,10 +94,11 @@ export default function ExportPost({
               background: '#000',
               borderRadius: '15px 15px 0 0',
             }}
-          >
-            <Image
-              src={featuredImage ? featuredImage : Post}
-              className='backend-img expert-header-img'
+            >
+           {entry?.isPromoted && <div className='promotedlable'><PromotedSVG/> <p className='mb-0' style={{fontWeight :"600"}}>Promoted Article</p></div>}
+          {featuredImage?  <Image
+              src={featuredImage}
+              className='backend-img expert-header-img '
               fill={true}
               alt='Profileicon'
               style={{
@@ -106,7 +107,8 @@ export default function ExportPost({
                 borderRadius: '15px 15px 0 0',
                 margin: '0 auto',
               }}
-            />
+            />:   <Spinner animation="border" variant="warning" />
+            }
           </div>
         </div>
         <div className='txt-pnl'>
@@ -125,7 +127,7 @@ export default function ExportPost({
                   >
                     <Image
                       src={userImg ? userImg : girl}
-                      className='backend-img'
+                      className='backend-img '
                       fill={true}
                       alt='Profileicon'
                     />
@@ -188,7 +190,7 @@ export default function ExportPost({
             <div>
               <ul className='quiz-list'>
                 <li>
-                  <Image src={infinity} alt='infinity' /> <span>+500 ICP</span>
+                  <Image src={icpimage} alt='icpImage' style={{height:"25px",width:"30px"}} /> <span>+500 ICP</span>
                 </li>
                 <li
                 // style={{ cursor: 'pointer' }}

@@ -19,7 +19,6 @@
   padding: 10px 0 5px;
   background: $white !important;
   z-index: 999;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
   @include animation-anime(Navanime, 1s, linear);
 
   @media (max-width: 1400px) {
@@ -45,11 +44,13 @@
       width: 100%;
     }
   }
+
   .loader-container {
     display: flex !important;
     align-items: center !important;
     margin: 10px;
   }
+
   // Logo
   .navbar-brand {
     img {
@@ -593,14 +594,17 @@
       }
     }
   }
+
   a.custom {
     padding: 0;
+
     a {
       width: 100%;
       font-weight: 600;
       font-size: 15px;
       padding: 10px;
       color: $black;
+
       &.blue {
         color: $blue;
 
@@ -860,6 +864,7 @@
       }
 
       .navbar-toggler {
+
         span,
         &:before,
         &:after {
@@ -933,12 +938,47 @@ select {
 }
 
 main.dark {
-  background-color: $darker !important;
+  background-color: $white !important;
+  position: relative;
+
+  @media(max-width:1400px) {
+    padding-top: 110px;
+  }
+
+  @media(max-width:1200px) {
+    padding-top: 120px;
+  }
+
+  @media(max-width:991px) {
+    padding-top: 50px;
+  }
+
+  @media(max-width:575px) {
+    .main-inner {
+      padding-top: 50px;
+    }
+  }
 }
 
 .navbar.dark {
   background-color: $darker !important;
   box-shadow: none;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+
+  .navbar-brand {
+    margin-left: 22px;
+    margin-right: 50px;
+
+    @media(max-width:1200px) {
+      margin-left: 60px;
+      margin-right: 50px;
+    }
+
+    @media(max-width:991px) {
+      margin-left: 0px;
+      margin-right: 0px;
+    }
+  }
 
   .navbar-nav .nav-link {
     color: $white;
@@ -949,6 +989,7 @@ main.dark {
   }
 
   .navbar-toggler {
+
     &:after,
     &:before {
       background-color: $white;
@@ -962,4 +1003,12 @@ main.dark {
   .social-list li a i {
     color: $white;
   }
+}
+@media (max-width: 992px) {
+  .width-80 {
+width: 80%;  }
+}
+@media (min-width: 700px) {
+  .superadmintext {
+font-size: 35px;  }
 }

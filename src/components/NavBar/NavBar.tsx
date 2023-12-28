@@ -2,41 +2,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Container, Nav, Navbar, Button, NavDropdown } from 'react-bootstrap';
-
-import feedback from '@/assets/Img/Icons/icon-feedback-3.png';
-import setting from '@/assets/Img/Icons/icon-setting-3.png';
+import { Container, Nav, Navbar, Button } from 'react-bootstrap';
 import home1 from '@/assets/Img/Icons/icon-home-1.png';
 import home2 from '@/assets/Img/Icons/icon-home-2.png';
 import folder1 from '@/assets/Img/Icons/icon-folder-1.png';
 import folder2 from '@/assets/Img/Icons/icon-folder-2.png';
-
-import Infinity from '@/assets/Img/Icons/infinity.png';
-
-import cup from '@/assets/Img/Icons/icon-cup-2.png';
 import cup1 from '@/assets/Img/Icons/icon-cup-1.png';
-import user from '@/assets/Img/Icons/icon-user-3.png';
-import user1 from '@/assets/Img/Icons/icon-user-2.png';
-
-import feedback1 from '@/assets/Img/Icons/icon-feedback-1.png';
-
-import setting1 from '@/assets/Img/Icons/icon-setting-2.png';
-import gift from '@/assets/Img/Icons/icon-gift.png';
-import { ConnectPlugWallet } from '@/components/utils/connection';
-
 import cup2 from '@/assets/Img/Icons/icon-cup-2.png';
 import book from '@/assets/Img/Icons/icon-money.png';
 import Bolt from '@/assets/Img/Icons/icon-marketing.png';
 import logo from '@/assets/Img/Logo/Logo.png';
 import logo2 from '@/assets/Img/Logo/Logo-2.png';
-
-import icongirl from '@/assets/Img/Icons/icon-girl.png';
 import Connect from '@/components/Connect/Connect';
 import { useThemeStore } from '@/store/useStore';
 import SocialList from '@/components/SocialList/SocialList';
+import { usePathname } from 'next/navigation';
 export default function NavBar() {
   // Dark Theme
   const [isThemeActive, setIsThemeActive] = useState(false);
+
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = React.useState<boolean>();
   const [toggle, settoggle] = React.useState(false);
@@ -48,6 +32,8 @@ export default function NavBar() {
     setIsBlack: state.setIsBlack,
     setIsOpen: state.setIsOpen,
   }));
+  const path = usePathname();
+  const route = path.split('/')[1];
 
   // const router = useRouter();
 
@@ -66,7 +52,7 @@ export default function NavBar() {
         }
       });
     } else {
-      // settoggle((prev) => !prev);
+      settoggle((prev) => !prev);
     }
   };
   // Dark Theme
@@ -102,7 +88,6 @@ export default function NavBar() {
   useEffect(() => {
     if (!once) {
       once = true;
-
       var addScript = document.createElement('script');
       addScript.setAttribute(
         'src',
@@ -113,8 +98,10 @@ export default function NavBar() {
     }
   }, []);
   return (
-    <>
-      {/* <p
+    <>{
+    route !== 'superadmin' && (
+      <>
+        {/* <p
         style={
           toggle
             ? {
@@ -135,93 +122,94 @@ export default function NavBar() {
           }
         }}
       /> */}
-      <Navbar
-        expand='lg'
-        expanded={toggle}
-        id='him'
-        className='bg-body-tertiary my-nav'
-        ref={navbarRef}
-        // style={{ zIndex: 1 }}
-      >
-        <Container fluid>
-          <Navbar.Brand>
-            <Link href='/'>
-              <Image src={logo} alt='Logo' />
-              <Image src={logo2} alt='Logo' />
-            </Link>
-          </Navbar.Brand>
-          <div className='d-flex-mobee'>
-            <Connect hideRewards />
-            <Navbar.Toggle
-              aria-controls='navbarScroll'
-              onClick={toggleNavbar}
-            />
-          </div>
-          <Navbar.Collapse id='navbarScroll'>
-            <Nav className='me-auto my-lg-0 my-2' navbarScroll>
-              <Link href='/' className='nav-link' onClick={toggleNavbar}>
-                <div className='img'>
-                  <Image src={home1} alt='Home' />
-                  <Image src={home2} alt='Home' />
-                </div>
-                Home
+        <Navbar
+          expand='lg'
+          expanded={toggle}
+          id='him'
+          className='bg-body-tertiary my-nav'
+          ref={navbarRef}
+          // style={{ zIndex: 1 }}
+        >
+          <Container fluid>
+            <Navbar.Brand>
+              <Link href='/'>
+                <Image src={logo} alt='Logo' />
+                <Image src={logo2} alt='Logo' />
               </Link>
-              <Nav.Link href='javascript:void(0);' onClick={toggleNavbar}>
-                <div className='img'>
-                  <Image src={folder1} alt='Directory' />
-                  <Image src={folder2} alt='Directory' />
-                </div>
-                Web3 Directory
-              </Nav.Link>
-              <Nav.Link href='javascript:void(0);' onClick={toggleNavbar}>
-                <div className='img'>
-                  <Image src={cup1} alt='Diamond' />
-                  <Image src={cup2} alt='Diamond' />
-                </div>
-                Grants <span>hot</span>
-              </Nav.Link>
-              <Nav.Link
+            </Navbar.Brand>
+            <div className='d-flex-mobee'>
+              <Connect hideRewards />
+              <Navbar.Toggle
+                aria-controls='navbarScroll'
                 onClick={toggleNavbar}
-                href='javascript:void(0);'
-                className='disablled'
-              >
-                <div className='img'>
-                  <Image src={book} alt='book' />
-                </div>
-                Investor Hub <sup>Coming Soon</sup>
-              </Nav.Link>
-              <Nav.Link
-                onClick={toggleNavbar}
-                href='javascript:void(0);'
-                className='disablled'
-              >
-                <div className='img'>
-                  <Image src={Bolt} alt='Bolt' />
-                </div>{' '}
-                Campaigns <sup>Coming Soon</sup>
-              </Nav.Link>
-              <SocialList />
-            </Nav>
-            <div id='google_translate_element'></div>
+              />
+            </div>
+            <Navbar.Collapse id='navbarScroll'>
+              <Nav className='me-auto my-lg-0 my-2' navbarScroll>
+                <Link href='/' className='nav-link' onClick={toggleNavbar}>
+                  <div className='img'>
+                    <Image src={home1} alt='Home' />
+                    <Image src={home2} alt='Home' />
+                  </div>
+                  Home
+                </Link>
+                <Nav.Link href='#;' onClick={toggleNavbar}>
+                  <div className='img'>
+                    <Image src={folder1} alt='Directory' />
+                    <Image src={folder2} alt='Directory' />
+                  </div>
+                  Web3 Directory
+                </Nav.Link>
+                <Nav.Link href='#;' onClick={toggleNavbar}>
+                  <div className='img'>
+                    <Image src={cup1} alt='Diamond' />
+                    <Image src={cup2} alt='Diamond' />
+                  </div>
+                  Grants <span>hot</span>
+                </Nav.Link>
+                <Nav.Link
+                  onClick={toggleNavbar}
+                  href='#;'
+                  className='disablled'
+                >
+                  <div className='img'>
+                    <Image src={book} alt='book' />
+                  </div>
+                  Investor Hub <sup>Coming Soon</sup>
+                </Nav.Link>
+                <Nav.Link
+                  onClick={toggleNavbar}
+                  href='#;'
+                  className='disablled'
+                >
+                  <div className='img'>
+                    <Image src={Bolt} alt='Bolt' />
+                  </div>{' '}
+                  Campaigns <sup>Coming Soon</sup>
+                </Nav.Link>
+                <SocialList />
+              </Nav>
+             
+             <div id='google_translate_element' className='width-80'></div>
 
-            <div className='d-flex'>
-              <Button
-                className={`themebtn ${isThemeActive ? 'active' : ''}`}
-                onClick={() => {
-                  // toggleThemeClass();
-                  handleButtonClick(); // Call your handleButtonClick function here
-                }}
-              >
-                <i className='fa fa-sun-o'></i>
-                <i className='fa fa-moon-o'></i>
-              </Button>
-              {/* <Nav.Link href='javascript:void(0);' className='link-btn empty'>
+              <div className='d-flex'>
+                <Button
+                  className={`themebtn ${isThemeActive ? 'active' : ''}`}
+                  onClick={() => {
+                    // toggleThemeClass();
+                    handleButtonClick(); // Call your handleButtonClick function here
+                  }}
+                >
+                  <i className='fa fa-sun-o'></i>
+                  <i className='fa fa-moon-o'></i>
+                </Button>
+                {/* <Nav.Link href='#;' className='link-btn empty'>
                 My Reward
               </Nav.Link>
-              <Nav.Link href='javascript:void(0);' className='link-btn empty'>
+              <Nav.Link href='#;' className='link-btn empty'>
                 <Image src={iconbook} alt='iconbook' /> Guide Book
               </Nav.Link> */}
-              {/* <Nav.Link href="javascript:void(0);" className='link-btn logedin'>
+                {/* <Nav.Link href="#;" className='link-btn logedin'>
                 <div className='img-pnl'>
                   <Image src={icongirl} alt='icongirl' />
                 </div>
@@ -230,7 +218,7 @@ export default function NavBar() {
                   <span><Image src={Infinity} alt='Infinity' /> 500</span>
                 </div>
               </Nav.Link> */}
-              {/* <div className='profile-btn'>
+                {/* <div className='profile-btn'>
                 <NavDropdown
                   title={
                     <>
@@ -263,7 +251,7 @@ export default function NavBar() {
                     </Link>
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
-                  <NavDropdown.Item href='javascript:void(0);'>
+                  <NavDropdown.Item href='#;'>
                     <Image src={User} alt="user" /> My Profile
                   </NavDropdown.Item>
                   <Link href='/dashboardn' className='dropdown-item'>
@@ -283,16 +271,17 @@ export default function NavBar() {
               </div>
               <Nav.Link
                 style={{ display: 'none' }}
-                href='javascript:void(0);'
+                href='#;'
                 className='link-btn'
               >
                 Sign In
               </Nav.Link> */}
-              <Connect hideUser />
-            </div>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    </>
-  );
+                <Connect hideUser />
+              </div>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
+      </>
+    )}
+  </>);
 }

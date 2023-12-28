@@ -1,26 +1,7 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import {
-  Row,
-  Col,
-  Table,
-  Dropdown,
-  Form,
-  Breadcrumb,
-  Button,
-  Spinner,
-} from 'react-bootstrap';
-import Image from 'next/image';
-import Link from 'next/link';
-import loader from '@/assets/Img/Icons/icon-loader.png';
-import arrows from '@/assets/Img/Icons/icon-arrows.png';
-import post1 from '@/assets/Img/Posts/small-post-10.png';
-import post2 from '@/assets/Img/Posts/small-post-11.png';
-import post3 from '@/assets/Img/Posts/small-post-12.png';
-import post4 from '@/assets/Img/Posts/small-post-13.png';
-import post5 from '@/assets/Img/Posts/small-post-14.png';
-import post6 from '@/assets/Img/Posts/small-post-15.png';
+import { Row, Col, Table, Form, Button, Spinner } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import { usePathname, useRouter } from 'next/navigation';
 import { useConnectPlugWalletStore } from '@/store/useStore';
@@ -33,7 +14,6 @@ import { getImage } from '@/components/utils/getImage';
 import { utcToLocal } from '@/components/utils/utcToLocal';
 // import { usePopper } from 'react-popper';
 import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css'; // optional
 
 /**
  * SVGR Support
@@ -42,7 +22,7 @@ import 'tippy.js/dist/tippy.css'; // optional
  * You can override the next-env if the type is important to you
  * @see https://stackoverflow.com/questions/68103844/how-to-override-next-js-svg-module-declaration
  */
-let itemsPerPage = 6;
+let itemsPerPage = 11;
 
 function Items({
   currentItems,
@@ -87,27 +67,29 @@ function Items({
                         email.substring(email.length - 10, email.length);
                     }
                     return (
-                      <tr>
-                        <td>{startIndex + index}</td>
-                        <td>{sub.name}</td>
-                        <td>{sub.id}</td>
-                        <Tippy
-                          disabled={sub.email.length <= 18}
-                          content={
-                            <div>
-                              <p className='mt-2'>{sub.email}</p>
-                            </div>
-                          }
-                        >
-                          <td>{email}</td>
-                        </Tippy>
-                        <td>
-                          {utcToLocal(
-                            sub.subscribedOn.toString(),
-                            'MM-DD-YYYY'
-                          )}
-                        </td>
-                      </tr>
+                      <>
+                        <tr>
+                          <td>{startIndex + index}</td>
+                          <td>{sub.name}</td>
+                          <td>{sub.id}</td>
+                          <Tippy
+                            disabled={sub.email.length <= 18}
+                            content={
+                              <div>
+                                <p className='mt-2'>{sub.email}</p>
+                              </div>
+                            }
+                          >
+                            <td>{email}</td>
+                          </Tippy>
+                          <td>
+                            {utcToLocal(
+                              sub.subscribedOn.toString(),
+                              'MM-DD-YYYY'
+                            )}
+                          </td>
+                        </tr>
+                      </>
                     );
                   })}
                   {/* <tr>
@@ -256,37 +238,7 @@ export default function AllArticles() {
     const tempCat = await entryActor.getCategories();
     setCategories(tempCat);
   };
-  const getRefinedList = async (tempEntriesList: any[]) => {
-    if (tempEntriesList.length === 0) {
-      return [];
-    }
-    const refinedPromise = await Promise.all(
-      tempEntriesList.map(async (entry: any) => {
-        let image = null;
-        if (entry[1].image) {
-          image = getImage(entry[1].image);
-        }
-        const userId = entry[1].user.toString();
 
-        const user = await auth.actor.get_user_details([userId]);
-
-        // let
-        let newItem = {
-          entryId: entry[0],
-          creation_time: entry[1].creation_time,
-          image: image,
-          categories: entry[1].category,
-          title: entry[1].title,
-          isDraft: entry[1].isDraft,
-          user: user.ok[1],
-          userId,
-        };
-        return newItem;
-      })
-    );
-
-    return refinedPromise;
-  };
   const getEntriesList = async (all?: string) => {
     const entryActor = makeEntryActor({
       agentOptions: {
@@ -421,21 +373,20 @@ export default function AllArticles() {
   }, [identity, pathName]);
 
   return (
-    <>
-      <main id='main'>
-        {auth.state === 'initialized' && (
-          <div className='main-inner home'>
-            <Head>
-              <title>Hi</title>
-            </Head>
-            <div className='section' id='top'>
-              <Row>
-                <Col xl='12' lg='12'>
-                  <div className='pbg-pnl text-left'>
-                    <Row>
-                      <Col xl='12' lg='12'>
-                        <div className='full-div d-flex justify-content-end mb-5'>
-                          {/* <div>
+    <main id='main'>
+      {auth.state === 'initialized' && (
+        <div className='main-inner home'>
+          <Head>
+            <title>Hi</title>
+          </Head>
+          <div className='section' id='top'>
+            <Row>
+              <Col xl='12' lg='12'>
+                <div className='pbg-pnl text-left'>
+                  <Row>
+                    <Col xl='12' lg='12'>
+                      <div className='full-div d-flex justify-content-end mb-5'>
+                        {/* <div>
                           {auth.state === 'initialized' && (
                             <Button
                               className='default-btn'
@@ -445,30 +396,30 @@ export default function AllArticles() {
                             </Button>
                           )}
                         </div> */}
-                          {/* <div></div> */}
+                        {/* <div></div> */}
 
-                          <div>
-                            <div className='search-post-pnl'>
-                              <input type='text' placeholder='Search Users' />
-                              <button>
-                                <i className='fa fa-search'></i>
-                              </button>
-                            </div>
+                        <div>
+                          <div className='search-post-pnl'>
+                            <input type='text' placeholder='Search Users' />
+                            <button>
+                              <i className='fa fa-search'></i>
+                            </button>
                           </div>
                         </div>
-                      </Col>
-                      <Col xl='6' lg='12'>
-                        <div className='full-div'>
-                          <ul className='filter-list'>
-                            <li>
-                              <Form.Select aria-label='All Dates'>
-                                <option>All Dates</option>
-                                <option value='1'>All Dates</option>
-                                <option value='2'>All Dates</option>
-                                <option value='3'>All Dates</option>
-                              </Form.Select>
-                            </li>
-                            {/* <li>
+                      </div>
+                    </Col>
+                    <Col xl='6' lg='12'>
+                      <div className='full-div'>
+                        <ul className='filter-list'>
+                          <li>
+                            <Form.Select aria-label='All Dates'>
+                              <option>All Dates</option>
+                              <option value='1'>All Dates</option>
+                              <option value='2'>All Dates</option>
+                              <option value='3'>All Dates</option>
+                            </Form.Select>
+                          </li>
+                          {/* <li>
                             <Form.Select
                               aria-label='All Categories'
                               value={selectedCategory}
@@ -482,48 +433,47 @@ export default function AllArticles() {
                               ))}
                             </Form.Select>
                           </li> */}
-                            <li>
-                              <Button className='filter-btn' onClick={filter}>
-                                Filter
-                              </Button>
-                            </li>
-                          </ul>
-                        </div>
-                      </Col>
-                      <Col xl='6' lg='12'>
-                        <div className='pagination-container'>
-                          <ReactPaginate
-                            breakLabel='...'
-                            nextLabel=''
-                            onPageChange={handlePageClick}
-                            pageRangeDisplayed={5}
-                            pageCount={pageCount}
-                            previousLabel=''
-                            renderOnZeroPageCount={null}
-                            forcePage={forcePaginate}
-                          />
-                        </div>
-                      </Col>
-                      {isGetting ? (
-                        <div className='d-flex justify-content-center w-full'>
-                          <Spinner />
-                        </div>
-                      ) : refinedSubscribersList.length > 0 ? (
-                        <Items
-                          pageNum={forcePaginate}
-                          currentItems={refinedSubscribersList}
+                          <li>
+                            <Button className='filter-btn' onClick={filter}>
+                              Filter
+                            </Button>
+                          </li>
+                        </ul>
+                      </div>
+                    </Col>
+                    <Col xl='6' lg='12'>
+                      <div className='pagination-container'>
+                        <ReactPaginate
+                          breakLabel='...'
+                          nextLabel=''
+                          onPageChange={handlePageClick}
+                          pageRangeDisplayed={5}
+                          pageCount={pageCount}
+                          previousLabel=''
+                          renderOnZeroPageCount={null}
+                          forcePage={forcePaginate}
                         />
-                      ) : (
-                        <p className='text-center'>No Subscribers Found</p>
-                      )}
-                    </Row>
-                  </div>
-                </Col>
-              </Row>
-            </div>
+                      </div>
+                    </Col>
+                    {isGetting ? (
+                      <div className='d-flex justify-content-center w-full'>
+                        <Spinner />
+                      </div>
+                    ) : refinedSubscribersList.length > 0 ? (
+                      <Items
+                        pageNum={forcePaginate}
+                        currentItems={refinedSubscribersList}
+                      />
+                    ) : (
+                      <p className='text-center'>No Subscribers Found</p>
+                    )}
+                  </Row>
+                </div>
+              </Col>
+            </Row>
           </div>
-        )}
-      </main>
-    </>
+        </div>
+      )}
+    </main>
   );
 }

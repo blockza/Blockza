@@ -44,13 +44,16 @@ export const metadata: Metadata = {
 import { ToastContainer } from 'react-toastify';
 import SidebarHome from '@/components/SideBarHome/SideBarHome';
 import NavBar from '@/components/NavBar/NavBar';
-import { useThemeStore } from '@/store/useStore';
 import Footer from '@/components/Footer/Footer';
 export default function RootLayout({
   children,
+  hide,
 }: {
   children: React.ReactNode;
+  hide?: boolean;
 }) {
+ 
+   
   return (
     <html>
       <head>
@@ -62,20 +65,20 @@ export default function RootLayout({
           href='https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700&family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500;7..72,600;7..72,700;7..72,800&display=swap'
           rel='stylesheet'
         /> */}
-        <script src='http://localhost:8097'></script>
+        {/* <script src='http://localhost:8097'></script> */}
       </head>
       <body>
         <SidebarHome />
         <NavBar />
-
         {children}
         <Footer />
 
         <ToastContainer theme='light' autoClose={3000} />
         <script
           src='https://kit.fontawesome.com/3fcb35e151.js'
-          crossOrigin='anonymous'
+          crossOrigin='anonymous' 
         ></script>
+      
       </body>
     </html>
   );

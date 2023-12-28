@@ -1,24 +1,26 @@
 'use client';
 
-import { Actor, ActorMethod, HttpAgent } from '@dfinity/agent';
+import { Actor, HttpAgent } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
 import * as React from 'react';
-
+import icpimage from '@/assets/Img/coin-image.png';
 // import { Modal } from 'flowbite-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import ButtonLink from '@/components/links/ButtonLink';
+import {
+  Button,
+  Form,
+  Modal,
+  Nav,
+  NavDropdown,
+  NavLink,
+  Spinner,
+} from 'react-bootstrap';
 import { useConnectPlugWalletStore } from '@/store/useStore';
-import { Button, Modal, Nav, NavDropdown, Spinner } from 'react-bootstrap';
-import { JsonnableDelegationChain } from '@dfinity/identity';
-import { makeLedgerCanister, makeUserActor } from '@/dfx/service/actor-locator';
 import Link from 'next/link';
 import Image from 'next/image';
 import authMethods from '@/lib/auth';
 import infinity from '@/assets/Img/Icons/infinity.png';
-
-// import infinity from '@/assets/Img/Icons/icon-infinite.png';
-import Wallet from '@/assets/Img/Icons/plug-wallet.png';
 import cup from '@/assets/Img/Icons/icon-cup-1.png';
 import cup1 from '@/assets/Img/Icons/icon-cup-3.png';
 import userImg from '@/assets/Img/Icons/icon-user-3.png';
@@ -33,16 +35,30 @@ import iconbook from '@/assets/Img/Icons/icon-book.png';
 import icongirl from '@/assets/Img/Icons/icon-girl-1.png';
 import { User } from '@/types/profile';
 import { getImage } from '@/components/utils/getImage';
+import { ConnectPlugWalletSlice, UserAuth } from '@/types/store';
 import logger from '@/lib/logger';
+import { canisterId as ledgerCanisterId } from '@/dfx/declarations/icp_ledger_canister';
+import { makeLedgerCanister } from '@/dfx/service/actor-locator';
 import { AccountIdentifier } from '@dfinity/ledger-icp';
 import { Principal } from '@dfinity/principal';
-
+import {
+  Formik,
+  FormikProps,
+  Form as FormikForm,
+  Field,
+  FormikValues,
+  ErrorMessage,
+} from 'formik';
+import { E8S, GAS_FEE } from '@/constant/config';
+import { number, object, string } from 'yup';
 export default function Connect({
   hideRewards,
   hideUser,
+  hide = false,
 }: {
   hideRewards?: boolean;
   hideUser?: boolean;
+  hide?: boolean;
 }) {
   const [pText, setPText] = React.useState('nothing');
   const [show, setShow] = React.useState<boolean | undefined>();
@@ -56,16 +72,36 @@ export default function Connect({
   const [publicKey, setPublicKey] = React.useState<string | null>();
 
   const [client, setClient] = React.useState<AuthClient>();
+  const [rewards, setRewards] = React.useState(0);
+  const [userBalance, setUserBalance] = React.useState<undefined | number>();
+  const [isTransfering, setIsTransfering] = React.useState(false);
   const pathname = usePathname();
-  const { auth, setAuth, setIdentity, setPrincipal, identity, principal } =
-    useConnectPlugWalletStore((state) => ({
-      auth: state.auth,
-      setAuth: state.setAuth,
-      setIdentity: state.setIdentity,
-      setPrincipal: state.setPrincipal,
-      identity: state.identity,
-      principal: state.principal,
-    }));
+  const route = pathname.split('/')[1];
+  const {
+    auth,
+    userAuth,
+    identity,
+    principal,
+    setIdentity,
+    setPrincipal,
+    setUserAuth,
+    reward,
+    balance,
+    setReward,
+    setBalance,
+  } = useConnectPlugWalletStore((state) => ({
+    auth: (state as ConnectPlugWalletSlice).auth,
+    reward: (state as ConnectPlugWalletSlice).reward,
+    balance: (state as ConnectPlugWalletSlice).balance,
+    userAuth: (state as ConnectPlugWalletSlice).userAuth,
+    identity: (state as ConnectPlugWalletSlice).identity,
+    setIdentity: (state as ConnectPlugWalletSlice).setIdentity,
+    setReward: (state as ConnectPlugWalletSlice).setReward,
+    setBalance: (state as ConnectPlugWalletSlice).setBalance,
+    principal: (state as ConnectPlugWalletSlice).principal,
+    setPrincipal: (state as ConnectPlugWalletSlice).setPrincipal,
+    setUserAuth: (state as ConnectPlugWalletSlice).setUserAuth,
+  }));
   const router = useRouter();
   const location = usePathname();
   const handleShow = () => setShow(true);
@@ -74,7 +110,50 @@ export default function Connect({
     setIsLoggin(false);
   };
 
-  const methods = authMethods({ auth, setAuth, setIsLoading, handleClose });
+  const methods = authMethods({
+    useConnectPlugWalletStore,
+    setIsLoading,
+    handleClose,
+  });
+
+  const initialTransferValues = {
+    destination: '',
+    amount: 0,
+  };
+  const gasFee = E8S / GAS_FEE;
+  const gasFeeICP = gasFee / E8S;
+  const transferSchema = object().shape({
+    destination: string().test('min', 'Not a valid address', (value) => {
+      try {
+        Principal.fromText(value as string);
+        return true;
+      } catch {
+        return false;
+      }
+    }),
+    amount: number()
+      .test('min', '', (value) => {
+        if (value && value > 0) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .test(
+        'min',
+        'Sorry, there are not enough funds in your account',
+        (value) => {
+          if (balance && value) {
+            let requiredICP = balance - gasFeeICP;
+            if (requiredICP >= value) return true;
+          } else if (!value) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      ),
+  });
 
   const verifyConnection = async () => {
     if (!window.ic) {
@@ -225,11 +304,63 @@ export default function Connect({
       setProfileImg(null);
     }
   };
+  const copyPrincipal = () => {
+    window.navigator.clipboard.writeText(principal);
+    toast.success('Address copied to clipboard', { autoClose: 1000 });
+  };
+  const getBalance = async () => {
+    if (auth.state !== 'initialized' || !identity) return;
+    let ledgerActor = await makeLedgerCanister({
+      agentOptions: {
+        identity,
+      },
+    });
+
+    let acc: any = AccountIdentifier.fromPrincipal({
+      principal: identity.getPrincipal(),
+      // subAccount: identity.getPrincipal(),
+    });
+    let res = await ledgerActor.account_balance({
+      account: acc.bytes,
+    });
+    let balance = parseInt(res.e8s) / E8S;
+    setBalance(balance);
+    setUserBalance(balance);
+  };
+  const getUser = async (res?: any) => {
+    let tempUser = null;
+    if (res) {
+      tempUser = await res.get_user_details([]);
+    } else {
+      tempUser = await auth.actor.get_user_details([]);
+    }
+    if (tempUser.ok) {
+      setUser(tempUser.ok[1]);
+      const unClaimedRewards = tempUser.ok[1].rewards
+        .filter((reward: any) => {
+          return !reward.isClaimed;
+        })
+        .reduce((acc: number, obj: any) => acc + parseInt(obj.amount), 0);
+      let rewardsInICP = unClaimedRewards / E8S;
+      setRewards(rewardsInICP);
+
+      logger(rewardsInICP, 'UNNNNNN');
+      setReward(rewardsInICP);
+
+      if (tempUser.ok[1].isBlocked) {
+        setUserAuth({ ...userAuth, status: tempUser.ok[1].isBlocked });
+      }
+      updateImg(tempUser.ok[1].profileImg[0]);
+    }
+  };
+  const getII = async () => {
+    const identity = await auth.client.getIdentity();
+    const principal = await identity.getPrincipal();
+    setPrincipal(principal.toString());
+    setIdentity(identity);
+  };
+
   React.useEffect(() => {
-    // const token = getToken();
-    // if (window.ic) {
-    // window.ic.plug.isConnected();
-    // }
     const getIdentity = async () => {
       if (auth.client) {
         const con = await auth.client.isAuthenticated();
@@ -245,24 +376,6 @@ export default function Connect({
     getIdentity();
   }, [auth.client]);
 
-  const getUser = async (res?: any) => {
-    let tempUser = null;
-    if (res) {
-      tempUser = await res.get_user_details([]);
-    } else {
-      tempUser = await auth.actor.get_user_details([]);
-    }
-    if (tempUser.ok) {
-      setUser(tempUser.ok[1]);
-      updateImg(tempUser.ok[1].profileImg[0]);
-    }
-  };
-  const getII = async () => {
-    const identity = await auth.client.getIdentity();
-    const principal = await identity.getPrincipal();
-    setPrincipal(principal.toString());
-    setIdentity(identity);
-  };
   React.useEffect(() => {
     if (auth.state === 'initialized') {
       getUser();
@@ -285,6 +398,16 @@ export default function Connect({
       getII();
     }
   }, [auth, pathname]);
+  React.useEffect(() => {
+    if (auth.state === 'initialized' && identity) {
+      getBalance();
+    }
+  }, [auth, pathname, identity]);
+  React.useEffect(() => {
+    if (userAuth.status) {
+      router.replace('/blocked');
+    }
+  }, [userAuth, pathname]);
 
   // React.useEffect(() => {
   //   if (auth.state === 'initialized') {
@@ -311,6 +434,7 @@ export default function Connect({
   React.useEffect(() => {
     methods.initAuth();
   }, []);
+
   return (
     <>
       {isLoading ? (
@@ -330,29 +454,36 @@ export default function Connect({
             hideRewards ? 'hide-on-desktop' : ''
           }`}
           disabled={isLoggin}
+          onClick={() => {
+            if (route === 'superadmin') {
+              connect();
+            }
+          }}
         >
-          Sign In
+          {isLoggin ? <Spinner size='sm' /> : 'Sign In'}
         </Button>
       ) : (
         <>
-          <>
-            <Nav.Link
-              href='/reward'
-              className={`link-btn empty re ${
-                hideRewards ? 'hide-on-mobile' : ''
-              } ${hideRewards ? 'hide-on-desktop' : ''}`}
-            >
-              My Reward
-            </Nav.Link>
-            <Nav.Link
-              href='javascript:void(0);'
-              className={`link-btn empty ${
-                hideRewards ? 'hide-on-mobile' : ''
-              } ${hideRewards ? 'hide-on-desktop' : ''}`}
-            >
-              <Image src={iconbook} alt='iconbook' /> Guide Book
-            </Nav.Link>
-          </>
+          {!hide && (
+            <>
+              <Link
+                href='/reward'
+                className={`link-btn empty re ${
+                  hideRewards ? 'hide-on-mobile' : ''
+                } ${hideRewards ? 'hide-on-desktop' : ''}`}
+              >
+                My Rewards
+              </Link>
+              <Nav.Link
+                href='#'
+                className={`link-btn empty ${
+                  hideRewards ? 'hide-on-mobile' : ''
+                } ${hideRewards ? 'hide-on-desktop' : ''}`}
+              >
+                <Image src={iconbook} alt='iconbook' /> Guide Book
+              </Nav.Link>
+            </>
+          )}
 
           <div
             className={`profile-btn ${hideUser ? 'hide-on-mobile' : ''} ${
@@ -360,7 +491,7 @@ export default function Connect({
             }`}
           >
             <NavDropdown
-              onSelect={() => console.log('hi')}
+              onSelect={() => {}}
               // active={true}
               title={
                 <>
@@ -384,9 +515,21 @@ export default function Connect({
                       </div>
                     </div>
                     <div className='txt-pnl'>
-                      <h6>{user ? user?.name : 'User Name'}</h6>
+                      <h6 className={hide ? 'text-white' : ''}>
+                        {user
+                          ? user?.name.toString().length <= 8
+                            ? user?.name
+                            : `${user?.name.toString().slice(0, 8)}... `
+                          : 'User Name'}
+                      </h6>
+
                       <span>
-                        <Image src={infinity} alt='Infinity' /> 0
+                        <Image
+                          src={infinity}
+                          alt='icpimage'
+                          style={{ height: '10px  ', width: '20px' }}
+                        />{' '}
+                        {balance ?? 0}
                       </span>
                     </div>
                   </div>
@@ -413,93 +556,142 @@ export default function Connect({
                   </div>
                 </div>
                 <div>
-                  <h6> {user ? user?.name : 'User Name'}</h6>
+                  <h6>
+                    {user
+                      ? user?.name.toString().length >= 16
+                        ? `${user?.name.toString().slice(0, 17)} \n ${user?.name
+                            .toString()
+                            .slice(17)}`
+                        : user?.name
+                      : 'User Name'}
+                  </h6>
                   <p>
-                    {publicKey
-                      ? publicKey?.slice(0, 5) + '...' + publicKey?.slice(-3)
-                      : ''}
+                    {principal
+                      ? principal?.slice(0, 5) + '...' + principal?.slice(-3)
+                      : ''}{' '}
+                    <i
+                      onClick={copyPrincipal}
+                      className='fa fa-lg fa-copy '
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: 15,
+                        color: 'black',
+                      }}
+                    ></i>
                   </p>
                 </div>
                 <div className='total-icp'>
-                  <p>Total ICP</p>
+                  <p>Claimable Rewards</p>
                   <span>
-                    <Image src={infinity} alt='Infinity' /> 0
+                    <Image
+                      src={icpimage}
+                      alt='icpimage'
+                      style={{ height: '21px', width: '21px' }}
+                    />{' '}
+                    {reward ?? 0}
+                  </span>
+                </div>
+                <div className='total-icp'>
+                  <p>ICP Tokens</p>
+                  <span>
+                    <Image
+                      src={infinity}
+                      alt='icpimage'
+                      style={{ height: '10px  ', width: '20px' }}
+                    />{' '}
+                    {balance ?? 0}
                   </span>
                 </div>
               </NavDropdown.Item>
-              <NavDropdown.Item className='custom'>
-                <Link href='/profile'>
-                  <Image src={userImg} alt='user' />
-                  <Image src={user1} alt='user' /> My Profile
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Item className='custom'>
-                <Link
+              {!userAuth.status && (
+                <>
+                  <NavDropdown.Item as={Link} href='/profile'>
+                    <Image src={userImg} alt='user' />
+                    <Image src={user1} alt='user' /> My Profile
+                  </NavDropdown.Item>
+
+                  <NavDropdown.Item
+                    // onClick={async (e) => {
+                    //   e.preventDefault();
+
+                    //   let ledgerActor = await makeLedgerCanister({
+                    //     agentOptions: {
+                    //       identity,
+                    //     },
+                    //   });
+
+                    //   let acc: any = AccountIdentifier.fromPrincipal({
+                    //     principal: identity.getPrincipal(),
+                    //     // subAccount: identity.getPrincipal(),
+                    //   });
+                    //   let poor = Principal.fromText(
+                    //     'og5g4-dvvdy-behql-zqoz5-f2qjs-x4nke-k5spr-q7ngf-7ia7a-h4jaj-yae'
+                    //   );
+                    //   let rich = Principal.fromText(
+                    //     'dmy7a-ywgp6-wkwqw-rplzc-lbaqc-5ppsv-6och2-yh2mg-tnn4y-yz4su-lae'
+                    //   );
+                    //   let transfered = await ledgerActor.icrc2_transfer_from({
+                    //     amount: 2000000,
+                    //     created_at_time: [],
+                    //     fee: [],
+                    //     from: { owner: rich, subaccount: [] },
+                    //     memo: [],
+                    //     spender_subaccount: [],
+                    //     to: { owner: poor, subaccount: [] },
+                    //   });
+
+                    //   logger(transfered);
+                    // }}
+                    href='/reward'
+                    as={Link}
+                  >
+                    {/* <Link
                   // onClick={async () => {
-                  //   let ledgerActor = await makeLedgerCanister({
-                  //     agentOptions: {
-                  //       identity,
-                  //     },
-                  //   });
-
-                  //   let acc: any = AccountIdentifier.fromPrincipal({
-                  //     principal: identity.getPrincipal(),
-                  //     // subAccount: identity.getPrincipal(),
-                  //   });
-                  //   logger(principal)
-                  //   let balance = await ledgerActor.account_balance({
-                  //     account: acc.bytes,
-                  //   });
-                  //   let replicaPrincipal = Principal.fromText(
-                  //     'ae25j-iwln7-esrn6-abfzr-p2plk-ow2pg-n2iuh-7ebfd-3drqw-m4cuq-zae'
-                  //   );
-                  //   let replicaAcc: any = AccountIdentifier.fromPrincipal({
-                  //     principal: replicaPrincipal,
-                  //     // subAccount: identity.getPrincipal(),
-                  //   });
-                  //   let transfer = await ledgerActor.transfer({
-                  //     to: replicaAcc.bytes,
-                  //     fee: { e8s: 10000 },
-                  //     memo: 1,
-                  //     amount: { e8s: 1000000 },
-                  //     from_subaccount: [],
-                  //     created_at_time: [],
-                  //   });
-                  //   logger({ balance }, 'DA transfer');
+                   
                   // }}
-                  href='/reward'
                   // }
-                >
-                  <Image src={cup} alt='cup' />
-                  <Image src={cup1} alt='cup' /> My Rewards
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Item className='custom'>
-                <Link href='/profiledetails'>
-                  <Image src={setting} alt='setting' />
-                  <Image src={setting1} alt='setting' /> Settings
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Item className='custom'>
-                <Link href='/'>
-                  <Image src={feedback} alt='Feedback' />
-                  <Image src={feedback1} alt='Feedback' /> Feedback
-                </Link>
-              </NavDropdown.Item>
+                > */}
+                    <Image src={cup} alt='cup' />
+                    <Image src={cup1} alt='cup' /> My Rewards
+                  </NavDropdown.Item>
+                  <NavDropdown.Item onClick={handleShow}>
+                    <Image
+                      src={infinity}
+                      alt='icpimage'
+                      style={{ height: '10px  ', width: '20px' }}
+                    />{' '}
+                    <Image
+                      src={infinity}
+                      alt='icpimage'
+                      style={{ height: '10px  ', width: '20px' }}
+                    />{' '}
+                    Transfer ICP
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} href='/profiledetails'>
+                    <Image src={setting} alt='setting' />
+                    <Image src={setting1} alt='setting' /> Settings
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} href='/'>
+                    <Image src={feedback} alt='Feedback' />
+                    <Image src={feedback1} alt='Feedback' /> Feedback
+                  </NavDropdown.Item>
 
-              <NavDropdown.Divider />
-              <NavDropdown.Item className='custom'>
-                <Link href='/' className='dropdown-item blue'>
-                  <Image src={gift} alt='Feedback' />
-                  <Image src={gift} alt='Feedback' /> Refer Friends & Collect
-                  Rewards
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item as={Link} href='/'>
+                    <Image src={gift} alt='Feedback' />
+                    <Image src={gift} alt='Feedback' /> Refer Friends & Collect
+                    Rewards
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                </>
+              )}
               <NavDropdown.Item
                 onClick={async () => {
                   await methods.logout();
                   await methods.initAuth();
+                  if (userAuth.status) {
+                    router.replace('/');
+                  }
                 }}
                 className='disconnect-btn'
               >
@@ -516,27 +708,164 @@ export default function Connect({
           </Button> */}
         </>
       )}
-      {/* <Modal show={show} onClose={handleClose} size={'md'}>
-          <Modal.Header className=''>Connect Wallet</Modal.Header>
-          <Modal.Body>
-            <div className='wallet-container flex flex-col gap-3'>
-              <div className='wallet-item' onClick={handleConnect}>
-                <p>Plug Wallet</p>
-                <img src='https://docs.plugwallet.ooo/imgs/logo.png' alt='' />
-              </div>
-              <div className='wallet-item' onClick={connectIdentity}>
-                <p>Internet Identity</p>
-                <img
-                  src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHnDVbkjS_-BN8jMKEJtnIwfx6y4xeqs5N3_jaydwPAQ&s'
-                  alt=''
-                />
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={handleClose}>Cancel</Button>
-          </Modal.Footer>
-        </Modal> */}
+      <Modal centered show={show} onHide={handleClose} onClose={handleClose}>
+        <Modal.Header closeButton className=''>
+          Transfer ICP
+        </Modal.Header>
+        <Modal.Body>
+          <div className=''>
+            <Formik
+              initialValues={initialTransferValues}
+              // innerRef={formikRef}
+              // enableReinitialize
+              validationSchema={transferSchema}
+              onSubmit={async (values, actions) => {
+                // setPromotionValues({
+                //   icp: values.ICP,
+                //   // likes: values.likesCount,
+                // });
+                logger(values, 'SAT VALUES');
+                if (!identity) {
+                  return;
+                }
+                try {
+                  setIsTransfering(true);
+                  let acc: any = AccountIdentifier.fromPrincipal({
+                    principal: Principal.fromText(values.destination),
+                    // subAccount: identity.getPrincipal(),
+                  });
+                  const ledgerActor = makeLedgerCanister({
+                    agentOptions: {
+                      identity,
+                    },
+                  });
+                  let transfer = await ledgerActor.transfer({
+                    to: acc.bytes,
+                    fee: { e8s: GAS_FEE },
+                    memo: 1,
+                    amount: { e8s: values.amount * E8S },
+                    from_subaccount: [],
+                    created_at_time: [],
+                  });
+                  logger({ transfer });
+                  if (transfer.Ok) {
+                    // setIsArticleDraft(false);
+                    setIsTransfering(false);
+                    handleClose();
+                    toast.success('Transfer Successfull');
+                    getBalance();
+                    // setConfirmTransaction(false);
+                  } else if (transfer.Err) {
+                    toast.success('Error During Transaction');
+
+                    setIsTransfering(false);
+                  }
+                } catch (err) {
+                  logger(err);
+                }
+
+                // setConfirmTransaction(true);
+                // formikRef.current?.handleSubmit();
+                // await uploadEntry(values, actions);
+              }}
+            >
+              {({
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                isValid,
+                dirty,
+              }) => (
+                <FormikForm
+                  className='flex w-full flex-col items-center justify-center'
+                  // onChange={(e) => handleImageChange(e)}
+                >
+                  <Field name='destination'>
+                    {({ field, formProps }: any) => (
+                      <Form.Group
+                        className='mb-2'
+                        controlId='exampleForm.ControlInput1'
+                      >
+                        <div className='d-flex justify-content-between w-100'>
+                          <Form.Label>Destination</Form.Label>
+                        </div>
+
+                        <Form.Control
+                          type='text'
+                          placeholder='Destination'
+                          value={field.value}
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          name='destination'
+                        />
+                      </Form.Group>
+                    )}
+                  </Field>
+                  <div className='text-danger mb-2'>
+                    <ErrorMessage
+                      className='Mui-err'
+                      name='destination'
+                      component='div'
+                    />
+                  </div>
+                  <Field name='amount'>
+                    {({ field, formProps }: any) => (
+                      <Form.Group
+                        className='mb-2'
+                        controlId='exampleForm.ControlInput1'
+                      >
+                        <div className='d-flex justify-content-between w-100'>
+                          <Form.Label>Amount</Form.Label>
+                        </div>
+
+                        <Form.Control
+                          type='number'
+                          placeholder='Amount'
+                          value={field.value}
+                          onInput={handleBlur}
+                          onChange={handleChange}
+                          name='amount'
+                        />
+                      </Form.Group>
+                    )}
+                  </Field>
+                  <div className='text-danger mb-2'>
+                    <ErrorMessage
+                      className='Mui-err'
+                      name='amount'
+                      component='div'
+                    />
+                  </div>
+                  <div className='mt-3'>
+                    <p className='m-0'>Transaction Fee </p>
+                    <p className='m-0'> {gasFeeICP}0000 ICP</p>
+                  </div>
+                  <div className='d-flex justify-content-end gap-4'>
+                    <Button
+                      className='publish-btn'
+                      disabled={isTransfering}
+                      onClick={handleClose}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className='publish-btn'
+                      disabled={isTransfering || !(isValid && dirty)}
+                      type='submit'
+                    >
+                      {isTransfering ? <Spinner size='sm' /> : 'Transfer'}
+                    </Button>
+                  </div>
+                </FormikForm>
+              )}
+            </Formik>
+          </div>
+        </Modal.Body>
+        {/* <Modal.Footer>
+          <Button onClick={handleClose}>Cancel</Button>
+        </Modal.Footer> */}
+      </Modal>
       {/* <Modal
         show={show}
         onClose={handleClose}

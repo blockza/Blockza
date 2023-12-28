@@ -63,6 +63,8 @@
     padding: 6px 15px 8px;
   }
 
+
+
   &.fill-not {
     background-color: transparent;
     color: $black;
@@ -76,6 +78,14 @@
       border-color: #1e5fb3;
     }
   }
+
+  &.ble-brdr {
+    border-color: $blue !important;
+    color: $blue;
+    font-weight: 600;
+    margin-top: 5px;
+  }
+
 
   &.fill {
     background-color: #1e5fb3;
@@ -132,11 +142,11 @@
 
 .grey-button {
   background-color: #ebebf0;
+  color: #bababe;
   border-radius: 5px;
   padding: 10px 15px;
   font-size: 16px;
   font-weight: 600;
-  color: #bababe;
   border-color: #e1e1e5;
 
   &.gry {
@@ -155,6 +165,10 @@
     background-color: $blue;
     color: $white;
   }
+}
+.grey-button.loadmore {
+  background-color: $blue;
+  color: $white;
 }
 
 .blue-button {
@@ -310,3 +324,19 @@
 //     color: $blue;
 //   }
 // }
+.reg-btn.yellow {
+  background-color: $color;
+  color: $black;
+}
+.disabledBtn:disabled{
+  opacity: 0.4 !important;
+  color: #ff5757 !important;
+  pointer-events:auto !important;
+  cursor: not-allowed !important;
+
+}
+@media screen and (max-width: 600px) {
+  .rewardbtn{
+    align-items: center !important;
+  }
+}

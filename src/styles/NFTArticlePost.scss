@@ -10,6 +10,27 @@
     display: inline-block;
     width: 100%;
     border-radius: 15px 15px 0 0;
+    div {
+      .promotedlable {
+        height: 40px;
+        width: 196px;
+        font-weight: 900;
+        color: white;
+        background-color: #1e5fb3;
+        border-radius: 2rem;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 11;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+       > img{
+          height: 28px;
+          width: 28px !important;
+        }
+      }
+    }
 
     img {
       border-radius: 15px 15px 0 0;

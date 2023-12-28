@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Slider from 'react-slick';
 export default function ProductSlider() {
   var Product = {
-    dots: null,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 3,
@@ -34,22 +34,33 @@ export default function ProductSlider() {
 
   return (
     <>
-      <Slider {...Product}>
+      <Slider {...Product} lazyLoad='anticipated'>
         <div className='Post-padding'>
           <Link href='#' className='Product-post'>
             <div className='Product-post-inner'>
               <div className='img-pnl'>
                 <Image src={bgimg} alt='Logo' />
-                <div className='logo-img'>
-                  <Image src={sublogo} alt='Logo' />
-                </div>
               </div>
               <div className='text-pnl'>
-                <h3>Afropolitan</h3>
-                <p>
-                  Afropolitan is creating a Digital Nation to enable all
-                  Africans to build abundant ...
-                </p>
+                <div className='flex-div-sm'>
+                  <div className='logo-img'>
+                    <Image src={sublogo} alt='Logo' />
+                  </div>
+                  <div className='heading-txt-pnl'>
+                    <h3>Afropolitan</h3>
+                    <p>
+                      Afropolitan is creating a Digital Nation to enable all
+                      Africans to build abundant ...
+                    </p>
+                  </div>
+                </div>
+                <div className='txt-pnl'>
+                  <p>Afrocentric and innovative. Really dig the logo too</p>
+                  <div className='img-pl'>
+                    <Image src={girl} alt='Girl' />
+                    <h5>Salome Ogbolu</h5>
+                  </div>
+                </div>
                 <ul>
                   <li>
                     <b>2</b>
@@ -64,51 +75,6 @@ export default function ProductSlider() {
                     <span>Upvotes</span>
                   </li>
                 </ul>
-                <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
-                  <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
-          <Link href='#' className='Product-post'>
-            <div className='Product-post-inner'>
-              <div className='img-pnl'>
-                <Image src={bgimg} alt='Logo' />
-                <div className='logo-img'>
-                  <Image src={sublogo} alt='Logo' />
-                </div>
-              </div>
-              <div className='text-pnl'>
-                <h3>Afropolitan</h3>
-                <p>
-                  Afropolitan is creating a Digital Nation to enable all
-                  Africans to build abundant ...
-                </p>
-                <ul>
-                  <li>
-                    <b>2</b>
-                    <span>Posts</span>
-                  </li>
-                  <li>
-                    <b>250</b>
-                    <span>Reviews</span>
-                  </li>
-                  <li>
-                    <b>1950</b>
-                    <span>Upvotes</span>
-                  </li>
-                </ul>
-                <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
-                  <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
-                  </div>
-                </div>
               </div>
             </div>
           </Link>
@@ -118,16 +84,27 @@ export default function ProductSlider() {
             <div className='Product-post-inner'>
               <div className='img-pnl'>
                 <Image src={bgimg} alt='Logo' />
-                <div className='logo-img'>
-                  <Image src={sublogo} alt='Logo' />
-                </div>
               </div>
               <div className='text-pnl'>
-                <h3>Afropolitan</h3>
-                <p>
-                  Afropolitan is creating a Digital Nation to enable all
-                  Africans to build abundant ...
-                </p>
+                <div className='flex-div-sm'>
+                  <div className='logo-img'>
+                    <Image src={sublogo} alt='Logo' />
+                  </div>
+                  <div className='heading-txt-pnl'>
+                    <h3>Afropolitan</h3>
+                    <p>
+                      Afropolitan is creating a Digital Nation to enable all
+                      Africans to build abundant ...
+                    </p>
+                  </div>
+                </div>
+                <div className='txt-pnl'>
+                  <p>Afrocentric and innovative. Really dig the logo too</p>
+                  <div className='img-pl'>
+                    <Image src={girl} alt='Girl' />
+                    <h5>Salome Ogbolu</h5>
+                  </div>
+                </div>
                 <ul>
                   <li>
                     <b>2</b>
@@ -142,51 +119,6 @@ export default function ProductSlider() {
                     <span>Upvotes</span>
                   </li>
                 </ul>
-                <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
-                  <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
-          <Link href='#' className='Product-post'>
-            <div className='Product-post-inner'>
-              <div className='img-pnl'>
-                <Image src={bgimg} alt='Logo' />
-                <div className='logo-img'>
-                  <Image src={sublogo} alt='Logo' />
-                </div>
-              </div>
-              <div className='text-pnl'>
-                <h3>Afropolitan</h3>
-                <p>
-                  Afropolitan is creating a Digital Nation to enable all
-                  Africans to build abundant ...
-                </p>
-                <ul>
-                  <li>
-                    <b>2</b>
-                    <span>Posts</span>
-                  </li>
-                  <li>
-                    <b>250</b>
-                    <span>Reviews</span>
-                  </li>
-                  <li>
-                    <b>1950</b>
-                    <span>Upvotes</span>
-                  </li>
-                </ul>
-                <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
-                  <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
-                  </div>
-                </div>
               </div>
             </div>
           </Link>
@@ -196,16 +128,27 @@ export default function ProductSlider() {
             <div className='Product-post-inner'>
               <div className='img-pnl'>
                 <Image src={bgimg} alt='Logo' />
-                <div className='logo-img'>
-                  <Image src={sublogo} alt='Logo' />
-                </div>
               </div>
               <div className='text-pnl'>
-                <h3>Afropolitan</h3>
-                <p>
-                  Afropolitan is creating a Digital Nation to enable all
-                  Africans to build abundant ...
-                </p>
+                <div className='flex-div-sm'>
+                  <div className='logo-img'>
+                    <Image src={sublogo} alt='Logo' />
+                  </div>
+                  <div className='heading-txt-pnl'>
+                    <h3>Afropolitan</h3>
+                    <p>
+                      Afropolitan is creating a Digital Nation to enable all
+                      Africans to build abundant ...
+                    </p>
+                  </div>
+                </div>
+                <div className='txt-pnl'>
+                  <p>Afrocentric and innovative. Really dig the logo too</p>
+                  <div className='img-pl'>
+                    <Image src={girl} alt='Girl' />
+                    <h5>Salome Ogbolu</h5>
+                  </div>
+                </div>
                 <ul>
                   <li>
                     <b>2</b>
@@ -220,51 +163,6 @@ export default function ProductSlider() {
                     <span>Upvotes</span>
                   </li>
                 </ul>
-                <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
-                  <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
-          <Link href='#' className='Product-post'>
-            <div className='Product-post-inner'>
-              <div className='img-pnl'>
-                <Image src={bgimg} alt='Logo' />
-                <div className='logo-img'>
-                  <Image src={sublogo} alt='Logo' />
-                </div>
-              </div>
-              <div className='text-pnl'>
-                <h3>Afropolitan</h3>
-                <p>
-                  Afropolitan is creating a Digital Nation to enable all
-                  Africans to build abundant ...
-                </p>
-                <ul>
-                  <li>
-                    <b>2</b>
-                    <span>Posts</span>
-                  </li>
-                  <li>
-                    <b>250</b>
-                    <span>Reviews</span>
-                  </li>
-                  <li>
-                    <b>1950</b>
-                    <span>Upvotes</span>
-                  </li>
-                </ul>
-                <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
-                  <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
-                  </div>
-                </div>
               </div>
             </div>
           </Link>
@@ -274,16 +172,27 @@ export default function ProductSlider() {
             <div className='Product-post-inner'>
               <div className='img-pnl'>
                 <Image src={bgimg} alt='Logo' />
-                <div className='logo-img'>
-                  <Image src={sublogo} alt='Logo' />
-                </div>
               </div>
               <div className='text-pnl'>
-                <h3>Afropolitan</h3>
-                <p>
-                  Afropolitan is creating a Digital Nation to enable all
-                  Africans to build abundant ...
-                </p>
+                <div className='flex-div-sm'>
+                  <div className='logo-img'>
+                    <Image src={sublogo} alt='Logo' />
+                  </div>
+                  <div className='heading-txt-pnl'>
+                    <h3>Afropolitan</h3>
+                    <p>
+                      Afropolitan is creating a Digital Nation to enable all
+                      Africans to build abundant ...
+                    </p>
+                  </div>
+                </div>
+                <div className='txt-pnl'>
+                  <p>Afrocentric and innovative. Really dig the logo too</p>
+                  <div className='img-pl'>
+                    <Image src={girl} alt='Girl' />
+                    <h5>Salome Ogbolu</h5>
+                  </div>
+                </div>
                 <ul>
                   <li>
                     <b>2</b>
@@ -298,51 +207,6 @@ export default function ProductSlider() {
                     <span>Upvotes</span>
                   </li>
                 </ul>
-                <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
-                  <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
-          <Link href='#' className='Product-post'>
-            <div className='Product-post-inner'>
-              <div className='img-pnl'>
-                <Image src={bgimg} alt='Logo' />
-                <div className='logo-img'>
-                  <Image src={sublogo} alt='Logo' />
-                </div>
-              </div>
-              <div className='text-pnl'>
-                <h3>Afropolitan</h3>
-                <p>
-                  Afropolitan is creating a Digital Nation to enable all
-                  Africans to build abundant ...
-                </p>
-                <ul>
-                  <li>
-                    <b>2</b>
-                    <span>Posts</span>
-                  </li>
-                  <li>
-                    <b>250</b>
-                    <span>Reviews</span>
-                  </li>
-                  <li>
-                    <b>1950</b>
-                    <span>Upvotes</span>
-                  </li>
-                </ul>
-                <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
-                  <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
-                  </div>
-                </div>
               </div>
             </div>
           </Link>

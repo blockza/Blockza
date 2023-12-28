@@ -22,6 +22,21 @@
       max-height: 100%;
       margin: 0 auto;
     }
+    .promotedlable {
+      height: 40px;
+      width: 196px;
+      font-weight: 900;
+      color: white;
+      background-color: #1e5fb3;
+      border-radius: 2rem;
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 11;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .txt-pnl {
@@ -378,6 +393,7 @@
 
             @media (max-width: 575px) {
               font-size: 14px;
+              margin-left: 10px;
             }
 
             &:hover {

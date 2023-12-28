@@ -3,16 +3,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import { Row, Col, Form, Button, Spinner } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
-import pic from '@/assets/Img/Posts/Post-1.png';
-import Footer from '@/components/Footer/Footer';
 import {
   ErrorMessage,
   Field,
-  FieldHelperProps,
-  FieldProps,
   Formik,
   Form as FormikForm,
   FormikProps,
@@ -30,14 +25,12 @@ import {
   MAX_AUTHOR_INFO_CHARACTERS,
   MAX_AUTHOR_META_DESC_CHARACTERS,
   MAX_AUTHOR_TITLE_CHARACTERS,
-  MAX_BIO_CHARACTERS,
   MAX_IMAGE_SIZE,
   MAX_NAME_CHARACTERS,
 } from '@/constant/validations';
 import { toast } from 'react-toastify';
 import { fileToCanisterBinaryStoreFormat } from '@/dfx/utils/image';
 import logger from '@/lib/logger';
-import { Logger } from 'sass';
 /**
  * SVGR Support
  * Caveat: No React Props Type.
@@ -79,13 +72,19 @@ export default function ProfileDetails() {
   const router = useRouter();
   const formRef = useRef<FormikProps<FormikValues>>(null);
   // const bannerRef = useRef();
+  const handleClose = () => {};
 
   const { auth, setAuth, setIdentity } = useConnectPlugWalletStore((state) => ({
     auth: state.auth,
     setAuth: state.setAuth,
     setIdentity: state.setIdentity,
   }));
-  const methods = authMethods({ auth, setAuth, setIsLoading });
+
+  const methods = authMethods({
+    useConnectPlugWalletStore,
+    handleClose,
+    setIsLoading,
+  });
 
   const initialUser = {
     name: user?.name[0] ?? '',
@@ -156,8 +155,11 @@ export default function ProfileDetails() {
       validFileExtensions[fileType].indexOf(fileName.split('.').pop()) > -1
     );
   }
-  const handleImageChange = (e: any) => {
+  //image change function
+
+  const handleImageChange = async (e: any) => {
     const img = e.target.files[0];
+    if (!img) return;
     const validType = isValidFileType(img && img.name.toLowerCase(), 'image');
     if (!validType) {
       toast.error('Not a valid image type');
@@ -168,17 +170,41 @@ export default function ProfileDetails() {
       toast.error('Max allowed size is 600KB');
       return;
     }
+
     const imgUrl = URL.createObjectURL(img);
+
     if (e.target.name === 'profileImg') {
       setTempImg({
         imgUrl,
       });
       setProfileFile(img);
     } else if (e.target.name === 'bannerImg') {
-      setTempBannerImg({
-        imgUrl,
-      });
-      setBannerFile(img);
+      // checking image height and width
+      const img2 = document.createElement('img');
+      const objectURL = URL.createObjectURL(img);
+      img2.onload = await function handleLoad() {
+        if (!(img2.width >= 820 && img2.height >= 320)) {
+          toast.error(
+            'Please upload an image with the resolution greater than  820 width x 320 height to avoid stretching.'
+          );
+          return;
+        } else {
+          if (e.target.name === 'profileImg') {
+            setTempImg({
+              imgUrl,
+            });
+            setProfileFile(img);
+          } else if (e.target.name === 'bannerImg') {
+            setTempBannerImg({
+              imgUrl,
+            });
+            setBannerFile(img);
+          }
+        }
+
+        URL.revokeObjectURL(objectURL);
+      };
+      img2.src = objectURL;
     }
   };
   const updateImg = async (img: any, name: string) => {
@@ -262,10 +288,10 @@ export default function ProfileDetails() {
   }, [auth.client]);
 
   return (
-    <>
+    <main id='main'>
       {isAuthenticated && (
         <>
-          <main id='main'>
+          <>
             <div className='main-inner home'>
               <Head>
                 <title>Hi</title>
@@ -357,7 +383,7 @@ export default function ProfileDetails() {
                               <div className='full-div'>
                                 <div className='edit-picture-cntnr'>
                                   {/* <Image src={pic} alt='Pic' /> */}
-                                  <div style={{ width: 200, height: 125 }}>
+                                  <div style={{ width: 250, height: 130 }}>
                                     {profileFile ? (
                                       <Image
                                         fill={true}
@@ -552,11 +578,12 @@ export default function ProfileDetails() {
                               <Field name='name'>
                                 {({ field, formProps }: any) => (
                                   <Form.Group>
-                                    {/* {console.log('Hi', field)} */}
+                                    {/* {('Hi', field)} */}
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       type='text'
                                       name='name'
                                       placeholder='Neha Ali'
@@ -580,6 +607,7 @@ export default function ProfileDetails() {
                                     <Form.Control
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       type='text'
                                       name='email'
                                       placeholder='Johndoe@example.com'
@@ -603,6 +631,7 @@ export default function ProfileDetails() {
                                     <Form.Control
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       type='text'
                                       name='website'
                                       placeholder='https://example.com'
@@ -628,6 +657,7 @@ export default function ProfileDetails() {
                                     <Form.Control
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       type='date'
                                       name='dob'
                                       // max={new Date()}
@@ -700,6 +730,7 @@ export default function ProfileDetails() {
                                     <Form.Control
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       type='text'
                                       name='facebook'
                                       placeholder='https://'
@@ -725,6 +756,7 @@ export default function ProfileDetails() {
                                     <Form.Control
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       type='text'
                                       name='twitter'
                                       placeholder='https://'
@@ -750,6 +782,7 @@ export default function ProfileDetails() {
                                     <Form.Control
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       name='instagram'
                                       type='text'
                                       placeholder='https://'
@@ -775,6 +808,7 @@ export default function ProfileDetails() {
                                     <Form.Control
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       name='linkedin'
                                       type='text'
                                       placeholder='https://'
@@ -824,6 +858,7 @@ export default function ProfileDetails() {
                                     <Form.Control
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       name='authorInfo'
                                       as='textarea'
                                       rows={3}
@@ -853,6 +888,7 @@ export default function ProfileDetails() {
                                       autoComplete='off'
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                       name='authorTitle'
                                       type='text'
                                       placeholder='Title'
@@ -880,6 +916,7 @@ export default function ProfileDetails() {
                                       rows={3}
                                       value={field.value}
                                       onChange={handleChange}
+                                      onInput={handleBlur}
                                     />
                                   </Form.Group>
                                 )}
@@ -920,9 +957,9 @@ export default function ProfileDetails() {
                 </Row>
               </div>
             </div>
-          </main>
+          </>
         </>
       )}
-    </>
+    </main>
   );
 }

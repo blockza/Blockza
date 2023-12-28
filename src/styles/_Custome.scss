@@ -88,6 +88,30 @@ svg {
   align-items: center;
 }
 
+.flex-div-lg {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  @media (max-width: 1200px) {
+    display: inline-block;
+
+    .filter-btn-list li {
+      margin-left: 0px;
+      margin-right: 15px !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    text-align: center;
+
+    .filter-btn-list li {
+      margin-left: 10px;
+      margin-right: 10px !important;
+    }
+  }
+}
+
 .flex-div-sm {
   display: flex;
   justify-content: space-between;
@@ -107,6 +131,14 @@ svg {
 
   @media (max-width: 575px) {
     display: inline-block;
+    text-align: center;
+  }
+}
+
+.text-right-md {
+  text-align: right;
+
+  @media (max-width: 767px) {
     text-align: center;
   }
 }
@@ -185,6 +217,12 @@ body {
   background-color: $white;
   box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
+  &.no-shadow {
+    box-shadow: none;
+  }
+  &.brdr-r-none {
+    border-radius: 0;
+  }
 
   @media (max-width: 1200px) {
     padding: 30px 15px 15px;
@@ -605,9 +643,11 @@ input[type='checkbox'] {
   align-items: center;
   flex-wrap: nowrap;
   margin-bottom: 5px;
+
   &.min {
     min-width: 270px;
   }
+
   li:first-child {
     a {
       top: 0px;
@@ -647,12 +687,15 @@ input[type='checkbox'] {
     border-color: $blue !important;
     box-shadow: 0px 0px 10px rgba(41, 192, 242, 0.5) !important;
     border-radius: 0px !important;
+
     img {
       max-width: 20px;
     }
+
     i {
       color: $blue;
     }
+
     &.show,
     &:focus,
     &:hover {
@@ -661,6 +704,7 @@ input[type='checkbox'] {
       border-color: $color;
     }
   }
+  
 
   .dropdown-menu {
     padding: 0;
@@ -683,6 +727,10 @@ input[type='checkbox'] {
   }
 }
 
+.dropdown button.fill{
+  background-color: $blue !important;color: $white !important;
+  i{color: $white;}
+}
 // Tabs
 
 // Breadcrum
@@ -930,7 +978,10 @@ input[type='checkbox'] {
   color: $white;
   background-color: $blue;
   border-radius: 5px;
-
+  &.table-btn {
+    color: $white !important;
+    border-radius: 15px;
+  }
   &:hover {
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.1);
   }
@@ -969,12 +1020,40 @@ input[type='checkbox'] {
     margin-bottom: 15px;
   }
 }
+
 .Toastify__close-button > svg {
   height: 22px !important;
   width: 20px !important;
 }
+
 .loader-container {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.status-tip {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 100;
+  p.status {
+    color: rgba(255, 255, 255, 0.877);
+    // color: white;
+    padding: 10px 50px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    text-transform: capitalize;
+    font-weight: bold;
+    margin: 0;
+    &.rejected {
+      background-color: red;
+    }
+    &.pending {
+      background-color: $blue;
+    }
+  }
+}
+.reward-text {
+  font-size: 2.5rem !important;
+  font-weight: 900;
 }

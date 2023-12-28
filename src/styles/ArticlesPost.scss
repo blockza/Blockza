@@ -50,3 +50,25 @@
     color: black !important;
   }
 }
+// custome style 
+@media (max-width: 560px) {
+#articlecls1{
+  display: flex !important;
+  justify-content: space-evenly;
+flex-wrap: wrap;
+align-items: center;
+h6{
+  margin: 0;
+}
+>*{
+  margin: 10px 0;
+}
+}
+}
+#articalPrev::-webkit-scrollbar {
+  width: 12px; 
+}
+#articalPrev::-webkit-scrollbar-thumb {
+  background-color: #5c84b9; 
+  border-radius: 6px; 
+}

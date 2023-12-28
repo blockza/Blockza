@@ -1,101 +1,137 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-import { Container, NavDropdown, Navbar, Button } from 'react-bootstrap';
-import logo from '@/assets/Img/Logo/Logo.png';
-import logo2 from '@/assets/Img/Logo/Logo-2.png';
-import Profileicon from '@/assets/Img/Profile/profile.png';
-import { useConnectPlugWalletStore } from '@/store/useStore';
-import authMethods from '@/lib/auth';
+import Link from 'next/link';
+import { Container, Nav, Navbar, Button } from 'react-bootstrap';
+import home1 from '@/assets/Img/Icons/icon-home-3.png';
+import feedback from '@/assets/Img/Icons/icon-comment-1.png';
+import plus1 from '@/assets/Img/Icons/icon-plus.png';
+import logo from '@/assets/Img/Logo/logo-small.png';
+import logo2 from '@/assets/Img/Logo/logo-small.png';
 import Connect from '@/components/Connect/Connect';
-export default function NavBarDash({ handleButtonClick }: any) {
-  // Initialize state for the button's class
+import { useThemeStore } from '@/store/useStore';
+import { usePathname } from 'next/navigation';
+export default function NavBar() {
+  // Dark Theme
   const [isThemeActive, setIsThemeActive] = useState(false);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-
-  const { auth, setAuth, setIdentity } = useConnectPlugWalletStore((state) => ({
-    auth: state.auth,
-    setAuth: state.setAuth,
-    setIdentity: state.setIdentity,
+  const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>();
+  const [toggle, settoggle] = React.useState(false);
+  const location = usePathname();
+  const [tab, setTab] = useState<any>('');
+  const navbarRef = useRef<HTMLDivElement | null>(null);
+  const { isBlack, setIsBlack, isOpen, setIsOpen } = useThemeStore((state) => ({
+    isBlack: state.isBlack,
+    isOpen: state.isOpen,
+    setIsBlack: state.setIsBlack,
+    setIsOpen: state.setIsOpen,
   }));
-  const methods = authMethods({ auth, setAuth, setIsLoading });
+
+  // const router = useRouter();
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   // Function to toggle the class
-  const toggleThemeClass = () => {
-    setIsThemeActive(!isThemeActive);
+  const toggleNavbar = () => {
+    if (isOpen !== 'Sidebar') {
+      settoggle((prev) => {
+        if (!prev) {
+          setIsOpen('Navbar');
+          return true;
+        } else {
+          setIsOpen('');
+          return false;
+        }
+      });
+    } else {
+      // settoggle((prev) => !prev);
+    }
   };
+  // Dark Theme
+  const handleButtonClick = () => {
+    setIsBlack(!isBlack);
+  };
+  React.useEffect(() => {
+    const currentTab = location;
+    setTab(currentTab);
+    console.error(currentTab);
+  }, [location]);
   return (
     <>
-      <Navbar expand='lg' className='bg-body-tertiary dashboard-nav'>
-        <Container>
-          <div className='nav-top'>
-            <Navbar.Brand href='/'>
+      <Navbar
+        expand='lg'
+        expanded={toggle}
+        id='him'
+        className='bg-body-tertiary my-nav dark'
+        ref={navbarRef}
+      >
+        <Container fluid>
+          <Navbar.Brand>
+            <Link href='/'>
               <Image src={logo} alt='Logo' />
               <Image src={logo2} alt='Logo' />
-            </Navbar.Brand>
-            <div>
+            </Link>
+          </Navbar.Brand>
+        {(tab !== '/superadmin') && <div className='d-flex-mobee'>
+            {/* <Connect hideRewards /> */}
+            <Navbar.Toggle
+              aria-controls='navbarScroll'
+              onClick={toggleNavbar}
+            />
+          </div>}
+          <Navbar.Collapse id='navbarScroll'>
+            <Nav className='me-auto my-lg-0 my-2 d-flex' navbarScroll>
+              {/* <Link href='/' className='nav-link' onClick={toggleNavbar}>
+                <div className='img'>
+                  <Image src={home1} alt='Home' />
+                  <Image src={home1} alt='Home' />
+                </div>
+                Test Site
+              </Link>
+              <Nav.Link href='#;' onClick={toggleNavbar}>
+                <div className='img'>
+                  <Image src={feedback} alt='Directory' />
+                  <Image src={feedback} alt='Directory' />
+                </div>
+                0
+              </Nav.Link>
+              <Nav.Link href='#;' onClick={toggleNavbar}>
+                <div className='img'>
+                  <Image src={plus1} alt='Diamond' />
+                  <Image src={plus1} alt='Diamond' />
+                </div>
+                New
+              </Nav.Link> */}
+            </Nav>
+
+            <div className='d-flex justify-content-end'>
               <Button
                 className={`themebtn ${isThemeActive ? 'active' : ''}`}
                 onClick={() => {
-                  toggleThemeClass();
-                  logger(
-                    'NETWORK',
-                    process.env.NEXT_PUBLIC_ENTRY_CANISTER_ID,
-                    'NETWORK',
-
-                    process.env.NEXT_PUBLIC_COLLECTION_CANISTER_ID,
-                    'NETWORK',
-
-                    process.env.DFX_NETWORK,
-                    'NETWORK',
-                    process.env.NEXT_PUBLIC_NFTSTUDIO24_CANISTER_ID
-                  );
-
+                  // toggleThemeClass();
                   handleButtonClick(); // Call your handleButtonClick function here
                 }}
               >
                 <i className='fa fa-sun-o'></i>
                 <i className='fa fa-moon-o'></i>
               </Button>
-              {/* <div className='profile-btn'>
-                <NavDropdown
-                  title={<Image src={Profileicon} alt='Profileicon' />}
-                  id='basic-nav-dropdown'
-                >
-                  <NavDropdown.Item href='profilen'>
-                    <div className='d-flex'>
-                      <div>
-                        <Image src={Profileicon} alt='Profileicon' />
-                      </div>
-                      <div>
-                        <h6>Username</h6>
-                        <p>0x717d...74a</p>
-                      </div>
-                    </div>
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item href='javascript:void(0);'>
-                    <i className='fa fa-globe'></i>Explore
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href='javascript:void(0);'>
-                    <i className='fa fa-th-large'></i>Dashboard
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href='javascript:void(0);'>
-                    <i className='fa fa-gear'></i> Settings
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="/entriesn"><i className='fa fa-th-large'></i>Dashboard</NavDropdown.Item>
-                  <NavDropdown.Item href="/settingsn"><i className='fa fa-gear'></i> Settings</NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item onClick={methods.logout} className='disconnect-btn'>
-                    <i className='fa fa-sign-out'></i> Disconnect
-                  </NavDropdown.Item>
-                </NavDropdown>
+              {/* <Link className='reg-btn yellow' href='#'>
+                Sign Out
+              </Link> */}
+              <div
+                style={
+                  tab === '/superadmin'
+                    ? {
+                        position: 'absolute',
+                        top: '10000px',
+                      }
+                    : {}
+                }
+              >
+                <Connect hide={true} />
               </div>
-
-              <Button className='connect-btn'>Create</Button> */}
-              <Connect />
-              <Button className='connect-btn'>Subscribe</Button>
             </div>
-          </div>
+          </Navbar.Collapse>
         </Container>
       </Navbar>
     </>

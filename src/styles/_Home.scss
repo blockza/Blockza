@@ -44,7 +44,6 @@ main {
     margin-left: 210px;
     padding-top: 30px;
     display: inline-block;
-
     h3,
     .tabs-list {
       @include animation-anime(transdown, 1s, linear);
@@ -396,5 +395,19 @@ main {
         border-color: rgba(30, 95, 179, 0.5);
       }
     }
+  }
+}
+
+
+.icp-leadership-pnl{
+  .upcoming-btn{font-size: 16px;
+    i{font-size: 20px;}
+  }
+  .search-pnl{
+    input{height: 35px;}
+  }
+  .release-post .release-post-inner .txt-pnl{ 
+    h6{font-size: 18px;margin: 5px 0;}
+    p{font-size: 12px;}
   }
 }

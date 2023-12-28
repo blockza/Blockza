@@ -37,6 +37,7 @@ export default function NextImage({
   const widthIsSet = className?.includes('w-') ?? false;
 
   return (
+    
     <figure
       style={!widthIsSet ? { width: `${width}px` } : undefined}
       className={className}

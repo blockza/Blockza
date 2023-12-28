@@ -12,31 +12,37 @@
   display: inline-block;
   width: 100%;
   position: relative;
-  background-color: $white;
-  border-radius: 15px;
-  margin-top: 50px;
+  background-image: url(../assets/Img/leadership-bg.jpg);
+  background-size: 100% 100%;
+  border-radius: 0px;
+  margin-top: 20px;
   padding: 20px;
   max-width: 520px;
   text-align: center;
   margin-bottom: 50px;
-  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
-
+.learn-more-btn,a.show-more-link{color: $black;font-weight: 700;font-size: 16px;
+  span{background-color: $color;border-radius: 50%;width: 20px;height: 20px;display: inline-flex;justify-content: center;
+    align-items: center;margin-left: 15px;
+  }
+}
   h1 {
     color: $skyblue;
-    font-size: 45px;
+    font-size: 25px;
     text-transform: uppercase;
-    font-weight: 700;
     margin: 0;
-
-    @media (max-width: 1600px) {
-      font-size: 38px;
-    }
-
-    @media (max-width: 575px) {
-      font-size: 28px;
-    }
+    padding: 10px;
+    background-color: $color;
+    border-radius: 10px;
+    display: inline-block;
+    margin: 10px auto 10px;
+    color: $black;
+    text-transform: uppercase;
+    font-weight: 800;
+    padding: 10px 20px;
+    border: 3px solid #ffb802;
+    
   }
-
+  h6{font-size: 14px;margin-bottom: 20px;font-weight: 600;}
   h5 {
     font-size: 18px;
     color: $black;
@@ -44,7 +50,7 @@
 
   table {
     img {
-      max-width: 15px;
+      max-width: 25px;
     }
 
     .img-pnl {
@@ -66,7 +72,7 @@
 
       h5 {
         font-weight: 400;
-        color: $grey;
+        color: $black;
         font-size: 15px;
         margin: 0;
       }
@@ -79,13 +85,15 @@
     }
 
     td {
+      background-color: transparent;
+      color: $black;
+      font-size: 15px;
+      font-weight: 600;
+      border-color: $white;
       b {
         font-size: 18px;
       }
 
-      color: $black;
-      font-size: 15px;
-      font-weight: 600;
     }
   }
 

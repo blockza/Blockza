@@ -1,27 +1,21 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import Head from 'next/head';
 import { Row, Col, Breadcrumb } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import iconrelated from '@/assets/Img/Icons/icon-related.png';
-import NavBar from '@/components/NavBar/NavBar';
-import SidebarHome from '@/components/SideBarHome/SideBarHome';
-import Footer from '@/components/Footer/Footer';
-import LeadershipPost from '@/components/LeadershipPost/LeadershipPost';
 import NFTArticlePost from '@/components/NFTArticlePost/NFTArticlePost';
 import RelatedPost from '@/components/RelatedPost/RelatedPost';
 import QuizPost from '@/components/QuizPost/QuizPost';
-import { useRouter as useOldRouter } from 'next/router';
 import { useConnectPlugWalletStore } from '@/store/useStore';
 import { makeEntryActor } from '@/dfx/service/actor-locator';
 import logger from '@/lib/logger';
 import { User } from '@/types/profile';
 import { getImage } from '@/components/utils/getImage';
 import { canisterId as userCanisterId } from '@/dfx/declarations/user';
-import { NextSeo } from 'next-seo';
+import { canisterId as commentCanisterId } from '@/dfx/declarations/comment';
 
 /**
  * SVGR Support
@@ -39,6 +33,7 @@ export default function article() {
   const [userId, setUserId] = useState();
   const searchParams = useSearchParams();
   const articleId = searchParams.get('articleId');
+  const promote = searchParams.get('promoted');
   const router = useRouter();
 
   const { auth, setAuth, identity } = useConnectPlugWalletStore((state) => ({
@@ -107,7 +102,7 @@ export default function article() {
       });
 
       entryActor
-        .likeEntry(articleId, userCanisterId)
+        .likeEntry(articleId, userCanisterId, commentCanisterId)
         .then(async (entry: any) => {
           logger(entry);
 
@@ -121,8 +116,8 @@ export default function article() {
     });
   };
   useEffect(() => {
-    getEntry();
-  }, []);
+    if (auth.state == 'anonymous' || auth.state === 'initialized') getEntry();
+  }, [articleId, auth, promote]);
   useEffect(() => {
     if (userId && auth.actor) {
       getUser();
@@ -166,6 +161,7 @@ export default function article() {
                       userImg: userImg,
                       userId: userId,
                       articleId: articleId,
+                      getEntry,
                     }}
                   />
                 )}
@@ -174,7 +170,7 @@ export default function article() {
                 </h3>
                 <div className='spacer-20'></div>
                 <div className='related-post-container rlf'>
-                  <RelatedPost />
+                  <RelatedPost catagorytype={entry?.category} />
                 </div>
               </Col>
               <Col xxl='5' xl='5' lg='12' md='12' className='text-right'>

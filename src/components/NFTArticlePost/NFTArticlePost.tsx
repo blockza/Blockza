@@ -1,33 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import post1 from '@/assets/Img/Posts/Post-17.png';
-import post2 from '@/assets/Img/Posts/Post-18.png';
-import post3 from '@/assets/Img/Posts/Post-19.png';
 import iconrise from '@/assets/Img/Icons/icon-rise.png';
 import infinity from '@/assets/Img/Icons/icon-infinite.png';
+import icpimage from '@/assets/Img/coin-image.png';
 import iconcomment from '@/assets/Img/Icons/icon-comment.png';
 import iconshare from '@/assets/Img/Icons/icon-share.png';
-import DefaultUser from '@/assets/Img/user.png';
-import user1 from '@/assets/Img/user-1.png';
-import Infinite from '@/assets/Img/Icons/infinity.png';
 import iconcap from '@/assets/Img/Icons/icon-cap.png';
-import { Button, Spinner } from 'react-bootstrap';
+import { Button, Form, Modal, Spinner } from 'react-bootstrap';
 import logger from '@/lib/logger';
 import parse from 'html-react-parser';
+import promotedIcon from '@/assets/Img/promoted-icon.png';
 import girl from '@/assets/Img/user-img.png';
-import moment from 'moment';
+
 import { useConnectPlugWalletStore } from '@/store/useStore';
+import {
+  Formik,
+  FormikProps,
+  Form as FormikForm,
+  Field,
+  FormikValues,
+  ErrorMessage,
+  useFormikContext,
+  FormikTouched,
+  setNestedObjectValues,
+} from 'formik';
 import {
   makeCommentActor,
   makeDIP721Canister,
   makeEntryActor,
+  makeLedgerCanister,
 } from '@/dfx/service/actor-locator';
 import { canisterId as userCanisterId } from '@/dfx/declarations/user';
 import { utcToLocal } from '@/components/utils/utcToLocal';
 import { toast } from 'react-toastify';
 import { getImage } from '@/components/utils/getImage';
+import Tippy from '@tippyjs/react';
+import ArticleComments from '@/components/ArticleComments/ArticleComments';
+import { E8S, GAS_FEE } from '@/constant/config';
+import { number, object } from 'yup';
 import { Principal } from '@dfinity/principal';
+import { canisterId as entryCanisterId } from '@/dfx/declarations/entry';
+import { canisterId as commentCanisterId } from '@/dfx/declarations/comment';
+import { AccountIdentifier } from '@dfinity/ledger-icp';
+import { useRouter } from 'next/navigation';
+import PromotedSVG from '@/components/PromotedSvg/Promoted';
+import updateReward from '@/components/utils/updateReward';
+import updateBalance from '@/components/utils/updateBalance';
 
 function VoteButton({
   isLiking,
@@ -44,14 +64,19 @@ function VoteButton({
   commentsLength: number;
   tempLike: number;
 }) {
+  const likeEntryMiddleWare = () => {
+    if (entry.isPromoted && isLiked) return;
+    handleLikeEntry();
+  };
+  const disabled = isLiking || (entry.isPromoted && isLiked);
   return (
     <>
       <ul className='vote-comment-list'>
         <li
-          className={`${isLiking ? 'disabled' : ''}  ${
+          className={`${disabled ? 'disabled' : ''}  ${
             isLiked ? ' liked' : ''
           }`}
-          onClick={handleLikeEntry}
+          onClick={likeEntryMiddleWare}
         >
           <div>
             <Image src={iconrise} alt='Rise' /> Vote
@@ -119,22 +144,61 @@ export default function NFTArticlePost({
   const [tempLike, setTempLike] = useState(0);
   const [articleComments, setArticleComments] = useState([]);
   const [userArticleComments, setUserArticleComments] = useState<any>([]);
+  const [loadmorecomments, setloadMoreComments] = useState<any>([]);
+  const [countcomments, setcountcomments] = useState<number>(2);
+  const [isArticleSubmitting, setIsArticleSubmitting] = useState(false);
+  const [confirmTransaction, setConfirmTransaction] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [promotionValues, setPromotionValues] = useState({
+    icp: 0,
+    // likes: 0,
+  });
+  const [userArticleCommentsLoading, setUserArticleCommentsLoading] =
+    useState<boolean>(true);
+  let gasFee = GAS_FEE / E8S;
 
-  const { entry, user, userImg, featuredImage, userId, articleId } = article;
+  const { entry, user, userImg, featuredImage, userId, articleId, getEntry } =
+    article;
   logger(entry, 'ENTRY THAT WE GOT');
-  const { auth, setAuth, identity, principal } = useConnectPlugWalletStore(
-    (state) => ({
+
+  const { auth, setAuth, identity, principal, setReward, setBalance } =
+    useConnectPlugWalletStore((state) => ({
       auth: state.auth,
       setAuth: state.setAuth,
       identity: state.identity,
       principal: state.principal,
-    })
-  );
-  // logger(identity._principal.toString(), 'THI is identity');
+      setReward: state.setReward,
+      setBalance: state.setBalance,
+    }));
+  const statusString = Object.keys(entry.status)[0];
+  const isPending = statusString == 'pending';
+  const isRejected = statusString == 'rejected';
+  const formikRef = useRef<FormikProps<FormikValues>>(null);
+  const initialPromoteVales = {
+    ICP: 0,
+  };
+  const promotionSchema = object().shape({
+    ICP: number().min(1, 'ICP cannot be less than 1'),
+  });
+  const router = useRouter();
+  const handleShow = () => {
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    if (isArticleSubmitting) {
+      return false;
+    }
+    setShowModal(false);
+    setConfirmTransaction(false);
+    setPromotionValues({
+      icp: 0,
+    });
+  };
+
   const isConnected = () => {
     if (auth.state === 'anonymous') {
       toast.error(
-        // 'Please Connect with Internet Identity to add a comment'
         'To perform this action, kindly connect to Internet Identity.',
         {}
       );
@@ -157,7 +221,8 @@ export default function NFTArticlePost({
 
     likeEntry()
       .then((res: any) => {
-        logger(res);
+        logger('tried to start update');
+        updateReward({ identity, auth, setReward });
         if (res[1]) {
           setIsLiked(true);
         } else {
@@ -182,6 +247,12 @@ export default function NFTArticlePost({
     if (comments.ok) {
       setArticleComments(comments.ok[0]);
       logger({ Comment: comments.ok[0], identity }, 'THEM DOMMENTS');
+    }
+    setUserArticleCommentsLoading(false);
+    if (userArticleComments.length > 10) {
+      setloadMoreComments(userArticleComments.slice(0, 10));
+    } else {
+      setloadMoreComments(userArticleComments);
     }
   };
   const handleCommented = () => {
@@ -242,19 +313,22 @@ export default function NFTArticlePost({
 
     // let p = Principal.fromUint8Array(principal_id._arr)
     let receipt = await DIP721Actor.mintDip721(identity._principal, [metadata]);
+    try {
+      if (receipt.Ok) {
+        let newNft = await DIP721Actor.getMetadataDip721(receipt.Ok.token_id);
+        let minted = await entryActor.mintEntry(articleId, userCanisterId);
+        setIsMinting(false);
+        setIsMinted(true);
+        logger(minted);
+      } else if (receipt.Err) {
+        setIsMinting(false);
 
-    if (receipt.Ok) {
-      let newNft = await DIP721Actor.getMetadataDip721(receipt.Ok.token_id);
-      let minted = await entryActor.mintEntry(articleId);
+        toast.error(
+          'Sorry, there was an error while minting please reload the page and try again'
+        );
+      }
+    } catch (error) {
       setIsMinting(false);
-      setIsMinted(true);
-      logger(minted);
-    } else if (receipt.Err) {
-      setIsMinting(false);
-
-      toast.error(
-        'Sorry, there was an error while minting please reload the page and try again'
-      );
     }
   };
   const handleIsMinted = async () => {
@@ -264,7 +338,7 @@ export default function NFTArticlePost({
         identity,
       },
     });
-    let minted = await entryActor.mintEntry(articleId);
+    let minted = await entryActor.mintEntry(articleId, userCanisterId);
     setIsMinting(false);
     setIsMinted(true);
   };
@@ -289,6 +363,7 @@ export default function NFTArticlePost({
         creation_time: utcToLocal('', 'MMMM Do, YYYY, HH:mm'),
         user: user.ok[1],
         content: currentComment,
+        userId: principal,
       };
       setUserArticleComments((prev: any) => {
         return [newComment, ...prev];
@@ -319,6 +394,155 @@ export default function NFTArticlePost({
       })
     );
     return tempComments;
+  };
+  // loadmore comments
+  let loadMoreComments = () => {
+    if (userArticleComments.length >= loadmorecomments.length) {
+      setloadMoreComments(userArticleComments.slice(0, 10 * countcomments));
+      setcountcomments((pre: any) => pre + 1);
+    } else {
+      toast.error('All comments has been loaded.');
+    }
+  };
+
+  const handlePromote = async () => {
+    const entryActor = makeEntryActor({
+      agentOptions: {
+        identity,
+      },
+    });
+    let rewardConfig = await entryActor.get_reward();
+    logger(rewardConfig);
+    let reward = parseFloat(rewardConfig.master);
+    let platform = parseFloat(rewardConfig.platform);
+    let admin = parseFloat(rewardConfig.admin);
+
+    let promotionE8S = promotionValues.icp * E8S;
+    // TODO ADJUST THIS
+    // let gasInICP = gasFee * 5;
+    // let gasInE8S = gasInICP * E8S;
+    // let promotedICP = promotionE8S + gasInE8S;
+    logger({ promotionE8S });
+    // let promotedICP = (reward / 100) * (promotionValues.icp * E8S);
+
+    const article = {
+      title: entry.title,
+      description: entry.description,
+      seoTitle: entry.seoTitle,
+      seoSlug: entry.seoSlug,
+      seoDescription: entry.seoDescription,
+      seoExcerpt: entry.seoExcerpt,
+      category: entry.category,
+      subscription: entry.subscription,
+      image: entry.image,
+      isDraft: entry.isDraft,
+      isPromoted: true,
+      userName: entry.userName,
+      // promotionLikesTarget: promotionentry.likes,
+      promotionICP: promotionE8S,
+    };
+    entryActor
+      .insertEntry(article, userCanisterId, true, articleId, commentCanisterId)
+      .then((res: any) => {
+        logger(res, 'draft Published successfully');
+        toast.success('Your article has been promoted successfuly');
+        updateBalance({ identity, auth, setBalance });
+        setIsArticleSubmitting(false);
+        getEntry();
+        handleModalClose();
+        // router.replace(`/article?articleId=${res.ok[1]}&promote=true`);
+
+        // setIsArticleSubmitting(false);
+
+        window.scrollTo(0, 0);
+      })
+      .catch((err: string) => {
+        logger(err);
+        // setIsArticleSubmitting(false);
+
+        setIsArticleSubmitting(false);
+      });
+  };
+  const handleTransaction = async () => {
+    try {
+      setIsArticleSubmitting(true);
+      const defaultEntryActor = makeEntryActor({
+        agentOptions: {
+          identity,
+        },
+      });
+      let ledgerActor = await makeLedgerCanister({
+        agentOptions: {
+          identity,
+        },
+      });
+      let acc: any = AccountIdentifier.fromPrincipal({
+        principal: identity.getPrincipal(),
+        // subAccount: identity.getPrincipal(),
+      });
+
+      let balance = await ledgerActor.account_balance({
+        account: acc.bytes,
+      });
+      logger(balance, 'weeeee');
+      let rewardConfig = await defaultEntryActor.get_reward();
+      logger(rewardConfig);
+      let promotion = parseFloat(rewardConfig.master);
+      let platform = parseFloat(rewardConfig.platform);
+      let admin = parseFloat(rewardConfig.admin);
+      let total = promotion + platform + admin;
+      if (total !== 100) {
+        setIsArticleSubmitting(false);
+        handleModalClose();
+        return toast.error('error during transaction');
+      }
+      // let promotedICP = (reward / 100) * promotionValues.icp;
+      let promotionE8S = promotionValues.icp * E8S;
+      let promotionICP = (promotion / 100) * promotionE8S;
+      let platformICP = (platform / 100) * promotionE8S;
+      let adminICP = (admin / 100) * promotionE8S;
+      let balanceICP = parseInt(balance.e8s) / E8S;
+      let gasInE8s = GAS_FEE;
+      // TODO ADJUST THIS
+      let gasInICP = gasFee * 2 + gasFee / 5;
+      let gasInE8S = gasInICP * E8S;
+      let requiredICP = balanceICP + gasInICP;
+      let approvingPromotionE8S = promotionE8S + gasInE8S;
+      logger({ balance, balanceICP });
+      if (balance.e8s < approvingPromotionE8S) {
+        setConfirmTransaction(false);
+        setIsArticleSubmitting(false);
+        return toast.error(
+          `Insufficient balance to promote. Current Balance: ${balanceICP}`
+        );
+      } else {
+      }
+
+      if (!entryCanisterId) return toast.error('Error in transaction');
+      let entryPrincipal = Principal.fromText(entryCanisterId);
+      let approval = await ledgerActor.icrc2_approve({
+        amount: approvingPromotionE8S,
+        spender: {
+          owner: entryPrincipal,
+          subaccount: [],
+        },
+        fee: [GAS_FEE],
+        memo: [],
+        from_subaccount: [],
+        created_at_time: [],
+        expected_allowance: [],
+        expires_at: [],
+      });
+      if (approval.Ok) {
+        setTimeout(() => {
+          handlePromote();
+        }, 100);
+      }
+      logger(approval, 'APPPPPROVEEEE');
+    } catch (e) {
+      console.error(e);
+      setIsArticleSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -357,10 +581,25 @@ export default function NFTArticlePost({
         setUserArticleComments(newComments);
         logger(newComments, 'WE GOT THEM COMMENTS');
       };
+      setUserArticleCommentsLoading(false);
 
       tempFun();
     }
   }, [articleComments]);
+  useEffect(() => {
+    if (userArticleComments.length > 10) {
+      setloadMoreComments(userArticleComments.slice(0, 10));
+    } else {
+      setloadMoreComments(userArticleComments);
+    }
+  }, [userArticleComments]);
+  // copy atrical link to  share
+  let copyArticleLink = (e: any) => {
+    e.preventDefault();
+    const currentURL = window.location.href;
+    window.navigator.clipboard.writeText(currentURL);
+    toast.success('URL copied to clipboard');
+  };
 
   return (
     <>
@@ -377,6 +616,39 @@ export default function NFTArticlePost({
                   height: '400px',
                 }}
               >
+                {(isPending || isRejected) && (
+                  <div className='status-tip'>
+                    <Tippy
+                      content={
+                        <div>
+                          <p className='m-0'>
+                            {isPending && 'Your Article will be reviewed soon'}
+                            {isRejected &&
+                              'Your Article Review has been rejected'}
+                          </p>
+                        </div>
+                      }
+                    >
+                      <p className={`${statusString} status`}>{statusString}</p>
+                    </Tippy>
+                  </div>
+                )}
+                {entry?.isPromoted && (
+                  <div className='promotedlable'>
+                    <PromotedSVG />
+                    {/* <Image
+                      src={promotedIcon2}
+                      alt='promoted icon'
+                      height={25}
+                      width={25}
+                      className='me-2 '
+                    />{' '} */}
+                    <p className='mb-0' style={{ fontWeight: '600' }}>
+                      Promoted Article
+                    </p>
+                  </div>
+                )}
+
                 <Image
                   src={featuredImage ? featuredImage : post1}
                   className='backend-img'
@@ -435,231 +707,157 @@ export default function NFTArticlePost({
                 </div>
               </div>
               <div className='count-description-pnl'>
-                <div className='d-flex sm'>
-                  {auth.state === 'initialized' && (
-                    <MintButton
-                      isMinted={isMinted}
-                      isMinting={isMinting}
-                      mintNft={mintNft}
+                {!(statusString == 'pending' || statusString == 'rejected') && (
+                  <div className='d-flex sm ' id='articlecls1'>
+                    {auth.state === 'initialized' && (
+                      <MintButton
+                        isMinted={isMinted}
+                        isMinting={isMinting}
+                        mintNft={mintNft}
+                        entry={entry}
+                        commentsLength={userArticleComments.length}
+                        tempLike={tempLike}
+                      />
+                    )}
+                    <VoteButton
+                      isLiked={isLiked}
+                      isLiking={isLiking}
+                      handleLikeEntry={handleLikeEntry}
                       entry={entry}
                       commentsLength={userArticleComments.length}
                       tempLike={tempLike}
                     />
-                  )}
-                  <VoteButton
-                    isLiked={isLiked}
-                    isLiking={isLiking}
-                    handleLikeEntry={handleLikeEntry}
-                    entry={entry}
-                    commentsLength={userArticleComments.length}
-                    tempLike={tempLike}
-                  />
 
-                  <Link href='#' className='share-btn'>
-                    Share <Image src={iconshare} alt='share' />
-                  </Link>
-                </div>
+                    <Link
+                      href='#'
+                      className='share-btn'
+                      onClick={copyArticleLink}
+                    >
+                      Share <Image src={iconshare} alt='share' />
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className='text-detail-pnl'>
-              <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+              <div
+                style={{ maxHeight: '70vh', overflowY: 'auto' }}
+                id='articalPrev'
+              >
                 <h3>{entry?.title ?? ''}</h3>
                 {parse(entry?.description ?? '')}
-                <div className='spacer-20'></div>
+                <div className='spacer-20 '></div>
               </div>
-              {/* Grey Panel */}
-              {/* <div className='grey-panel'>
-              <p>
-                This is a really good piece Peculiar, Cryptocurrency was (still
-                is) seen as a get-rich- quick scheme. The consistant “crashing”
-                which is typical with every other scheme, reinforced this view.
-              </p>
-              <div className='user-inf-cntnr'>
-                <div className='img-pnl'>
-                  <div
-                    style={{
-                      position: 'relative',
-                      width: '45px',
-                      margin: '0 auto',
-                      height: '45px',
-                    }}
-                  >
-                    <Image
-                      src={userImg ? userImg : DefaultUser}
-                      className='backend-img'
-                      fill={true}
-                      alt='Profileicon'
-                    />
-                  </div>
-                </div>
-                <div className='txt-pnl'>
-                  <h6>By Hinza Asif</h6>
-                  <p>
-                    Comment Follow of <b>NFTStudios 24</b>
-                  </p>
-                </div>
-              </div>
-            </div> */}
+
               <ul className='hash-list'>
-                {entry?.category.map((category: string) => (
-                  <li>
+                {entry?.category.map((category: string, index: number) => (
+                  <li key={index}>
                     <span>#</span> {category}
                   </li>
                 )) ?? ''}
               </ul>
               <div className='count-top'></div>
 
-              <div className='count-description-pnl'>
-                <div className='d-flex'>
-                  <VoteButton
-                    isLiked={isLiked}
-                    isLiking={isLiking}
-                    handleLikeEntry={handleLikeEntry}
-                    entry={entry}
-                    commentsLength={userArticleComments?.length}
-                    tempLike={tempLike}
-                  />
-                </div>
-                <div>
-                  <ul className='quiz-list'>
-                    <li>
-                      <Image src={infinity} alt='infinity' />{' '}
-                      <span>+500 ICP</span>
-                    </li>
-                    <li>
-                      Take Quiz <i className='fa fa-angle-right'></i>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              {/* Count Description Panel */}
-              {/* Comment Panel */}
-              <div className='full-div comment-pnl'>
-                <div className='flex-div'>
-                  <h4>Leave a comment</h4>
-                  <h6>{currentComment.length}/400</h6>
-                </div>
-                <textarea
-                  className='form-control'
-                  id='comment'
-                  placeholder='What do you think about this article?'
-                  maxLength={400}
-                  value={currentComment}
-                  onChange={(e) => setCurrentComment(e.target.value)}
-                />
-                {/* <p className='text-danger'>
+              {!(isPending || isRejected) && (
+                <>
+                  <div className='count-description-pnl'>
+                    <div className='d-flex'>
+                      <VoteButton
+                        isLiked={isLiked}
+                        isLiking={isLiking}
+                        handleLikeEntry={handleLikeEntry}
+                        entry={entry}
+                        commentsLength={userArticleComments?.length}
+                        tempLike={tempLike}
+                      />
+                    </div>
+                    {/* <div>
+                      <ul className='quiz-list'>
+                        <li>
+                          <Image src={icpimage} alt='icpimage' />{' '}
+                          <span>+500 ICP</span>
+                        </li>
+                        <li>
+                          Take Quiz <i className='fa fa-angle-right'></i>
+                        </li>
+                      </ul>
+                    </div> */}
+                    {!entry.isPromoted &&
+                      identity &&
+                      identity._principal.toString() === userId && (
+                        <div>
+                          <Button className='publish-btn' onClick={handleShow}>
+                            Promote Article
+                          </Button>
+                        </div>
+                      )}
+                  </div>
+                  {/* Count Description Panel */}
+                  {/* Comment Panel */}
+                  <div className='full-div comment-pnl'>
+                    <div className='flex-div'>
+                      <h4>Leave a comment</h4>
+                      <h6>{currentComment.length}/400</h6>
+                    </div>
+                    <textarea
+                      className='form-control'
+                      id='comment'
+                      placeholder='What do you think about this article?'
+                      maxLength={400}
+                      value={currentComment}
+                      onChange={(e) => setCurrentComment(e.target.value)}
+                    />
+                    {/* <p className='text-danger'>
                 {currentComment.length === 400 && 'What the fu** do you want'}
               </p> */}
-                <div className='text-right'>
-                  <Button
-                    // className='grey-button'
-                    disabled={
-                      isCommenting || currentComment.trim().length === 0
-                    }
-                    onClick={addComment}
-                  >
-                    {isCommenting ? (
-                      // <div className='loader-container'>
-                      <Spinner size='sm' />
+                    <div className='text-right'>
+                      <Button
+                        // className='grey-button'
+                        disabled={
+                          isCommenting || currentComment.trim().length === 0
+                        }
+                        onClick={addComment}
+                      >
+                        {isCommenting ? (
+                          // <div className='loader-container'>
+                          <Spinner size='sm' />
+                        ) : (
+                          // </div>
+                          'Add Comment'
+                        )}
+                      </Button>
+                    </div>
+                    {userArticleCommentsLoading ? (
+                      <div className='d-flex justify-content-center'>
+                        {' '}
+                        <Spinner animation='border' variant='primary' />
+                      </div>
                     ) : (
-                      // </div>
-                      'Add Comment'
+                      <ArticleComments
+                        userArticleComments={loadmorecomments}
+                        totalcomment={userArticleComments}
+                      />
                     )}
-                  </Button>
-                </div>
-                <p className='grey-txt'>
-                  comments ({userArticleComments?.length ?? ''})
-                </p>
-                <ul className='comment-list'>
-                  {userArticleComments.length > 0 &&
-                    userArticleComments.map((comment: any) => {
-                      let image = null;
-                      if (comment.user?.profileImg[0]) {
-                        image = getImage(comment.user?.profileImg[0]);
-                      }
-                      return (
-                        <li>
-                          <div className='user-inf-cntnr'>
-                            <Link href={`/profile?userId=${comment?.userId}`}>
-                              <div className='img-pnl'>
-                                {/* <div
-                                style={{
-                                  width: '20px',
-                                  height: '20x',
-                                  position: 'relative',
-                                }}
-                              >
-                                <Image src={image} fill alt='User' />
-                              </div> */}
-                                <div
-                                  className='w-full'
-                                  style={{
-                                    height: '40px',
-                                    width: '40x',
-                                    position: 'relative',
-                                  }}
-                                >
-                                  {image ? (
-                                    <Image
-                                      fill={true}
-                                      src={image}
-                                      alt='Banner'
-                                    />
-                                  ) : (
-                                    <Image
-                                      src={girl}
-                                      alt='Banner'
-                                      fill={true}
-                                    />
-                                  )}
-                                </div>
-                              </div>
-                            </Link>
-
-                            <div className='txt-pnl'>
-                              <Link
-                                className='d-flex'
-                                href={`/profile?userId=${comment?.userId}`}
-                              >
-                                <h6>{comment.user?.name[0] ?? ''}</h6>
-                              </Link>
-                              <span>{comment.creation_time ?? ''}</span>
-                              <p>{comment.content ?? ''}</p>
-                            </div>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  {/* <li>
-                  <div className='user-inf-cntnr'>
-                    <div className='img-pnl'>
-                      <Image src={user1} alt='User' />
-                    </div>
-                    <div className='txt-pnl'>
-                      <h6>Promise Njoku</h6>
-                      <span>Oct 19, 2023, 23:35</span>
-                      <p>Nice One</p>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div className='user-inf-cntnr'>
-                    <div className='img-pnl'>
-                      <Image src={user1} alt='User' />
-                    </div>
-                    <div className='txt-pnl'>
-                      <h6>Edidiong</h6>
-                      <span>Oct 19, 2023, 23:35</span>
-                      <p>Cool</p>
-                    </div>
-                  </div>
-                </li> */}
-                </ul>
-                {/* <div className='txt-center'>
-                  <Button className='grey-button'>Load more comments</Button>
-                </div> */}
-              </div>
+                    {userArticleComments.length >= 10 && (
+                      <div className='txt-center mt-2'>
+                        <Button
+                          className='grey-button loadmore'
+                          onClick={loadMoreComments}
+                          disabled={
+                            userArticleComments.length <=
+                            loadmorecomments.length
+                              ? true
+                              : false
+                          }
+                        >
+                          Load more comments
+                        </Button>
+                      </div>
+                    )}
+                  </div>{' '}
+                </>
+              )}
             </div>
           </>
         ) : (
@@ -678,311 +876,134 @@ export default function NFTArticlePost({
           </div>
         )}
       </div>
+      <Modal show={showModal} centered onHide={handleModalClose}>
+        <Modal.Body>
+          {confirmTransaction ? (
+            <>
+              <div className='flex-div connect-heading-pnl mb-3'>
+                {/* <i className='fa fa-question-circle-o'></i> */}
+                <p></p>
+                <p className='text-bold h5 fw-bold m-0'>Confirm Transaction</p>
+                {/* <i onClick={handleModalClose} className='fa fa-close'></i> */}
+                <i
+                  style={{
+                    cursor: 'pointer',
+                  }}
+                  onClick={handleModalClose}
+                  className='fa fa-close'
+                ></i>
+                {/* <Button
+          className='close-btn'
+        ></Button> */}
+              </div>
+              <div>
+                <p className='text-center'>
+                  Are you sure you want to promote your article for{' '}
+                  {promotionValues.icp + gasFee * 2 + gasFee / 5} ICP tokens ?
+                </p>
+                <p className='text-secondary mb-0'>
+                  Transaction fee: {gasFee * 2 + gasFee / 5} ICP
+                </p>
+                <p className='text-secondary mb-1'>
+                  <span
+                    style={{
+                      border: '2px',
+                    }}
+                  >
+                    Promotion amount: {promotionValues.icp} ICP
+                  </span>
+                </p>
+                <div
+                  style={{
+                    height: 1,
+                    backgroundColor: 'gray',
+                    width: '40%',
+                  }}
+                ></div>
+                <p className='text-secondary mt-1 mb-0'>
+                  Total: {promotionValues.icp + gasFee * 2 + gasFee / 5} ICP
+                </p>
+              </div>
+              <div className='d-flex justify-content-center'>
+                <Button
+                  className='publish-btn'
+                  disabled={isArticleSubmitting}
+                  onClick={handleTransaction}
+                  // type='submit'
+                >
+                  {isArticleSubmitting ? <Spinner size='sm' /> : 'Confirm'}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <Formik
+              initialValues={initialPromoteVales}
+              // innerRef={formikRef}
+              // enableReinitialize
+              validationSchema={promotionSchema}
+              onSubmit={async (values, actions) => {
+                setPromotionValues({
+                  icp: values.ICP,
+                  // likes: values.likesCount,
+                });
+                logger(values, 'SAT VALUES');
+                setConfirmTransaction(true);
+                // formikRef.current?.handleSubmit();
+                // await uploadEntry(values, actions);
+              }}
+            >
+              {({ errors, touched, handleChange }) => (
+                <FormikForm
+                  className='flex w-full flex-col items-center justify-center'
+                  // onChange={(e) => handleImageChange(e)}
+                >
+                  <Field name='icp'>
+                    {({ field, formProps }: any) => (
+                      <Form.Group
+                        className='mb-2'
+                        controlId='exampleForm.ControlInput1'
+                      >
+                        <div className='d-flex justify-content-between w-100'>
+                          <Form.Label>ICP</Form.Label>
+                          <i
+                            style={{
+                              cursor: 'pointer',
+                            }}
+                            onClick={handleModalClose}
+                            className='fa fa-close'
+                          ></i>
+                        </div>
+
+                        <Form.Control
+                          type='number'
+                          placeholder='Enter ICP Amount'
+                          value={field.value}
+                          onChange={handleChange}
+                          name='ICP'
+                        />
+                      </Form.Group>
+                    )}
+                  </Field>
+                  <div className='text-danger mb-2'>
+                    <ErrorMessage
+                      className='Mui-err'
+                      name='ICP'
+                      component='div'
+                    />
+                  </div>
+                  <Button
+                    className='publish-btn'
+                    disabled={isArticleSubmitting}
+                    type='submit'
+                  >
+                    {isArticleSubmitting ? <Spinner size='sm' /> : 'Promote'}
+                  </Button>
+                </FormikForm>
+              )}
+            </Formik>
+          )}
+        </Modal.Body>
+      </Modal>
     </>
   );
 }
-// <div className='text-detail-pnl'>
-//   <h3>
-//     NIGERIAN LOCAL TRADERS COMMENT ON THE USE OF CRYPTOCURRENCY FOR
-//     RECEIVING PAYMENTS
-//   </h3>
-//   <p>
-//     "Why should I put my money in a system I cannot trust? One minute,
-//     I'm rich. The next minute, I'm poor. Cryptocurrency is so
-//     unpredictable. If I lose my money now, who would I turn to?
-//     Nobody. You see that crypto? I'm not doing it."
-//   </p>
-//   <p>
-//     These were the exact words of Chuka Bassey, an electronic gadget
-//     trader who was asked if he would rather use cryptocurrency as a
-//     means of payment than the traditional cash or bank transfer
-//     system.
-//   </p>
-//   <p>
-//     Over the years, cryptocurrency is a term that has gained
-//     widespread traction in Nigeria. The term; <b>"I'm into crypto"</b>{' '}
-//     seems like one of the coolest things to say among the Nigerian
-//     youth populace. And even though the Central Bank of Nigeria (CBN)
-//     issued a circular to close accounts of persons or entities
-//     involved in cryptocurrency transactions within financial and
-//     non-financial systems in 2021, cryptocurrency has not stopped
-//     gaining traction.
-//   </p>
-//   <p>
-//     According to a survey conducted by Statista in 2020, 32% of
-//     Nigerians have admitted to using and owning cryptocurrencies. The
-//     reason for this is not far-fetched- "In Nigeria, interest in
-//     bitcoin and stablecoin increased when the naira's value plunged,
-//     particularly during the most extreme drops in June and July of
-//     2023."- Chainalysis, 2023.
-//   </p>
-//   <p>
-//     This statement would also support the findings from Coinbase 2022
-//     research report, <b>"International Survey of Web 3 Adoption</b>."
-//     Coinbase report highlighted that people in emerging markets often
-//     turn to borderless cryptocurrencies for remittances and as a store
-//     of value, especially through periods of high inflation when access
-//     to fiat currencies like the US dollar is limited.
-//   </p>
-//   <p>
-//     From this, we can deduce that Nigerians perfer keeping their
-//     assets as stable crypto tokens due to the volatility of the naira
-//     and the high inflationary periods. This shows that crypto, once
-//     perceived negatively, is now serving as a financial lifeline for
-//     the average Nigerian.
-//   </p>
-//   <p>
-//     But is that all there is to it? Are Nigerians fully embracing the
-//     idea and concept of cryptocurrency? Or are there still some
-//     perceived notions around it, like that of Chuka Bassey, the
-//     electronic gadget trader who swore never to use cryptocurrency?
-//   </p>
-//   <p>
-//     During a WhatsApp conversation with RG Fries, a food vendor based
-//     in Akure, she expressed a preference for customers to send USDT as
-//     payment for her services rather than using traditional cash. This
-//     conversation sparked my curiosity, making me wonder if other
-//     traders shared her perspective. So, last week, I ventured into the
-//     stores of traders in Lagos, engaging them in casual conversations
-//     to know if they would opt for cryptocurrency as a means of payment
-//     over conventional fiat currency. And many of them had a lot of
-//     things to say about that.
-//   </p>
-//   <div className='image-panel'>
-//     <Image src={post2} alt='Post' />
-//   </div>
-//   <p>
-//     A trader identified as Emeka said: "Make I collect crypto, make
-//     people go tell police say I dey do yahoo? Abeg Abeg"
-//   </p>
-//   <p>
-//     Iya Seyi, a provision store owner, shared her perspective in
-//     Yoruba, a native Nigerian language, saying, "Se kii se nkan ti
-//     awon boys ma fin gba ara ilu oyinbo niyen?" which translates to,
-//     "Is that not the tool most of these boys use to defraud
-//     foreigners?"
-//   </p>
-//   <p>
-//     Another trader, Dennis, showed some interest in cryptocurrency,
-//     saying he wouldn't mind learning more about it and possibly
-//     integrating it into his business's payment system. However, he
-//     pointed out that many cryptocurrency apps he had seen appeared to
-//     be very complex.
-//   </p>
-//   <p>
-//     While there were some positive responses, negative opinions seemed
-//     more prevalent. Some traders believed cryptocurrency was another
-//     form of a Ponzi scheme, some assumed fraudsters primarily used it,
-//     and others found crypto apps challenging. Many admitted to having
-//     heard of cryptocurrency but have limited knowledge about it.
-//   </p>
-//   <p>
-//     Chuka Bassey's response, however, stood out among the various
-//     opinions. He appeared to have little knowledge about the
-//     volatility of cryptocurrencies and tokens. But from his
-//     conversation, it became clear that he needed more understanding of
-//     stablecoins like USD, which tend to maintain a stable value with
-//     minimal price fluctuations.
-//   </p>
-//   <p>
-//     The responses of these traders highlight the presence of numerous
-//     misconceptions about cryptocurrency, even in a country like
-//     Nigeria, often considered a cryptocurrency hub. While many are
-//     involved in cryptocurrency, a significant portion remains
-//     uninformed. There are still people who, upon hearing that someone
-//     is involved in crypto, might react with suspicion, assuming the
-//     person’s involvement is linked to fraudulent activities. Also,
-//     many still find it challenging to operate cryptocurrency apps,
-//     even though these same people can efficiently use their bank apps
-//     like Opay, Palmpay, and Moniepoint.
-//   </p>
-//   <div className='image-panel'>
-//     <Image src={post3} alt='Post' />
-//   </div>
-//   <p>
-//     Undoubtedly, Nigerians are increasingly embracing the concept of
-//     cryptocurrency. However, the question arises: is it just for a
-//     select few? Does cryptocurrency remain within the reach of only
-//     the highly informed? What about the likes of Mr. Dennis, who
-//     expressed interest but needs help with the complexity of most
-//     cryptocurrency apps? And what about Iya Seyi, who holds a negative
-//     perception that cryptocurrency users are all fraudsters? Also, how
-//     do we address the ignorance that leads some to believe it's just
-//     another Ponzi scheme?
-//   </p>
-//   <p>
-//     With the responses gotten from this experiment, it is evident that
-//     we ought to proactively work towards bridging the gaps in the way
-//     people perceive cryptocurrency through education and enlightenment
-//     initiatives. And we also have to focus on developing
-//     cryptocurrency apps with enhanced user-friendliness and
-//     flexibility. Apps with seamless interface- one that people can
-//     find easy to use.
-//   </p>
-//   <p>
-//     So yes, blockchain and cryptocurrencies are gaining wide traction.
-//     But the essential question is: among whom?
-//   </p>
-//   <Link href='#' className='show-more-link'>
-//     Show less <i className='fa fa-caret-up'></i>
-//   </Link>
-//   <div className='spacer-20'></div>
-//   {/* Grey Panel */}
-//   <div className='grey-panel'>
-//     <p>
-//       This is a really good piece Peculiar, Cryptocurrency was (still
-//       is) seen as a get-rich- quick scheme. The consistant “crashing”
-//       which is typical with every other scheme, reinforced this view.
-//     </p>
-//     <div className='user-inf-cntnr'>
-//       <div className='img-pnl'>
-//         <Image src={user} alt='Post' />
-//       </div>
-//       <div className='txt-pnl'>
-//         <h6>By Hinza Asif</h6>
-//         <p>
-//           Comment Follow of <b>NFTStudios 24</b>
-//         </p>
-//       </div>
-//     </div>
-//   </div>
-//   {/* Grey Panel */}
-//   {/* Hash List */}
-//   {/* <ul className='hash-list'>
-//     <li>
-//       <span>#</span> Blockchain in Nigeria
-//     </li>
-//     <li>
-//       <span>#</span> cryto{' '}
-//     </li>
-//     <li>
-//       <span>#</span> Cryptocurrency
-//     </li>
-//     <li>
-//       <span>#</span> education{' '}
-//     </li>
-//     <li>
-//       <span>#</span> Nigeria
-//     </li>
-//     <li>
-//       <span>#</span> Expert
-//     </li>
-//     <li>
-//       <span>#</span> Post
-//     </li>
-//     <li>
-//       <span>#</span> Quiz
-//     </li>
-//   </ul> */}
-//   {/* Hash List */}
-
-//   {/* Count Description Panel */}
-//   <div className='count-description-pnl'>
-//     <div className='d-flex'>
-//       <ul className='vote-comment-list'>
-//         <li>
-//           <div>
-//             <Image src={iconrise} alt='Rise' /> Vote
-//           </div>
-//           <div>48</div>
-//         </li>
-//       </ul>
-//       <h6>
-//         <Image src={iconcomment} alt='Comment' /> 12 Comments
-//       </h6>
-//     </div>
-//     <div>
-//       <ul className='quiz-list'>
-//         <li>
-//           <Image src={infinity} alt='infinity' />{' '}
-//           <span>+500 ICP</span>
-//         </li>
-//         <li>
-//           Take Quiz <i className='fa fa-angle-right'></i>
-//         </li>
-//       </ul>
-//     </div>
-//   </div>
-//   {/* Count Description Panel */}
-//   {/* Comment Panel */}
-//   <div className='full-div comment-pnl'>
-//     <div className='flex-div'>
-//       <h4>Leave a comment</h4>
-//       <h6>0/400</h6>
-//     </div>
-//     <textarea
-//       className='form-control'
-//       id='comment'
-//       placeholder='What do you think about this article?'
-//     ></textarea>
-//     <div className='text-right'>
-//       <Button className='grey-button'>Add comment</Button>
-//     </div>
-//     <p className='grey-txt'>comments (6)</p>
-//     <ul className='comment-list'>
-//       <li>
-//         <div className='user-inf-cntnr'>
-//           <div className='img-pnl'>
-//             <Image src={user} alt='User' />
-//           </div>
-//           <div className='txt-pnl'>
-//             <h6>
-//               By Hinza Asif{' '}
-//               <Link href='#'>
-//                 <Image src={iconcap} alt='Cap' /> Expert
-//               </Link>
-//             </h6>
-//             <span>Oct 19, 2023, 23:35</span>
-//             <p>This is a really good piece Peculiar.</p>
-//             <div className='spacer-10'></div>
-//             <p>
-//               Cryptocurrency was (still is) seen as a get-rich-quick
-//               scheme. The consistent "crashing" which is typical with
-//               every other scheme, reinforced this view.
-//             </p>
-//           </div>
-//         </div>
-//       </li>
-//       <li>
-//         <div className='user-inf-cntnr'>
-//           <div className='img-pnl'>
-//             <Image src={user1} alt='User' />
-//           </div>
-//           <div className='txt-pnl'>
-//             <h6>Rita</h6>
-//             <span>Oct 19, 2023, 23:35</span>
-//             <p>Insightful piece</p>
-//           </div>
-//         </div>
-//       </li>
-//       <li>
-//         <div className='user-inf-cntnr'>
-//           <div className='img-pnl'>
-//             <Image src={user1} alt='User' />
-//           </div>
-//           <div className='txt-pnl'>
-//             <h6>Promise Njoku</h6>
-//             <span>Oct 19, 2023, 23:35</span>
-//             <p>Nice One</p>
-//           </div>
-//         </div>
-//       </li>
-//       <li>
-//         <div className='user-inf-cntnr'>
-//           <div className='img-pnl'>
-//             <Image src={user1} alt='User' />
-//           </div>
-//           <div className='txt-pnl'>
-//             <h6>Edidiong</h6>
-//             <span>Oct 19, 2023, 23:35</span>
-//             <p>Cool</p>
-//           </div>
-//         </div>
-//       </li>
-//     </ul>
-//     <div className='txt-center'>
-//       <Button className='grey-button'>Load more comments</Button>
-//     </div>
-//   </div>
-//   {/* Comment Panel */}
-// </div>

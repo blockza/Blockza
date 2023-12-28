@@ -22,7 +22,7 @@ export default function ReleaseSlider() {
   //   }
   // };
   var Featued = {
-    dots: null,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 2,
@@ -63,95 +63,93 @@ export default function ReleaseSlider() {
     ],
   };
   return (
-    <>
-      <Slider {...Featued}>
-        <div className='Post-padding'>
-          <Link href='#' className='Featured-Post press'>
-            <div className='Featured-Post-inner'>
-              <div className='img-pnl'>
-                <Image src={post1} alt='Post' />
-              </div>
-              <div className='txt-pnl'>
-                <h2>Press Release</h2>
-                <h5>Hong Kong FinTech Week 2023: “Fintech Redefined”</h5>
-                <p>
-                  <span>
-                    <Image src={logo} alt='logo' />
-                  </span>{' '}
-                  Campaing of <b>NFTStudio24</b>
-                </p>
-              </div>
+    <Slider {...Featued} lazyLoad='anticipated'>
+      <div className='Post-padding'>
+        <Link href='#' className='Featured-Post press'>
+          <div className='Featured-Post-inner'>
+            <div className='img-pnl'>
+              <Image src={post1} alt='Post' />
             </div>
-          </Link>
-        </div>
-        <div className='Post-padding'>
-          <Link href='#' className='Featured-Post press'>
-            <div className='Featured-Post-inner'>
-              <div className='img-pnl'>
-                <Link href='/'>
-                  <Image src={post2} alt='Post' />
-                </Link>
-              </div>
-              <div className='txt-pnl'>
-                <h2>Press Release</h2>
-                <h5>
-                  Highstreet Redefines Metaverse Life Via Home Sales with
-                  Animoca Brands
-                </h5>
-                <p>
-                  <span>
-                    <Image src={logo} alt='logo' />
-                  </span>{' '}
-                  Campaing of <b>NFTStudio24</b>
-                </p>
-              </div>
+            <div className='txt-pnl'>
+              <h2>Press Release</h2>
+              <h5>Hong Kong FinTech Week 2023: “Fintech Redefined”</h5>
+              <p>
+                <span>
+                  <Image src={logo} alt='logo' />
+                </span>{' '}
+                Campaing of <b>NFTStudio24</b>
+              </p>
             </div>
-          </Link>
-        </div>
-        <div className='Post-padding'>
-          <Link href='#' className='Featured-Post press'>
-            <div className='Featured-Post-inner'>
-              <div className='img-pnl'>
-                <Image src={post1} alt='Post' />
-              </div>
-              <div className='txt-pnl'>
-                <h2>Press Release</h2>
-                <h5>Hong Kong FinTech Week 2023: “Fintech Redefined”</h5>
-                <p>
-                  <span>
-                    <Image src={logo} alt='logo' />
-                  </span>{' '}
-                  Campaing of <b>NFTStudio24</b>
-                </p>
-              </div>
+          </div>
+        </Link>
+      </div>
+      <div className='Post-padding'>
+        <Link href='#' className='Featured-Post press'>
+          <div className='Featured-Post-inner'>
+            <div className='img-pnl'>
+              {/* <Link href='/'> */}
+              <Image src={post2} alt='Post' />
+              {/* </Link> */}
             </div>
-          </Link>
-        </div>
-        <div className='Post-padding'>
-          <Link href='#' className='Featured-Post press'>
-            <div className='Featured-Post-inner'>
-              <div className='img-pnl'>
-                <Link href='/'>
-                  <Image src={post2} alt='Post' />
-                </Link>
-              </div>
-              <div className='txt-pnl'>
-                <h2>Press Release</h2>
-                <h5>
-                  Highstreet Redefines Metaverse Life Via Home Sales with
-                  Animoca Brands
-                </h5>
-                <p>
-                  <span>
-                    <Image src={logo} alt='logo' />
-                  </span>{' '}
-                  Campaing of <b>NFTStudio24</b>
-                </p>
-              </div>
+            <div className='txt-pnl'>
+              <h2>Press Release</h2>
+              <h5>
+                Highstreet Redefines Metaverse Life Via Home Sales with Animoca
+                Brands
+              </h5>
+              <p>
+                <span>
+                  <Image src={logo} alt='logo' />
+                </span>{' '}
+                Campaing of <b>NFTStudio24</b>
+              </p>
             </div>
-          </Link>
-        </div>
-      </Slider>
-    </>
+          </div>
+        </Link>
+      </div>
+      <div className='Post-padding'>
+        <Link href='#' className='Featured-Post press'>
+          <div className='Featured-Post-inner'>
+            <div className='img-pnl'>
+              <Image src={post1} alt='Post' />
+            </div>
+            <div className='txt-pnl'>
+              <h2>Press Release</h2>
+              <h5>Hong Kong FinTech Week 2023: “Fintech Redefined”</h5>
+              <p>
+                <span>
+                  <Image src={logo} alt='logo' />
+                </span>{' '}
+                Campaing of <b>NFTStudio24</b>
+              </p>
+            </div>
+          </div>
+        </Link>
+      </div>
+      <div className='Post-padding'>
+        <Link href='#' className='Featured-Post press'>
+          <div className='Featured-Post-inner'>
+            <div className='img-pnl'>
+              {/* <Link href='/'> */}
+              <Image src={post2} alt='Post' />
+              {/* </Link> */}
+            </div>
+            <div className='txt-pnl'>
+              <h2>Press Release</h2>
+              <h5>
+                Highstreet Redefines Metaverse Life Via Home Sales with Animoca
+                Brands
+              </h5>
+              <p>
+                <span>
+                  <Image src={logo} alt='logo' />
+                </span>{' '}
+                Campaing of <b>NFTStudio24</b>
+              </p>
+            </div>
+          </div>
+        </Link>
+      </div>
+    </Slider>
   );
 }

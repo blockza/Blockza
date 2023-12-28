@@ -1,8 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import quiz from '@/assets/Img/quiz.png';
-import Infinite from '@/assets/Img/Icons/infinity.png';
+import coinicon from '@/assets/Img/coin-image.png';
 import icontest from '@/assets/Img/Icons/icon-test.png';
 import iconcheck from '@/assets/Img/Icons/icon-check.png';
 import iconrefresh from '@/assets/Img/Icons/icon-refresh.png';
@@ -59,7 +58,7 @@ export default function QuizPost() {
           </li>
         </ul>
 
-        <h6><Image src={Infinite} alt="Infinite" /> +500 ICP</h6>
+        <h6><Image src={coinicon} alt="Infinite" style={{height:'20px',width: '20px'}}/> +500 ICP</h6>
         <Button className='blue-button'>Take Quiz</Button>
       </div>
     </>

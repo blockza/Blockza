@@ -1,12 +1,22 @@
 export const idlFactory = ({ IDL }) => {
+  const List = IDL.Rec();
+  const List_1 = IDL.Rec();
   const Key = IDL.Text;
+  const EntryStatus = IDL.Variant({
+    pending: IDL.Null,
+    approved: IDL.Null,
+    rejected: IDL.Null,
+  });
   const UserId = IDL.Principal;
+  List.fill(IDL.Opt(IDL.Tuple(IDL.Int, List)));
   const ImageObject = IDL.Vec(IDL.Nat8);
   const Entry = IDL.Record({
     creation_time: IDL.Int,
+    status: EntryStatus,
+    userName: IDL.Text,
     title: IDL.Text,
     seoTitle: IDL.Text,
-    promotionICP: IDL.Float64,
+    promotionICP: IDL.Nat,
     likedUsers: IDL.Vec(IDL.Principal),
     seoSlug: IDL.Text,
     subscription: IDL.Bool,
@@ -17,28 +27,61 @@ export const idlFactory = ({ IDL }) => {
     isPromoted: IDL.Bool,
     likes: IDL.Nat,
     isDraft: IDL.Bool,
+    promotionHistory: List,
     category: IDL.Vec(IDL.Text),
     viewedUsers: IDL.Vec(IDL.Principal),
     image: ImageObject,
     seoDescription: IDL.Text,
     seoExcerpt: IDL.Text,
   });
+  const Result_2 = IDL.Variant({
+    ok: IDL.Tuple(IDL.Text, Entry),
+    err: IDL.Text,
+  });
+  const Permission = IDL.Variant({
+    assign_role: IDL.Null,
+    manage_user: IDL.Null,
+    manage_article: IDL.Null,
+    write: IDL.Null,
+  });
   const ListEntryItem = IDL.Record({
     creation_time: IDL.Int,
+    status: EntryStatus,
+    userName: IDL.Text,
     title: IDL.Text,
     views: IDL.Nat,
     user: UserId,
     minters: IDL.Vec(IDL.Principal),
+    isPromoted: IDL.Bool,
     likes: IDL.Nat,
     isDraft: IDL.Bool,
     category: IDL.Vec(IDL.Text),
     image: ImageObject,
   });
+  const EntryStatus__1 = IDL.Variant({
+    pending: IDL.Null,
+    approved: IDL.Null,
+    rejected: IDL.Null,
+  });
   const UserId__1 = IDL.Principal;
+  const TransactionHistoryItem = IDL.Record({
+    creation_time: IDL.Int,
+    admin: IDL.Nat,
+    user: IDL.Principal,
+    platform: IDL.Nat,
+  });
+  List_1.fill(IDL.Opt(IDL.Tuple(TransactionHistoryItem, List_1)));
+  const TransactionHistory = IDL.Opt(IDL.Tuple(TransactionHistoryItem, List_1));
+  const RewardConfig = IDL.Record({
+    admin: IDL.Nat,
+    platform: IDL.Nat,
+    master: IDL.Nat,
+  });
   const InputEntry = IDL.Record({
+    userName: IDL.Text,
     title: IDL.Text,
     seoTitle: IDL.Text,
-    promotionICP: IDL.Float64,
+    promotionICP: IDL.Nat,
     seoSlug: IDL.Text,
     subscription: IDL.Bool,
     description: IDL.Text,
@@ -58,7 +101,14 @@ export const idlFactory = ({ IDL }) => {
     ok: IDL.Tuple(IDL.Text, IDL.Bool),
     err: IDL.Text,
   });
-  const anon_class_17_1 = IDL.Service({
+  const LikeReward = IDL.Nat;
+  const anon_class_22_1 = IDL.Service({
+    approveArticle: IDL.Func(
+      [IDL.Text, IDL.Text, Key, IDL.Bool],
+      [Result_2],
+      []
+    ),
+    call_me: IDL.Func([IDL.Text, IDL.Principal, Permission], [IDL.Bool], []),
     getAllEntries: IDL.Func([], [IDL.Vec(IDL.Tuple(Key, Entry))], ['query']),
     getCategories: IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     getEntriesByCategory: IDL.Func(
@@ -67,15 +117,35 @@ export const idlFactory = ({ IDL }) => {
       ['query']
     ),
     getEntriesList: IDL.Func(
-      [IDL.Text],
-      [IDL.Vec(IDL.Tuple(Key, ListEntryItem))],
+      [IDL.Text, IDL.Bool, IDL.Text, IDL.Nat, IDL.Nat],
+      [
+        IDL.Record({
+          entries: IDL.Vec(IDL.Tuple(Key, ListEntryItem)),
+          amount: IDL.Nat,
+        }),
+      ],
       ['query']
     ),
     getEntry: IDL.Func([Key], [IDL.Opt(Entry)], ['query']),
+    getFilteredList: IDL.Func(
+      [IDL.Text, IDL.Opt(IDL.Text)],
+      [IDL.Vec(IDL.Tuple(Key, ListEntryItem))],
+      ['query']
+    ),
     getPromotedEntries: IDL.Func(
-      [],
+      [IDL.Nat],
       [IDL.Vec(IDL.Tuple(Key, Entry))],
       ['query']
+    ),
+    getReviewEntries: IDL.Func(
+      [IDL.Text, IDL.Text, EntryStatus__1, IDL.Text, IDL.Nat, IDL.Nat],
+      [
+        IDL.Record({
+          entries: IDL.Vec(IDL.Tuple(Key, ListEntryItem)),
+          amount: IDL.Nat,
+        }),
+      ],
+      []
     ),
     getUserEntries: IDL.Func(
       [UserId__1],
@@ -83,20 +153,42 @@ export const idlFactory = ({ IDL }) => {
       ['query']
     ),
     getUserEntriesList: IDL.Func(
-      [IDL.Text, IDL.Bool],
-      [IDL.Vec(IDL.Tuple(Key, ListEntryItem))],
+      [IDL.Text, IDL.Bool, IDL.Text, IDL.Nat, IDL.Nat],
+      [
+        IDL.Record({
+          entries: IDL.Vec(IDL.Tuple(Key, ListEntryItem)),
+          amount: IDL.Nat,
+        }),
+      ],
       ['query']
     ),
+    get_em: IDL.Func([], [TransactionHistory], ['query']),
+    get_like_reward: IDL.Func([], [IDL.Nat], ['query']),
+    get_reward: IDL.Func([], [RewardConfig], ['query']),
     insertEntry: IDL.Func(
-      [InputEntry, IDL.Text, IDL.Bool, IDL.Text],
+      [InputEntry, IDL.Text, IDL.Bool, IDL.Text, IDL.Text],
       [Result_1],
       []
     ),
     isMinted: IDL.Func([Key], [IDL.Bool], []),
-    likeEntry: IDL.Func([Key, IDL.Text], [Result], []),
-    mintEntry: IDL.Func([Key], [Result], []),
+    likeEntry: IDL.Func([Key, IDL.Text, IDL.Text], [Result], []),
+    mintEntry: IDL.Func([Key, IDL.Text], [Result], []),
+    searchEntry: IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Nat, IDL.Nat],
+      [
+        IDL.Record({
+          total: IDL.Int,
+          entries: IDL.Vec(IDL.Tuple(Key, Entry)),
+          amount: IDL.Int,
+        }),
+      ],
+      []
+    ),
+    updateDraft: IDL.Func([Key], [Result], []),
+    update_like_reward: IDL.Func([IDL.Text, LikeReward], [LikeReward], []),
+    update_reward: IDL.Func([IDL.Text, RewardConfig], [RewardConfig], []),
   });
-  return anon_class_17_1;
+  return anon_class_22_1;
 };
 export const init = ({ IDL }) => {
   return [];
