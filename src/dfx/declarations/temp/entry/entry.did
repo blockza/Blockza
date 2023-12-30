@@ -1,7 +1,7 @@
 type anon_class_22_1 = 
  service {
+   addCategory: (text, text) -> (vec text);
    approveArticle: (text, text, Key, bool) -> (Result_2);
-   call_me: (text, principal, Permission) -> (bool);
    getAllEntries: () -> (vec record {
                                Key;
                                Entry;
@@ -20,11 +20,18 @@ type anon_class_22_1 =
                     };
      }) query;
    getEntry: (Key) -> (opt Entry) query;
-   getFilteredList: (text, opt text) ->
-    (vec record {
-           Key;
-           ListEntryItem;
-         }) query;
+   getPaginatedEntries: (nat, nat) ->
+    (record {
+       amount: nat;
+       entries: vec record {
+                      Key;
+                      Entry;
+                    };
+     }) query;
+   getPressEntries: () -> (vec record {
+                                 Key;
+                                 Entry;
+                               }) query;
    getPromotedEntries: (nat) -> (vec record {
                                        Key;
                                        Entry;
@@ -49,40 +56,17 @@ type anon_class_22_1 =
                       ListEntryItem;
                     };
      }) query;
-   get_em: () -> (TransactionHistory) query;
    get_like_reward: () -> (nat) query;
    get_reward: () -> (RewardConfig) query;
    insertEntry: (InputEntry, text, bool, text, text) -> (Result_1);
    isMinted: (Key) -> (bool);
    likeEntry: (Key, text, text) -> (Result);
    mintEntry: (Key, text) -> (Result);
-   searchEntry: (text, text, nat, nat) ->
-    (record {
-       amount: int;
-       entries: vec record {
-                      Key;
-                      Entry;
-                    };
-       total: int;
-     });
-   updateDraft: (Key) -> (Result);
    update_like_reward: (text, LikeReward) -> (LikeReward);
    update_reward: (text, RewardConfig) -> (RewardConfig);
  };
 type UserId__1 = principal;
 type UserId = principal;
-type TransactionHistoryItem = 
- record {
-   admin: nat;
-   creation_time: int;
-   platform: nat;
-   user: principal;
- };
-type TransactionHistory = 
- opt record {
-       TransactionHistoryItem;
-       List_1;
-     };
 type RewardConfig = 
  record {
    admin: nat;
@@ -113,18 +97,6 @@ type Result =
          bool;
        };
  };
-type Permission = 
- variant {
-   assign_role;
-   manage_article;
-   manage_user;
-   write;
- };
-type List_1 = 
- opt record {
-       TransactionHistoryItem;
-       List_1;
-     };
 type ListEntryItem = 
  record {
    category: vec text;
@@ -134,6 +106,7 @@ type ListEntryItem =
    isPromoted: bool;
    likes: nat;
    minters: vec principal;
+   pressRelease: bool;
    status: EntryStatus;
    title: text;
    user: UserId;
@@ -154,6 +127,7 @@ type InputEntry =
    image: ImageObject;
    isDraft: bool;
    isPromoted: bool;
+   pressRelease: bool;
    promotionICP: nat;
    seoDescription: text;
    seoExcerpt: text;
@@ -188,6 +162,7 @@ type Entry =
    likedUsers: vec principal;
    likes: nat;
    minters: vec principal;
+   pressRelease: bool;
    promotionHistory: List;
    promotionICP: nat;
    seoDescription: text;

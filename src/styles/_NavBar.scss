@@ -11,6 +11,82 @@
   }
 }
 
+@media (min-width: 992px) {
+  .navbar.new {
+    display: inline-block;
+    left: 220px;
+    text-align: center;
+  }
+  .navbar-expand-lg.new .navbar-collapse {
+    justify-content: center;
+    display: inline-block !important;
+    text-align: center;
+    width: 100%;
+  }
+  .navbar.new .container {
+    display: inline-block;
+  }
+  .navbar.new .navbar-brand {
+    margin-right: 0;
+    margin-bottom: 30px;
+    display: inline-block;
+    width: 186px;
+    img {
+      width: 186px;
+    }
+  }
+  .navbar.new.navbar-expand-lg .navbar-nav {
+    justify-content: center;
+  }
+}
+.navbar.new{ 
+  
+  @media (max-width: 1200px) {left: 0px;padding-left:15px;padding-right:15px;z-index: 999;
+    border-bottom: 1px solid $blue;
+  }
+    .navbar-nav .nav-link {
+    margin-left: 5px;margin-right:5px;
+    @media (max-width: 1200px) {margin-left: 3px;margin-right:3px;}
+    p{margin: 0;color: $blue;margin-left: 5px;
+      @media (max-width: 1200px) {font-size: 12px;}
+    }  
+  }
+  .side-btnlist {
+    position: absolute;
+    right: 5%;
+    top: 50px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    @media (max-width: 991px) {
+      right: 70px;top:15px;
+
+    }
+    li {
+      display: inline-block;
+      margin-left: 15px;
+      a,
+      .link-btn,
+      .link-btn.empty {
+        margin: 0;
+        span {
+          position: unset !important;
+          padding: 0 !important;
+          background-color: transparent !important;
+        }
+        .link-btn,
+        .link-btn.empty {
+          padding: 5px 12px 7px;
+        }
+      }
+      .profile-btn a.dropdown-toggle {
+        padding-left: 0;
+        padding-right: 0;
+        margin: 0;
+      }
+    }
+  }
+}
 .navbar {
   position: absolute;
   left: 0;
@@ -18,8 +94,9 @@
   top: 0;
   padding: 10px 0 5px;
   background: $white !important;
-  z-index: 999;
+  z-index: 99;
   @include animation-anime(Navanime, 1s, linear);
+  
 
   @media (max-width: 1400px) {
     padding-top: 20px;
@@ -61,13 +138,6 @@
       display: none;
     }
 
-    @media (max-width: 1400px) {
-      max-width: 140px;
-    }
-
-    @media (max-width: 1200px) {
-      max-width: 100px;
-    }
 
     @media (max-width: 991px) {
       max-width: unset;
@@ -204,7 +274,7 @@
 
   .navbar-collapse {
     @media (max-width: 991px) {
-      padding-bottom: 30px;
+      padding-bottom: 10px;
     }
   }
 
@@ -766,6 +836,8 @@
     display: inline-block;
     width: 100%;
     display: none;
+    
+    @media(max-width:575px){margin-bottom:0;}
 
     @media (max-width: 991px) {
       display: inline-block;
@@ -785,7 +857,7 @@
         font-size: 22px;
         color: $blue;
         border-radius: 50%;
-
+        @media(max-width:575px){margin-right: 5px;}
         i {
           color: $blue;
         }
@@ -864,7 +936,6 @@
       }
 
       .navbar-toggler {
-
         span,
         &:before,
         &:after {
@@ -941,19 +1012,19 @@ main.dark {
   background-color: $white !important;
   position: relative;
 
-  @media(max-width:1400px) {
+  @media (max-width: 1400px) {
     padding-top: 110px;
   }
 
-  @media(max-width:1200px) {
+  @media (max-width: 1200px) {
     padding-top: 120px;
   }
 
-  @media(max-width:991px) {
+  @media (max-width: 991px) {
     padding-top: 50px;
   }
 
-  @media(max-width:575px) {
+  @media (max-width: 575px) {
     .main-inner {
       padding-top: 50px;
     }
@@ -969,12 +1040,12 @@ main.dark {
     margin-left: 22px;
     margin-right: 50px;
 
-    @media(max-width:1200px) {
+    @media (max-width: 1200px) {
       margin-left: 60px;
       margin-right: 50px;
     }
 
-    @media(max-width:991px) {
+    @media (max-width: 991px) {
       margin-left: 0px;
       margin-right: 0px;
     }
@@ -989,7 +1060,6 @@ main.dark {
   }
 
   .navbar-toggler {
-
     &:after,
     &:before {
       background-color: $white;
@@ -1006,9 +1076,11 @@ main.dark {
 }
 @media (max-width: 992px) {
   .width-80 {
-width: 80%;  }
+    width: 80%;
+  }
 }
 @media (min-width: 700px) {
   .superadmintext {
-font-size: 35px;  }
+    font-size: 35px;
+  }
 }

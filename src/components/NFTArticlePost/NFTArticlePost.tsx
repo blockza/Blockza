@@ -440,6 +440,7 @@ export default function NFTArticlePost({
       userName: entry.userName,
       // promotionLikesTarget: promotionentry.likes,
       promotionICP: promotionE8S,
+      pressRelease: entry.pressRelease,
     };
     entryActor
       .insertEntry(article, userCanisterId, true, articleId, commentCanisterId)
@@ -784,6 +785,7 @@ export default function NFTArticlePost({
                       </ul>
                     </div> */}
                     {!entry.isPromoted &&
+                      !entry.pressRelease &&
                       identity &&
                       identity._principal.toString() === userId && (
                         <div>
@@ -876,6 +878,8 @@ export default function NFTArticlePost({
           </div>
         )}
       </div>
+      <div id='comments'></div>
+
       <Modal show={showModal} centered onHide={handleModalClose}>
         <Modal.Body>
           {confirmTransaction ? (

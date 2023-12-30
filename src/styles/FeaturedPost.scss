@@ -40,28 +40,7 @@
       padding: 10px 0 0;
       @include bd-radius(0px 0px 15px 15px);
 
-      h2 {
-        color: $white;
-        font-size: 16px;
-        text-transform: uppercase;
-        position: relative;
-        display: inline-block;
-        padding: 8px 25px 5px 5px;
-        z-index: 2;
-        margin-bottom: 10px;
-
-        &::before {
-          position: absolute;
-          content: '';
-          left: 0;
-          top: 0;
-          bottom: 0;
-          right: 0;
-          background-color: $blue;
-          z-index: -1;
-          clip-path: polygon(0 0, 90% 0%, 100% 100%, 0% 100%);
-        }
-      }
+     
 
       h5 {
         color: $black;
@@ -160,6 +139,29 @@ p a.mylink {
     .img-pnl {
       width: 100%;
       position: relative;
+      h2 {
+        color: $white;
+        font-size: 16px;
+        text-transform: uppercase;
+        position: relative;
+        display: inline-block;
+        padding: 8px 25px 5px 5px;
+        z-index: 2;
+        margin-bottom: 0px;
+        position: absolute;
+        left: 0;bottom:0;
+        &::before {
+          position: absolute;
+          content: '';
+          left: 0;
+          top: 0;
+          bottom: 0;
+          right: 0;
+          background-color: $blue;
+          z-index: -1;
+          clip-path: polygon(0 0, 90% 0%, 100% 100%, 0% 100%);
+        }
+      }
 
       img {
         max-height: 185px;
@@ -174,11 +176,62 @@ p a.mylink {
 
   &.press .Featured-Post-inner .txt-pnl {
     h5 {
-      height: 54px;
+      height: 36px;
+      margin-bottom:20px;
     }
 
     p {
       margin-bottom: 5px;
     }
+    .read-more-btn{background-color: $white;max-width: 80%;margin: 25px auto 0;
+      &:hover{background-color: $color;}
+    }
+  }
+}
+.comingsoonlb, .comingsoonlb1{
+  color: $white;
+  font-size: 16px;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+  padding: 6px 25px 5px 5px;
+  z-index: 2;
+  margin-bottom: 0px;
+  position: absolute;
+  left: 0;bottom:0;
+  &::before {
+    position: absolute;
+    content: '';
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: $blue;
+    z-index: -1;
+    clip-path: polygon(0 0, 90% 0%, 100% 100%, 0% 100%);
+  }
+}
+.comingsoonlb1{
+  color: $white;
+  font-size: 16px;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+  padding: 6px 25px 5px 5px;
+  z-index: 2;
+  margin-bottom: 0px;
+  width: 170px;
+height: 30px;
+  left: 0;bottom:0;
+  &::before {
+    position: absolute;
+    content: '';
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: $blue;
+    z-index: -1;
+    clip-path: polygon(0 0, 90% 0%, 100% 100%, 0% 100%);
   }
 }

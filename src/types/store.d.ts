@@ -4,6 +4,7 @@ interface Auth {
   state: string;
   actor: Actor | null;
   client: AuthClient | null;
+  isLoading: boolean;
 }
 export interface UserPermissions {
   userManagement: boolean;

@@ -98,10 +98,10 @@ export default function NavBar() {
     }
   }, []);
   return (
-    <>{
-    route !== 'superadmin' && (
-      <>
-        {/* <p
+    <>
+      {route !== 'superadmin' && (
+        <>
+          {/* <p
         style={
           toggle
             ? {
@@ -122,94 +122,94 @@ export default function NavBar() {
           }
         }}
       /> */}
-        <Navbar
-          expand='lg'
-          expanded={toggle}
-          id='him'
-          className='bg-body-tertiary my-nav'
-          ref={navbarRef}
-          // style={{ zIndex: 1 }}
-        >
-          <Container fluid>
-            <Navbar.Brand>
-              <Link href='/'>
-                <Image src={logo} alt='Logo' />
-                <Image src={logo2} alt='Logo' />
-              </Link>
-            </Navbar.Brand>
-            <div className='d-flex-mobee'>
-              <Connect hideRewards />
-              <Navbar.Toggle
-                aria-controls='navbarScroll'
-                onClick={toggleNavbar}
-              />
-            </div>
-            <Navbar.Collapse id='navbarScroll'>
-              <Nav className='me-auto my-lg-0 my-2' navbarScroll>
-                <Link href='/' className='nav-link' onClick={toggleNavbar}>
-                  <div className='img'>
-                    <Image src={home1} alt='Home' />
-                    <Image src={home2} alt='Home' />
-                  </div>
-                  Home
+          <Navbar
+            expand='lg'
+            expanded={toggle}
+            id='him'
+            className='bg-body-tertiary my-nav'
+            ref={navbarRef}
+            // style={{ zIndex: 1 }}
+          >
+            <Container fluid>
+              <Navbar.Brand>
+                <Link href='/'>
+                  <Image src={logo} alt='Logo' />
+                  <Image src={logo2} alt='Logo' />
                 </Link>
-                <Nav.Link href='#;' onClick={toggleNavbar}>
-                  <div className='img'>
-                    <Image src={folder1} alt='Directory' />
-                    <Image src={folder2} alt='Directory' />
-                  </div>
-                  Web3 Directory
-                </Nav.Link>
-                <Nav.Link href='#;' onClick={toggleNavbar}>
-                  <div className='img'>
-                    <Image src={cup1} alt='Diamond' />
-                    <Image src={cup2} alt='Diamond' />
-                  </div>
-                  Grants <span>hot</span>
-                </Nav.Link>
-                <Nav.Link
+              </Navbar.Brand>
+              <div className='d-flex-mobee'>
+                <Connect hideRewards />
+                <Navbar.Toggle
+                  aria-controls='navbarScroll'
                   onClick={toggleNavbar}
-                  href='#;'
-                  className='disablled'
-                >
-                  <div className='img'>
-                    <Image src={book} alt='book' />
-                  </div>
-                  Investor Hub <sup>Coming Soon</sup>
-                </Nav.Link>
-                <Nav.Link
-                  onClick={toggleNavbar}
-                  href='#;'
-                  className='disablled'
-                >
-                  <div className='img'>
-                    <Image src={Bolt} alt='Bolt' />
-                  </div>{' '}
-                  Campaigns <sup>Coming Soon</sup>
-                </Nav.Link>
-                <SocialList />
-              </Nav>
-             
-             <div id='google_translate_element' className='width-80'></div>
+                />
+              </div>
+              <Navbar.Collapse id='navbarScroll'>
+                <Nav className='me-auto my-lg-0 my-2' navbarScroll>
+                  <Link href='/' className='nav-link' onClick={toggleNavbar}>
+                    <div className='img'>
+                      <Image src={home1} alt='Home' />
+                      <Image src={home2} alt='Home' />
+                    </div>
+                    Home
+                  </Link>
+                  <Nav.Link href='#;' onClick={toggleNavbar}>
+                    <div className='img'>
+                      <Image src={folder1} alt='Directory' />
+                      <Image src={folder2} alt='Directory' />
+                    </div>
+                    Web3 Directory
+                  </Nav.Link>
+                  <Nav.Link href='#;' onClick={toggleNavbar}>
+                    <div className='img'>
+                      <Image src={cup1} alt='Diamond' />
+                      <Image src={cup2} alt='Diamond' />
+                    </div>
+                    Grants <span>hot</span>
+                  </Nav.Link>
+                  <Nav.Link
+                    onClick={toggleNavbar}
+                    href='#;'
+                    className='disablled'
+                  >
+                    <div className='img'>
+                      <Image src={book} alt='book' />
+                    </div>
+                    Investor Hub <sup>Coming Soon</sup>
+                  </Nav.Link>
+                  <Nav.Link
+                    onClick={toggleNavbar}
+                    href='#;'
+                    className='disablled'
+                  >
+                    <div className='img'>
+                      <Image src={Bolt} alt='Bolt' />
+                    </div>{' '}
+                    Campaigns <sup>Coming Soon</sup>
+                  </Nav.Link>
+                  <SocialList />
+                </Nav>
 
-              <div className='d-flex'>
-                <Button
-                  className={`themebtn ${isThemeActive ? 'active' : ''}`}
-                  onClick={() => {
-                    // toggleThemeClass();
-                    handleButtonClick(); // Call your handleButtonClick function here
-                  }}
-                >
-                  <i className='fa fa-sun-o'></i>
-                  <i className='fa fa-moon-o'></i>
-                </Button>
-                {/* <Nav.Link href='#;' className='link-btn empty'>
+                <div id='google_translate_element' className='width-80'></div>
+
+                <div className='d-flex'>
+                  <Button
+                    className={`themebtn ${isThemeActive ? 'active' : ''}`}
+                    onClick={() => {
+                      // toggleThemeClass();
+                      handleButtonClick(); // Call your handleButtonClick function here
+                    }}
+                  >
+                    <i className='fa fa-sun-o'></i>
+                    <i className='fa fa-moon-o'></i>
+                  </Button>
+                  {/* <Nav.Link href='#;' className='link-btn empty'>
                 My Reward
               </Nav.Link>
               <Nav.Link href='#;' className='link-btn empty'>
                 <Image src={iconbook} alt='iconbook' /> Guide Book
               </Nav.Link> */}
-                {/* <Nav.Link href="#;" className='link-btn logedin'>
+                  {/* <Nav.Link href="#;" className='link-btn logedin'>
                 <div className='img-pnl'>
                   <Image src={icongirl} alt='icongirl' />
                 </div>
@@ -218,7 +218,7 @@ export default function NavBar() {
                   <span><Image src={Infinity} alt='Infinity' /> 500</span>
                 </div>
               </Nav.Link> */}
-                {/* <div className='profile-btn'>
+                  {/* <div className='profile-btn'>
                 <NavDropdown
                   title={
                     <>
@@ -276,12 +276,13 @@ export default function NavBar() {
               >
                 Sign In
               </Nav.Link> */}
-                <Connect hideUser />
-              </div>
-            </Navbar.Collapse>
-          </Container>
-        </Navbar>
-      </>
-    )}
-  </>);
+                  <Connect hideUser />
+                </div>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
+        </>
+      )}
+    </>
+  );
 }

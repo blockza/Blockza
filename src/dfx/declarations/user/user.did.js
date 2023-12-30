@@ -69,6 +69,7 @@ export const idlFactory = ({ IDL }) => {
     'ok' : IDL.Tuple(IDL.Text, User, IDL.Bool),
     'err' : IDL.Text,
   });
+  const ImageObject__1 = IDL.Vec(IDL.Nat8);
   const InputUser = IDL.Record({
     'dob' : IDL.Text,
     'authorDescription' : IDL.Text,
@@ -126,11 +127,21 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'get_user_details' : IDL.Func([UserId], [Result_2], ['query']),
+    'get_user_name' : IDL.Func(
+        [IDL.Principal],
+        [
+          IDL.Opt(
+            IDL.Record({
+              'name' : IDL.Opt(IDL.Text),
+              'image' : IDL.Opt(ImageObject__1),
+            })
+          ),
+        ],
+        ['query'],
+      ),
     'make_admin' : IDL.Func([IDL.Principal, Role__1], [IDL.Bool], []),
     'unBlock_user' : IDL.Func([IDL.Text, IDL.Text], [Result_1], []),
-    'unclaimed_rewards' : IDL.Func([], [IDL.Nat], []),
     'update_user' : IDL.Func([InputUser], [Result], []),
-    'who_am_i' : IDL.Func([], [IDL.Text], ['query']),
   });
   return anon_class_20_1;
 };

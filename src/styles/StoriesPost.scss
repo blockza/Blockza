@@ -22,15 +22,15 @@
 }
 .Stories-post {
   display: inline-block;
-  width: 100%;
+  width: calc(100% - 10px);
   @include bd-radius(15px);
   background-color: transparent;
   margin-bottom: 15px;
 
-  @media(max-width:767px) {
-    max-width: 320px;
-    margin: 0 auto 30px;
-  }
+  // @media(max-width:767px) {
+  //   max-width: 320px;
+  //   margin: 0 auto 30px;
+  // }
 
   .Stories-post-inner {
     display: inline-block;
@@ -50,8 +50,9 @@
       z-index: 2;
       right: 15px;
       height: 48px;
-      font-size: 20px;
+      font-size: 16px;
       overflow: hidden;
+      line-height: 24px;
 
       @media(max-width:1600px) {
         font-size: 20px;

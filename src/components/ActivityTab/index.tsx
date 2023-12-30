@@ -16,6 +16,7 @@ import {
 } from '@/dfx/service/actor-locator';
 import ExportPost from '@/components/ExportPost/ExportPost';
 import { Activity, RefinedActivity } from '@/types/profile';
+import pressicon from '@/assets/Img/Icons/icon-press-release.png';
 import { utcToLocal } from '@/components/utils/utcToLocal';
 import ReactPaginate from 'react-paginate';
 import Tippy from '@tippyjs/react';
@@ -85,6 +86,7 @@ export default function ActivityTab({}: {}) {
       title: '',
       target: '',
       isPromoted: false,
+      pressRelease: false,
     };
     if (activity.activity_type.hasOwnProperty('subscribe')) {
       refinedActivity.message = 'You subscribed to a User';
@@ -103,6 +105,7 @@ export default function ActivityTab({}: {}) {
     }
     refinedActivity.target = activity.target;
     refinedActivity.isPromoted = activity.isPromoted;
+    refinedActivity.pressRelease = activity.pressRelease;
 
     refinedActivity.time = utcToLocal(activity.time.toString(), 'hh:mm A');
     refinedActivity.date = utcToLocal(activity.time.toString(), 'DD-MM-yyyy');
@@ -127,10 +130,12 @@ export default function ActivityTab({}: {}) {
           if (entry.length > 0) {
             activity.title = entry[0].title;
             activity.isPromoted = entry[0].isPromoted;
+            activity.pressRelease = entry[0].pressRelease;
             // if (entry[0].)
           } else {
             activity.title = 'not-found';
             activity.isPromoted = false;
+            activity.pressRelease = false;
           }
         }
       }
@@ -142,6 +147,8 @@ export default function ActivityTab({}: {}) {
       setIsLoading(false);
       setMyActivity(refinedActivities);
       logger(refinedActivities, 'Active Refined');
+    } else {
+      setIsLoading(false);
     }
   };
   const handlePageClick = async (event: any) => {
@@ -186,8 +193,8 @@ export default function ActivityTab({}: {}) {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((activity: RefinedActivity) => (
-                <tr>
+              {currentItems.map((activity: RefinedActivity, index) => (
+                <tr key={index}>
                   <td>
                     <div className='d-inline-flex align-items-start'>
                       {activity.message ?? ''}
@@ -203,6 +210,19 @@ export default function ActivityTab({}: {}) {
                             className='mx-2 mt-1'
                           />
                         </Tippy>
+                      )}
+                      {activity?.pressRelease && (
+                        <Tippy content={<p className='mb-0'>Press Release</p>}>
+                          <Image
+                            src={pressicon}
+                            alt='pressicon'
+                            style={{ width: 22, height: 22 }}
+                          />
+                        </Tippy>
+
+                        // <span className='publish-btn table-btn'>
+                        //   promotedIcon
+                        // </span>
                       )}
                       <Link
                         href={

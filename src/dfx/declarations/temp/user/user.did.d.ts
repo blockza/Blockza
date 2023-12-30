@@ -3,6 +3,7 @@ import type { ActorMethod } from '@dfinity/agent';
 
 export type Id = Principal;
 export type ImageObject = Uint8Array | number[];
+export type ImageObject__1 = Uint8Array | number[];
 export interface InputUser {
   'dob' : string,
   'authorDescription' : string,
@@ -96,10 +97,12 @@ export interface anon_class_20_1 {
     { 'users' : Array<[Id, ListAdminUser]>, 'amount' : bigint }
   >,
   'get_user_details' : ActorMethod<[UserId], Result_2>,
+  'get_user_name' : ActorMethod<
+    [Principal],
+    [] | [{ 'name' : [] | [string], 'image' : [] | [ImageObject__1] }]
+  >,
   'make_admin' : ActorMethod<[Principal, Role__1], boolean>,
   'unBlock_user' : ActorMethod<[string, string], Result_1>,
-  'unclaimed_rewards' : ActorMethod<[], bigint>,
   'update_user' : ActorMethod<[InputUser], Result>,
-  'who_am_i' : ActorMethod<[], string>,
 }
 export interface _SERVICE extends anon_class_20_1 {}

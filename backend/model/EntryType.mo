@@ -41,6 +41,7 @@ module EntryType {
     isPromoted : Bool;
     minters : [Principal];
     status : EntryStatus;
+    pressRelease : Bool;
     // promotionLikesTarget : Nat;
     promotionICP : Nat;
     promotionHistory : List.List<Int>;
@@ -60,6 +61,7 @@ module EntryType {
     isDraft : Bool;
     isPromoted : Bool;
     promotionICP : Nat;
+    pressRelease : Bool;
     // promotionLikesTarget : Nat;
     // promotion: ;
 
@@ -77,6 +79,7 @@ module EntryType {
     minters : [Principal];
     status : EntryStatus;
     isPromoted : Bool;
+    pressRelease : Bool;
   };
   public type EntryStorage = Map.HashMap<EntryId, Entry>;
   public func generateNewRemoteObjectId() : EntryId {

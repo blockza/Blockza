@@ -13,14 +13,10 @@ export default function updateReward({ identity, setReward, auth }: Props) {
       if (auth.state !== 'initialized' || !identity) return;
 
       let tempUser = await auth.actor.get_user_details([]);
-      const unClaimedRewards = tempUser.ok[1].rewards
-        .filter((reward: any) => {
-          return !reward.isClaimed;
-        })
-        .reduce((acc: number, obj: any) => acc + parseInt(obj.amount), 0);
-      let rewardsInICP = unClaimedRewards / E8S;
-      logger(rewardsInICP, 'UPdated rewards');
-      setReward(rewardsInICP);
+      const unClaimedRewards = tempUser.ok[1].rewards.filter((reward: any) => {
+        return !reward.isClaimed;
+      });
+      setReward(unClaimedRewards.length);
     };
     getRewards();
   } catch (error) {

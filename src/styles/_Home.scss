@@ -37,13 +37,28 @@ main {
   height: auto;
   min-height: 1200px;
   padding-top: 80px;
-  background-color: $bg;
-
+  background-color: $white;
+  .log-home {
+    background-color: $white;
+    .Featured-Post,
+    .general-post.slider {
+      max-width: 370px;
+      text-align: initial;
+    }
+    .slick-track {
+      .slick-slide.slick-active:nth-child(even) {
+        text-align: right;
+      }
+    }
+  }
   .main-inner {
     width: calc(100% - 250px);
     margin-left: 210px;
-    padding-top: 30px;
+    padding-top: 150px;
     display: inline-block;
+    @media (max-width: 991px) {
+      padding-top: 30px;
+    }
     h3,
     .tabs-list {
       @include animation-anime(transdown, 1s, linear);
@@ -398,16 +413,52 @@ main {
   }
 }
 
+.icp-leadership-pnl {
+  .upcoming-btn {
+    font-size: 16px;
+    i {
+      font-size: 20px;
+    }
+  }
+  .search-pnl {
+    input {
+      height: 30px;
+    }
+  }
+  .release-post .release-post-inner .txt-pnl {
+    h6 {
+      font-size: 18px;
+      margin: 5px 0;
+      font-weight: 500;
+    }
+    p {
+      font-size: 12px;
+    }
+  }
+}
 
-.icp-leadership-pnl{
-  .upcoming-btn{font-size: 16px;
-    i{font-size: 20px;}
+.follow-list {
+  padding-left: 20px;
+  list-style: none;
+  text-align: left;
+
+  li {
+    width: 100%;
+    float: left;
   }
-  .search-pnl{
-    input{height: 35px;}
+  @media (max-width: 1200px) {
+    padding-left: 0;
+    li {
+      width: 100%;
+    }
   }
-  .release-post .release-post-inner .txt-pnl{ 
-    h6{font-size: 18px;margin: 5px 0;}
-    p{font-size: 12px;}
+  @media (max-width: 575px) {
+    li {
+      width: 100%;
+    }
   }
+}
+.coin-img {
+  max-width: 32px !important;
+  width: 32px !important;
 }

@@ -30,16 +30,24 @@ export default function Footer() {
                     <h6>About Us</h6>
                     <ul>
                       <li>
-                        <Link href='#;'>About Us</Link>
+                        <Link href='https://nftstudio24.com/about/'>
+                          About Us
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>About Hinza Asif</Link>
+                        <Link href='https://nftstudio24.com/hinza-asif/'>
+                          About Hinza Asif
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Career</Link>
+                        <Link href='https://nftstudio24.com/careers/'>
+                          Career
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Contact Us</Link>
+                        <Link href='https://nftstudio24.com/contact-us/'>
+                          Contact Us
+                        </Link>
                       </li>
                     </ul>
                   </Col>
@@ -47,28 +55,44 @@ export default function Footer() {
                     <h6>Our Services</h6>
                     <ul>
                       <li>
-                        <Link href='#;'>Advertise with Us</Link>
+                        <Link href='https://nftstudio24.com/advertise-with-us/'>
+                          Advertise with Us
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Hackathon</Link>
+                        <Link href='https://nftstudio24.com/hackathon/'>
+                          Hackathon
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Web3 Accelerators</Link>
+                        <Link href='https://nftstudio24.com/web3-accelerators/'>
+                          Web3 Accelerators
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Experts Alliance</Link>
+                        <Link href='https://nftstudio24.com/experts-alliance/'>
+                          Experts Alliance
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>About Alliance</Link>
+                        <Link href='https://nftstudio24.com/about-expert-alliance/'>
+                          About Alliance
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Alliance Benefits</Link>
+                        <Link href='https://nftstudio24.com/expert-alliance-benefits/'>
+                          Alliance Benefits
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Membership Requirements</Link>
+                        <Link href='https://nftstudio24.com/expert-alliance-benefits/#:~:text=DIGITAL%20ARTIST-,Membership%20Requirements,-Occupational%20Position'>
+                          Membership Requirements
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Apply Alliance</Link>
+                        <Link href='https://nftstudio24.com/apply-for-experts-alliance/'>
+                          Apply Alliance
+                        </Link>
                       </li>
                     </ul>
                   </Col>
@@ -76,22 +100,32 @@ export default function Footer() {
                     <h6>Top Categories</h6>
                     <ul>
                       <li>
-                        <Link href='#;'>News</Link>
+                        <Link href='https://nftstudio24.com/news/'>News</Link>
                       </li>
                       <li>
-                        <Link href='#;'>Press Release</Link>
+                        <Link href='https://nftstudio24.com/press-release/'>
+                          Press Release
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>NFT Collection Review</Link>
+                        <Link href='https://nftstudio24.com/nft-review/'>
+                          NFT Collection Review
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Blockchain Game Review</Link>
+                        <Link href='https://nftstudio24.com/game-review/'>
+                          Blockchain Game Review
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>WEB3 Guide</Link>
+                        <Link href='https://nftstudio24.com/guide/'>
+                          WEB3 Guide
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Events</Link>
+                        <Link href='https://nftstudio24.com/events/'>
+                          Events
+                        </Link>
                       </li>
                     </ul>
                   </Col>
@@ -99,22 +133,34 @@ export default function Footer() {
                     <h6>Our Policy</h6>
                     <ul>
                       <li>
-                        <Link href='#;'>Privacy Policy</Link>
+                        <Link href='https://nftstudio24.com/privacy-policy/'>
+                          Privacy Policy
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Terms of Use</Link>
+                        <Link href='https://nftstudio24.com/terms-of-use/'>
+                          Terms of Use
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Ethics Policy</Link>
+                        <Link href='https://nftstudio24.com/ethics-policy/'>
+                          Ethics Policy
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Do Not Sell My Personal Info</Link>
+                        <Link href='https://nftstudio24.com/do-not-sell-my-personal-info/'>
+                          Do Not Sell My Personal Info
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Disclaimer</Link>
+                        <Link href='https://nftstudio24.com/disclaimer/'>
+                          Disclaimer
+                        </Link>
                       </li>
                       <li>
-                        <Link href='#;'>Contact Us</Link>
+                        <Link href='https://nftstudio24.com/contact-us/'>
+                          Contact Us
+                        </Link>
                       </li>
                     </ul>
                   </Col>

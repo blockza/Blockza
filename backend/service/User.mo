@@ -21,7 +21,8 @@ shared ({ caller = initializer }) actor class () {
 
   private let MAX_USERS = 1_000;
   private let MAX_NAME_CHARS = 40;
-  private let MAX_BIO_CHARS = 140;
+  private let MAX_TITLE_CHARS = 60;
+  private let MAX_BIO_CHARS = 500;
   private let MAX_LINK_CHARS = 2048;
   private let MAX_EMAIL_CHARS = 320;
   //
@@ -468,6 +469,30 @@ shared ({ caller = initializer }) actor class () {
 
     return #err("Something went wrong while getting user");
   };
+  public query func get_user_name(userId : Principal) : async ?{
+    name : ?Text;
+    image : ?ImageObject;
+  } {
+    // assert is_user(userId) != null;
+
+    let user = userStorage.get(userId);
+
+    switch user {
+      case (?iuser) {
+        return ?{
+          name = iuser.name;
+          image = iuser.profileImg;
+        };
+      };
+      case (null) {
+        return null;
+
+      };
+    };
+
+    // let user = userStorage.get(caller);
+
+  };
   public shared ({ caller }) func block_user(userId : Text, commentCanisterId : Text) : async Result.Result<(Text, User), Text> {
     assert require_permission(caller, #manage_user);
     let commentCanister = actor (commentCanisterId) : actor {
@@ -613,7 +638,7 @@ shared ({ caller = initializer }) actor class () {
     // assert user.externalLink.size() <= MAX_LINK_CHARS;
     // tempExternalLink := user.externalLink;
     assert user.name.size() <= MAX_NAME_CHARS;
-    assert user.name.size() >= 3;
+    assert user.name.size() >= 1;
     tempName := user.name;
 
     assert user.email.size() <= MAX_EMAIL_CHARS;
@@ -643,7 +668,7 @@ shared ({ caller = initializer }) actor class () {
     assert user.authorInfo.size() <= MAX_BIO_CHARS;
     tempAuthorInfo := user.authorInfo;
 
-    assert user.authorTitle.size() <= MAX_NAME_CHARS;
+    assert user.authorTitle.size() <= MAX_TITLE_CHARS;
     tempAuthorTitle := user.authorTitle;
 
     assert user.authorDescription.size() <= MAX_BIO_CHARS;

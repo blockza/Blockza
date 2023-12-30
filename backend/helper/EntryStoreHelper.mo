@@ -34,15 +34,13 @@ module EntryStoreHelper {
   type ImageObject = ImageType.ImageObject;
   type ImageId = ImageType.ImageId;
 
-  let my_categories = ["AI", "BlockChain", "Guide", "GameReview"];
-
-  public func addNewEntry(entryStorage : EntryStorage, entry : InputEntry, entryId : EntryId, caller : UserId, isDraftUpdate : Bool, draftId : Text, articlePool : Nat) : EntryStorage {
+  public func addNewEntry(entryStorage : EntryStorage, entry : InputEntry, entryId : EntryId, caller : UserId, isDraftUpdate : Bool, draftId : Text, articlePool : Nat, stable_categories : [Text]) : EntryStorage {
 
     var categories = Array.mapFilter<Text, Text>(
       entry.category,
       func(x) {
         var found = false;
-        for (cat in my_categories.vals()) {
+        for (cat in stable_categories.vals()) {
           if (x == cat) {
             found := true;
           };
@@ -74,6 +72,7 @@ module EntryStoreHelper {
     var entryStatus : EntryStatus = #pending;
 
     if (entry.isPromoted) {
+
       let oldEntry = entryStorage.get(draftId);
       switch (oldEntry) {
         case (?isEntry) {
@@ -103,6 +102,7 @@ module EntryStoreHelper {
             userName = isEntry.userName;
             status = isEntry.status;
             promotionHistory = newPromotion;
+            pressRelease = isEntry.pressRelease;
           };
           let oldEntry = entryStorage.replace(draftId, tempEntry);
           let newEntryStorage : Map.HashMap<EntryId, Entry> = Map.fromIter<EntryId, Entry>(entryStorage.entries(), entryStorage.size(), Text.equal, Text.hash);
@@ -139,6 +139,7 @@ module EntryStoreHelper {
         userName = entry.userName;
         status = entryStatus;
         promotionHistory = List.nil<Int>();
+        pressRelease = entry.pressRelease;
       };
       if (isDraftUpdate) {
         let oldEntry = entryStorage.replace(draftId, tempEntry);
@@ -370,8 +371,50 @@ module EntryStoreHelper {
       compare,
     );
   };
-  public func getCategoies() : [Text] {
-    my_categories;
-  };
+  public func paginateEntriesByLatest(array : [(Key, Entry)], startIndex : Nat, length : Nat) : {
+    entries : [(Key, Entry)];
+    amount : Nat;
+  } {
+    let compare = func((keyA : Key, a : Entry), (keyB : Key, b : Entry)) : Order.Order {
+      if (a.creation_time > b.creation_time) {
+        return #less;
+      } else if (a.creation_time < b.creation_time) {
+        return #greater;
+      } else {
+        return #equal;
+      };
+    };
+    // let sortedArray = Array.sort(newArr, func((keyA : Key, a : ListEntryItem), (keyB : Key, b : ListEntryItem)) { Order.fromCompare((b.creation_time - a.creation_time)) });
+    let sortedEntries = Array.sort(
+      array,
+      compare,
+    );
+    var paginatedArray : [(Key, Entry)] = [];
+    let size = sortedEntries.size();
+    let amount : Nat = size - startIndex;
+    let itemsPerPage = 3;
+    if (size > startIndex and size > (length + startIndex) and length != 0) {
+      paginatedArray := Array.subArray<(Key, Entry)>(sortedEntries, startIndex, length);
+    } else if (size > startIndex and size > (startIndex + itemsPerPage)) {
+      if (length != 0) {
+        paginatedArray := Array.subArray<(Key, Entry)>(sortedEntries, startIndex, amount);
+      } else {
+        paginatedArray := Array.subArray<(Key, Entry)>(sortedEntries, startIndex, itemsPerPage);
 
+      };
+
+    } else if (size > startIndex and size < (startIndex + itemsPerPage) and size > itemsPerPage) {
+      Debug.print(debug_show (size, startIndex, amount));
+      paginatedArray := Array.subArray<(Key, Entry)>(sortedEntries, startIndex, amount);
+
+    } else if (size > startIndex) {
+      paginatedArray := Array.subArray<(Key, Entry)>(sortedEntries, startIndex, amount);
+
+    } else if (size > itemsPerPage) {
+      paginatedArray := Array.subArray<(Key, Entry)>(sortedEntries, 0, itemsPerPage);
+    } else {
+      paginatedArray := sortedEntries;
+    };
+    return { entries = paginatedArray; amount = sortedEntries.size() };
+  };
 };

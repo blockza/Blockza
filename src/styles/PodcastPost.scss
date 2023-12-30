@@ -105,6 +105,10 @@
     }
 
     .reg-btn.big {
+      font-size: 16px;font-weight: 700;
+      height: 45px;line-height: 35px;
+      min-width: 152px;
+      text-align: center;margin-right: 30px;
       @media (max-width: 1819px) {
         margin-right: 10px;
       }
@@ -124,11 +128,12 @@
 
       @media (max-width: 1400px) {
         font-size: 14px;
+        min-width: unset;
+        height: auto;
       }
       
       @media (max-width: 1300px) {
         padding: 5px 8px;
-        height: 34px;
       }
       @media (max-width: 1200px) {
         padding: 8px 15px;

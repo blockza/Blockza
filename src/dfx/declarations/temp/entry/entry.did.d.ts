@@ -19,6 +19,7 @@ export interface Entry {
   'likes' : bigint,
   'isDraft' : boolean,
   'promotionHistory' : List,
+  'pressRelease' : boolean,
   'category' : Array<string>,
   'viewedUsers' : Array<Principal>,
   'image' : ImageObject,
@@ -43,6 +44,7 @@ export interface InputEntry {
   'description' : string,
   'isPromoted' : boolean,
   'isDraft' : boolean,
+  'pressRelease' : boolean,
   'category' : Array<string>,
   'image' : ImageObject,
   'seoDescription' : string,
@@ -62,14 +64,10 @@ export interface ListEntryItem {
   'isPromoted' : boolean,
   'likes' : bigint,
   'isDraft' : boolean,
+  'pressRelease' : boolean,
   'category' : Array<string>,
   'image' : ImageObject,
 }
-export type List_1 = [] | [[TransactionHistoryItem, List_1]];
-export type Permission = { 'assign_role' : null } |
-  { 'manage_user' : null } |
-  { 'manage_article' : null } |
-  { 'write' : null };
 export type Result = { 'ok' : [string, boolean] } |
   { 'err' : string };
 export type Result_1 = { 'ok' : [string, EntryId] } |
@@ -81,18 +79,11 @@ export interface RewardConfig {
   'platform' : bigint,
   'master' : bigint,
 }
-export type TransactionHistory = [] | [[TransactionHistoryItem, List_1]];
-export interface TransactionHistoryItem {
-  'creation_time' : bigint,
-  'admin' : bigint,
-  'user' : Principal,
-  'platform' : bigint,
-}
 export type UserId = Principal;
 export type UserId__1 = Principal;
 export interface anon_class_22_1 {
+  'addCategory' : ActorMethod<[string, string], Array<string>>,
   'approveArticle' : ActorMethod<[string, string, Key, boolean], Result_2>,
-  'call_me' : ActorMethod<[string, Principal, Permission], boolean>,
   'getAllEntries' : ActorMethod<[], Array<[Key, Entry]>>,
   'getCategories' : ActorMethod<[], Array<string>>,
   'getEntriesByCategory' : ActorMethod<[string], Array<[Key, Entry]>>,
@@ -101,10 +92,11 @@ export interface anon_class_22_1 {
     { 'entries' : Array<[Key, ListEntryItem]>, 'amount' : bigint }
   >,
   'getEntry' : ActorMethod<[Key], [] | [Entry]>,
-  'getFilteredList' : ActorMethod<
-    [string, [] | [string]],
-    Array<[Key, ListEntryItem]>
+  'getPaginatedEntries' : ActorMethod<
+    [bigint, bigint],
+    { 'entries' : Array<[Key, Entry]>, 'amount' : bigint }
   >,
+  'getPressEntries' : ActorMethod<[], Array<[Key, Entry]>>,
   'getPromotedEntries' : ActorMethod<[bigint], Array<[Key, Entry]>>,
   'getReviewEntries' : ActorMethod<
     [string, string, EntryStatus__1, string, bigint, bigint],
@@ -115,7 +107,6 @@ export interface anon_class_22_1 {
     [string, boolean, string, bigint, bigint],
     { 'entries' : Array<[Key, ListEntryItem]>, 'amount' : bigint }
   >,
-  'get_em' : ActorMethod<[], TransactionHistory>,
   'get_like_reward' : ActorMethod<[], bigint>,
   'get_reward' : ActorMethod<[], RewardConfig>,
   'insertEntry' : ActorMethod<
@@ -125,11 +116,6 @@ export interface anon_class_22_1 {
   'isMinted' : ActorMethod<[Key], boolean>,
   'likeEntry' : ActorMethod<[Key, string, string], Result>,
   'mintEntry' : ActorMethod<[Key, string], Result>,
-  'searchEntry' : ActorMethod<
-    [string, string, bigint, bigint],
-    { 'total' : bigint, 'entries' : Array<[Key, Entry]>, 'amount' : bigint }
-  >,
-  'updateDraft' : ActorMethod<[Key], Result>,
   'update_like_reward' : ActorMethod<[string, LikeReward], LikeReward>,
   'update_reward' : ActorMethod<[string, RewardConfig], RewardConfig>,
 }

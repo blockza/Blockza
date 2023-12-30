@@ -24,11 +24,14 @@ type anon_class_20_1 =
                   };
      }) query;
    get_user_details: (UserId) -> (Result_2) query;
+   get_user_name: (principal) ->
+    (opt record {
+           image: opt ImageObject__1;
+           name: opt text;
+         }) query;
    make_admin: (principal, Role__1) -> (bool);
    unBlock_user: (text, text) -> (Result_1);
-   unclaimed_rewards: () -> (nat);
    update_user: (InputUser) -> (Result);
-   who_am_i: () -> (text) query;
  };
 type UserId = opt text;
 type User = 
@@ -140,6 +143,7 @@ type InputUser =
    twitter: text;
    website: text;
  };
+type ImageObject__1 = vec nat8;
 type ImageObject = vec nat8;
 type Id = principal;
 service : () -> anon_class_20_1

@@ -70,7 +70,10 @@ export default function SideBarDash() {
       >
         {tab !== '/superadmin' && (
           <div className='sidebar-inner'>
-            <button className='toggler' onClick={()=>settoggle((pre)=>!pre)}>
+            <button
+              className='toggler'
+              onClick={() => settoggle((pre) => !pre)}
+            >
               <div>
                 <span></span>
                 <span></span>
@@ -144,6 +147,18 @@ export default function SideBarDash() {
                       >
                         <Image src={iconlist2} alt='ICon' />
                         <Image src={iconlist2} alt='ICon' /> Pending articles
+                      </Dropdown.Item>{' '}
+                      <Dropdown.Item
+                        as={Link}
+                        href='/superadmin/manageCategory'
+                        className={`${
+                          location === '/superadmin/manageCategory'
+                            ? 'active'
+                            : ''
+                        }`}
+                      >
+                        <Image src={iconlist2} alt='ICon' />
+                        <Image src={iconlist2} alt='ICon' /> Manage Category
                       </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>

@@ -64,6 +64,8 @@ shared ({ caller = initializer }) actor class () {
 
   // WALLETS
   stable var stable_entries : Entries = [];
+  stable var stable_categories : [Text] = ["AI", "BlockChain", "Guide", "GameReview"];
+
   stable var reward_config : RewardConfig = {
     master = 80;
     admin = 10;
@@ -72,6 +74,7 @@ shared ({ caller = initializer }) actor class () {
   stable var like_reward : LikeReward = 1000;
   stable var transaction_history : TransactionHistory = List.nil();
   var entryStorage = Map.fromIter<Key, Entry>(stable_entries.vals(), 0, Text.equal, Text.hash);
+
   private var sectek = "#cosa@erwe0ss1s<e}s*dfCc<e>c!dwa)<vvde>";
   // var entryStorage = Map.HashMap<Key, Entry>(0, Text.equal, Text.hash);
 
@@ -140,6 +143,9 @@ shared ({ caller = initializer }) actor class () {
           return #err("Error while saving draft");
         };
       };
+    };
+    if (entry.isPromoted and entry.pressRelease) {
+      return #err("Not Allowed");
     };
     if (entry.isPromoted) {
       if (List.size(transaction_history) >= MAX_TRANSACTIONS) {
@@ -224,7 +230,8 @@ shared ({ caller = initializer }) actor class () {
     let masterPercentage : Float = Float.fromInt(reward_config.master) / 100;
     let articlePool = (masterPercentage * Float.fromInt(entry.promotionICP));
     // let articlePool : Nat = Int.abs(Float.toInt(masterPercentage));
-    entryStorage := EntryStoreHelper.addNewEntry(entryStorage, entry, entryId, caller, isDraftUpdate, draftId, Int.abs(Float.toInt(articlePool)));
+
+    entryStorage := EntryStoreHelper.addNewEntry(entryStorage, entry, entryId, caller, isDraftUpdate, draftId, Int.abs(Float.toInt(articlePool)), stable_categories);
     if (not entry.isDraft) {
       if (isDraftUpdate) {
         let activited = commentCanister.addActivity(caller, draftId, #create);
@@ -243,7 +250,19 @@ shared ({ caller = initializer }) actor class () {
     entryStorage.get(key);
   };
   public query func getCategories() : async [Text] {
-    EntryStoreHelper.getCategoies();
+    return stable_categories;
+  };
+  public shared ({ caller }) func addCategory(categoryName : Text, userCanisterId : Text) : async [Text] {
+    let userCanister = actor (userCanisterId) : actor {
+      entry_require_permission : (pal : Principal, perm : Permission) -> async Bool;
+    };
+    assert await userCanister.entry_require_permission(caller, #manage_article);
+
+    let newCategories = Array.append<Text>([categoryName], stable_categories);
+
+    stable_categories := newCategories;
+    // stable_categories := ["AI", "BlockChain", "Guide", "GameReview"];
+    return newCategories;
   };
   public shared ({ caller }) func likeEntry(key : Key, userCanisterId : Text, commentCanisterId : Text) : async Result.Result<(Text, Bool), (Text)> {
     assert not Principal.isAnonymous(caller);
@@ -326,6 +345,7 @@ shared ({ caller = initializer }) actor class () {
                   promotionICP = newPromotionICP;
                   status = isEntry.status;
                   promotionHistory = isEntry.promotionHistory;
+                  pressRelease = isEntry.pressRelease;
                 };
                 let newEntry = entryStorage.replace(key, tempEntry);
                 let activited = commentCanister.addActivity(caller, key, #like);
@@ -356,6 +376,7 @@ shared ({ caller = initializer }) actor class () {
                   promotionICP = isEntry.promotionICP;
                   status = isEntry.status;
                   promotionHistory = isEntry.promotionHistory;
+                  pressRelease = isEntry.pressRelease;
                 };
                 let newEntry = entryStorage.replace(key, tempEntry);
                 return #ok("Error while liking", true);
@@ -402,6 +423,7 @@ shared ({ caller = initializer }) actor class () {
                 promotionICP = isEntry.promotionICP;
                 status = isEntry.status;
                 promotionHistory = isEntry.promotionHistory;
+                pressRelease = isEntry.pressRelease;
               };
               let newEntry = entryStorage.replace(key, tempEntry);
               #ok("Article Unliked Successfully", false);
@@ -433,6 +455,7 @@ shared ({ caller = initializer }) actor class () {
                 // promotionLikesTarget = isEntry.promotionLikesTarget;
                 promotionICP = isEntry.promotionICP;
                 status = isEntry.status;
+                pressRelease = isEntry.pressRelease;
                 promotionHistory = isEntry.promotionHistory;
               };
               let newEntry = entryStorage.replace(key, tempEntry);
@@ -493,6 +516,7 @@ shared ({ caller = initializer }) actor class () {
 
               status = isEntry.status;
               // promotionLikesTarget = isEntry.promotionLikesTarget;
+              pressRelease = isEntry.pressRelease;
               promotionHistory = isEntry.promotionHistory;
             };
 
@@ -596,6 +620,48 @@ shared ({ caller = initializer }) actor class () {
       };
     };
     let entryArray = Iter.toArray(nonDraftedEntries.entries());
+    let sortedArray = EntryStoreHelper.sortEntriesByLatest(entryArray);
+    var paginatedArray : [(Key, Entry)] = [];
+
+    if (sortedArray.size() > 10) {
+
+      paginatedArray := Array.subArray<(Key, Entry)>(sortedArray, 0, 10);
+    } else {
+      paginatedArray := sortedArray;
+    };
+    return paginatedArray;
+
+    // var tempEntries : [(Key, Entry)] = [];
+    // tempEntries := Iter.toArray(entryStorage.entries());
+    // return tempEntries;
+  };
+  public query func getPaginatedEntries(startIndex : Nat, length : Nat) : async {
+    entries : [(Key, Entry)];
+    amount : Nat;
+  } {
+    var nonDraftedEntries = Map.fromIter<Key, Entry>(stable_entries.vals(), stable_entries.size(), Text.equal, Text.hash);
+    for ((key, entry) in entryStorage.entries()) {
+      if (shouldSendEntry(entry)) {
+        nonDraftedEntries.put(key, entry);
+      };
+    };
+    let entryArray = Iter.toArray(nonDraftedEntries.entries());
+    return EntryStoreHelper.paginateEntriesByLatest(entryArray, startIndex, length)
+
+    // var tempEntries : [(Key, Entry)] = [];
+    // tempEntries := Iter.toArray(entryStorage.entries());
+    // return tempEntries;
+  };
+  public query func getPressEntries() : async [(Key, Entry)] {
+    var nonDraftedEntries = Map.fromIter<Key, Entry>(stable_entries.vals(), stable_entries.size(), Text.equal, Text.hash);
+    for ((key, entry) in entryStorage.entries()) {
+      if (shouldSendEntry(entry)) {
+        if (entry.pressRelease) {
+          nonDraftedEntries.put(key, entry);
+        };
+      };
+    };
+    let entryArray = Iter.toArray(nonDraftedEntries.entries());
     return EntryStoreHelper.sortEntriesByLatest(entryArray)
 
     // var tempEntries : [(Key, Entry)] = [];
@@ -655,6 +721,7 @@ shared ({ caller = initializer }) actor class () {
         minters = entry.minters;
         status = entry.status;
         isPromoted = entry.isPromoted;
+        pressRelease = entry.pressRelease;
       };
       if ((inputCategory == "All")) {
         if (draft and entry.isDraft or not draft and not entry.isDraft and shouldSendListEntry(entry.status)) {
@@ -706,6 +773,7 @@ shared ({ caller = initializer }) actor class () {
           userName = entry.userName;
           status = entry.status;
           isPromoted = entry.isPromoted;
+          pressRelease = entry.pressRelease;
         };
         if ((inputCategory == "All")) {
 
@@ -756,6 +824,7 @@ shared ({ caller = initializer }) actor class () {
         userName = entry.userName;
         status = entry.status;
         isPromoted = entry.isPromoted;
+        pressRelease = entry.pressRelease;
       };
       if (not entry.isDraft) {
         if ((inputCategory == "All")) {
@@ -825,6 +894,7 @@ shared ({ caller = initializer }) actor class () {
           userName = entry.userName;
           status = status;
           promotionHistory = null;
+          pressRelease = entry.pressRelease;
         };
         let activitied = commentCanister.addAdminActivity(caller, key, activity);
         let newEntry = entryStorage.replace(key, tempEntry);

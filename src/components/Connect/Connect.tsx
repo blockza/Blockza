@@ -21,6 +21,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import authMethods from '@/lib/auth';
 import infinity from '@/assets/Img/Icons/infinity.png';
+import iconuser1 from '@/assets/Img/Icons/icon-user-2.png';
+import iconuser2 from '@/assets/Img/Icons/icon-user-1.png';
 import cup from '@/assets/Img/Icons/icon-cup-1.png';
 import cup1 from '@/assets/Img/Icons/icon-cup-3.png';
 import userImg from '@/assets/Img/Icons/icon-user-3.png';
@@ -336,16 +338,15 @@ export default function Connect({
     }
     if (tempUser.ok) {
       setUser(tempUser.ok[1]);
-      const unClaimedRewards = tempUser.ok[1].rewards
-        .filter((reward: any) => {
-          return !reward.isClaimed;
-        })
-        .reduce((acc: number, obj: any) => acc + parseInt(obj.amount), 0);
-      let rewardsInICP = unClaimedRewards / E8S;
-      setRewards(rewardsInICP);
+      const unClaimedRewards = tempUser.ok[1].rewards.filter((reward: any) => {
+        return !reward.isClaimed;
+      });
+      // .reduce((acc: number, obj: any) => acc + parseInt(obj.amount), 0);
+      // let rewardsInICP = unClaimedRewards / E8S;
+      setRewards(unClaimedRewards.length);
 
-      logger(rewardsInICP, 'UNNNNNN');
-      setReward(rewardsInICP);
+      logger(unClaimedRewards.length, 'UNNNNNN');
+      setReward(unClaimedRewards.length);
 
       if (tempUser.ok[1].isBlocked) {
         setUserAuth({ ...userAuth, status: tempUser.ok[1].isBlocked });
@@ -437,73 +438,123 @@ export default function Connect({
 
   return (
     <>
-      {isLoading ? (
-        <div className='loader-container'>
-          <Spinner
-            animation='border'
-            variant='secondary'
-            size='sm'
-            className={`${hideUser ? 'hide-on-mobile' : ''} ${
-              hideRewards ? 'hide-on-desktop' : ''
-            }`}
-          />
-        </div>
-      ) : auth.state !== 'initialized' ? (
-        <Button
-          className={`link-btn ${hideUser ? 'hide-on-mobile' : ''} ${
-            hideRewards ? 'hide-on-desktop' : ''
-          }`}
-          disabled={isLoggin}
-          onClick={() => {
-            if (route === 'superadmin') {
-              connect();
-            }
-          }}
-        >
-          {isLoggin ? <Spinner size='sm' /> : 'Sign In'}
-        </Button>
-      ) : (
-        <>
-          {!hide && (
-            <>
-              <Link
-                href='/reward'
-                className={`link-btn empty re ${
-                  hideRewards ? 'hide-on-mobile' : ''
-                } ${hideRewards ? 'hide-on-desktop' : ''}`}
+      <ul className='side-btnlist'>
+        {isLoading ? (
+          <li>
+            <div className='loader-container'>
+              <Spinner
+                animation='border'
+                variant='secondary'
+                size='sm'
+                className={`${hideUser ? '' : ''} ${
+                  hideRewards ? 'hide-on-desktop' : ''
+                }`}
+              />
+            </div>
+          </li>
+        ) : auth.state !== 'initialized' ? (
+          <li>
+            <Button
+              className={`link-btn ${hideUser ? '' : ''} ${
+                hideRewards ? 'hide-on-desktop' : ''
+              }`}
+              disabled={isLoggin}
+              onClick={() => {
+                if (route === 'superadmin') {
+                  connect();
+                }
+              }}
+            >
+              {isLoggin ? <Spinner size='sm' /> : 'Sign In'}
+            </Button>
+          </li>
+        ) : (
+          <>
+            {!hide && (
+              <>
+                <li>
+                  <Link
+                    href='/reward'
+                    className={`link-btn empty re ${
+                      hideUser ? 'hide-on-mobile' : ''
+                    } ${hideRewards ? 'hide-on-desktop' : ''}`}
+                  >
+                    My Rewards
+                  </Link>
+                </li>
+                <li>
+                  <Nav.Link
+                    href='#'
+                    className={`link-btn empty ${
+                      hideUser ? 'hide-on-mobile' : ''
+                    } ${hideRewards ? 'hide-on-desktop' : ''}`}
+                  >
+                    <Image src={iconbook} alt='iconbook' /> Guide Book
+                  </Nav.Link>
+                </li>
+              </>
+            )}
+            <li>
+              <div
+                className={`profile-btn ${hideUser ? '' : ''} ${
+                  hideRewards ? 'hide-on-desktop' : ''
+                }`}
               >
-                My Rewards
-              </Link>
-              <Nav.Link
-                href='#'
-                className={`link-btn empty ${
-                  hideRewards ? 'hide-on-mobile' : ''
-                } ${hideRewards ? 'hide-on-desktop' : ''}`}
-              >
-                <Image src={iconbook} alt='iconbook' /> Guide Book
-              </Nav.Link>
-            </>
-          )}
+                <NavDropdown
+                  onSelect={() => {}}
+                  // active={true}
+                  title={
+                    <>
+                      <div className='link-btn logedin'>
+                        <div className='img-pnl'>
+                          {/* <Image src={icongirl} alt='icongirl' /> */}
+                          <div
+                            style={{
+                              position: 'relative',
+                              width: '45px',
+                              margin: '0 auto',
+                              height: '45px',
+                            }}
+                          >
+                            <Image
+                              src={profileImg ? profileImg : icongirl}
+                              className='backend-img'
+                              fill={true}
+                              alt='Profileicon'
+                            />
+                          </div>
+                        </div>
+                        <div className='txt-pnl'>
+                          <h6 className={hide ? 'text-white' : ''}>
+                            {user
+                              ? user?.name.toString().length <= 8
+                                ? user?.name
+                                : `${user?.name.toString().slice(0, 8)}... `
+                              : 'User Name'}
+                          </h6>
 
-          <div
-            className={`profile-btn ${hideUser ? 'hide-on-mobile' : ''} ${
-              hideRewards ? 'hide-on-desktop' : ''
-            }`}
-          >
-            <NavDropdown
-              onSelect={() => {}}
-              // active={true}
-              title={
-                <>
-                  <div className='link-btn logedin'>
-                    <div className='img-pnl'>
-                      {/* <Image src={icongirl} alt='icongirl' /> */}
+                          <span>
+                            <Image
+                              src={infinity}
+                              alt='icpimage'
+                              style={{ height: '10px  ', width: '20px' }}
+                            />{' '}
+                            {balance ?? 0}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  }
+                  id='basic-nav-dropdown'
+                >
+                  <NavDropdown.Item className='pr-link'>
+                    <div>
                       <div
                         style={{
                           position: 'relative',
-                          width: '45px',
+                          width: '60px',
                           margin: '0 auto',
-                          height: '45px',
+                          height: '60px',
                         }}
                       >
                         <Image
@@ -514,15 +565,48 @@ export default function Connect({
                         />
                       </div>
                     </div>
-                    <div className='txt-pnl'>
-                      <h6 className={hide ? 'text-white' : ''}>
+                    <div>
+                      <h6>
                         {user
-                          ? user?.name.toString().length <= 8
-                            ? user?.name
-                            : `${user?.name.toString().slice(0, 8)}... `
+                          ? user?.name.toString().length >= 16
+                            ? `${user?.name
+                                .toString()
+                                .slice(0, 17)} \n ${user?.name
+                                .toString()
+                                .slice(17)}`
+                            : user?.name
                           : 'User Name'}
                       </h6>
-
+                      <p>
+                        {principal
+                          ? principal?.slice(0, 5) +
+                            '...' +
+                            principal?.slice(-3)
+                          : ''}{' '}
+                        <i
+                          onClick={copyPrincipal}
+                          className='fa fa-lg fa-copy '
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: 15,
+                            color: 'black',
+                          }}
+                        ></i>
+                      </p>
+                    </div>
+                    <div className='total-icp'>
+                      <p>Claimable Rewards</p>
+                      <span>
+                        <Image
+                          src={icpimage}
+                          alt='icpimage'
+                          style={{ height: '21px', width: '21px' }}
+                        />{' '}
+                        {reward ?? 0}
+                      </span>
+                    </div>
+                    <div className='total-icp'>
+                      <p>ICP Tokens</p>
                       <span>
                         <Image
                           src={infinity}
@@ -532,182 +616,121 @@ export default function Connect({
                         {balance ?? 0}
                       </span>
                     </div>
-                  </div>
-                </>
-              }
-              id='basic-nav-dropdown'
-            >
-              <NavDropdown.Item className='pr-link'>
-                <div>
-                  <div
-                    style={{
-                      position: 'relative',
-                      width: '60px',
-                      margin: '0 auto',
-                      height: '60px',
-                    }}
-                  >
-                    <Image
-                      src={profileImg ? profileImg : icongirl}
-                      className='backend-img'
-                      fill={true}
-                      alt='Profileicon'
-                    />
-                  </div>
-                </div>
-                <div>
-                  <h6>
-                    {user
-                      ? user?.name.toString().length >= 16
-                        ? `${user?.name.toString().slice(0, 17)} \n ${user?.name
-                            .toString()
-                            .slice(17)}`
-                        : user?.name
-                      : 'User Name'}
-                  </h6>
-                  <p>
-                    {principal
-                      ? principal?.slice(0, 5) + '...' + principal?.slice(-3)
-                      : ''}{' '}
-                    <i
-                      onClick={copyPrincipal}
-                      className='fa fa-lg fa-copy '
-                      style={{
-                        cursor: 'pointer',
-                        fontSize: 15,
-                        color: 'black',
-                      }}
-                    ></i>
-                  </p>
-                </div>
-                <div className='total-icp'>
-                  <p>Claimable Rewards</p>
-                  <span>
-                    <Image
-                      src={icpimage}
-                      alt='icpimage'
-                      style={{ height: '21px', width: '21px' }}
-                    />{' '}
-                    {reward ?? 0}
-                  </span>
-                </div>
-                <div className='total-icp'>
-                  <p>ICP Tokens</p>
-                  <span>
-                    <Image
-                      src={infinity}
-                      alt='icpimage'
-                      style={{ height: '10px  ', width: '20px' }}
-                    />{' '}
-                    {balance ?? 0}
-                  </span>
-                </div>
-              </NavDropdown.Item>
-              {!userAuth.status && (
-                <>
-                  <NavDropdown.Item as={Link} href='/profile'>
-                    <Image src={userImg} alt='user' />
-                    <Image src={user1} alt='user' /> My Profile
                   </NavDropdown.Item>
+                  {!userAuth.status && (
+                    <>
+                      <NavDropdown.Item as={Link} href='/profile'>
+                        <Image src={userImg} alt='user' />
+                        <Image src={user1} alt='user' /> My Profile
+                      </NavDropdown.Item>
 
-                  <NavDropdown.Item
-                    // onClick={async (e) => {
-                    //   e.preventDefault();
+                      <NavDropdown.Item
+                        // onClick={async (e) => {
+                        //   e.preventDefault();
 
-                    //   let ledgerActor = await makeLedgerCanister({
-                    //     agentOptions: {
-                    //       identity,
-                    //     },
-                    //   });
+                        //   let ledgerActor = await makeLedgerCanister({
+                        //     agentOptions: {
+                        //       identity,
+                        //     },
+                        //   });
 
-                    //   let acc: any = AccountIdentifier.fromPrincipal({
-                    //     principal: identity.getPrincipal(),
-                    //     // subAccount: identity.getPrincipal(),
-                    //   });
-                    //   let poor = Principal.fromText(
-                    //     'og5g4-dvvdy-behql-zqoz5-f2qjs-x4nke-k5spr-q7ngf-7ia7a-h4jaj-yae'
-                    //   );
-                    //   let rich = Principal.fromText(
-                    //     'dmy7a-ywgp6-wkwqw-rplzc-lbaqc-5ppsv-6och2-yh2mg-tnn4y-yz4su-lae'
-                    //   );
-                    //   let transfered = await ledgerActor.icrc2_transfer_from({
-                    //     amount: 2000000,
-                    //     created_at_time: [],
-                    //     fee: [],
-                    //     from: { owner: rich, subaccount: [] },
-                    //     memo: [],
-                    //     spender_subaccount: [],
-                    //     to: { owner: poor, subaccount: [] },
-                    //   });
+                        //   let acc: any = AccountIdentifier.fromPrincipal({
+                        //     principal: identity.getPrincipal(),
+                        //     // subAccount: identity.getPrincipal(),
+                        //   });
+                        //   let poor = Principal.fromText(
+                        //     'og5g4-dvvdy-behql-zqoz5-f2qjs-x4nke-k5spr-q7ngf-7ia7a-h4jaj-yae'
+                        //   );
+                        //   let rich = Principal.fromText(
+                        //     'dmy7a-ywgp6-wkwqw-rplzc-lbaqc-5ppsv-6och2-yh2mg-tnn4y-yz4su-lae'
+                        //   );
+                        //   let transfered = await ledgerActor.icrc2_transfer_from({
+                        //     amount: 2000000,
+                        //     created_at_time: [],
+                        //     fee: [],
+                        //     from: { owner: rich, subaccount: [] },
+                        //     memo: [],
+                        //     spender_subaccount: [],
+                        //     to: { owner: poor, subaccount: [] },
+                        //   });
 
-                    //   logger(transfered);
-                    // }}
-                    href='/reward'
-                    as={Link}
-                  >
-                    {/* <Link
+                        //   logger(transfered);
+                        // }}
+                        href='/reward'
+                        as={Link}
+                      >
+                        {/* <Link
                   // onClick={async () => {
                    
                   // }}
                   // }
                 > */}
-                    <Image src={cup} alt='cup' />
-                    <Image src={cup1} alt='cup' /> My Rewards
-                  </NavDropdown.Item>
-                  <NavDropdown.Item onClick={handleShow}>
-                    <Image
-                      src={infinity}
-                      alt='icpimage'
-                      style={{ height: '10px  ', width: '20px' }}
-                    />{' '}
-                    <Image
-                      src={infinity}
-                      alt='icpimage'
-                      style={{ height: '10px  ', width: '20px' }}
-                    />{' '}
-                    Transfer ICP
-                  </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} href='/profiledetails'>
-                    <Image src={setting} alt='setting' />
-                    <Image src={setting1} alt='setting' /> Settings
-                  </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} href='/'>
-                    <Image src={feedback} alt='Feedback' />
-                    <Image src={feedback1} alt='Feedback' /> Feedback
-                  </NavDropdown.Item>
+                        <Image src={cup} alt='cup' />
+                        <Image src={cup1} alt='cup' /> My Rewards
+                      </NavDropdown.Item>
+                      <NavDropdown.Item onClick={handleShow}>
+                        <Image
+                          src={infinity}
+                          alt='icpimage'
+                          style={{ height: '10px  ', width: '20px' }}
+                        />{' '}
+                        <Image
+                          src={infinity}
+                          alt='icpimage'
+                          style={{ height: '10px  ', width: '20px' }}
+                        />{' '}
+                        Transfer ICP
+                      </NavDropdown.Item>
+                      <NavDropdown.Item as={Link} href='/subscribers'>
+                        {' '}
+                        <Image src={userImg} alt='user' />
+                        <Image src={user1} alt='user' />
+                        My Subscribers
+                      </NavDropdown.Item>
+                      <NavDropdown.Item as={Link} href='/profiledetails'>
+                        <Image src={setting} alt='setting' />
+                        <Image src={setting1} alt='setting' /> Settings
+                      </NavDropdown.Item>
+                      <NavDropdown.Item as={Link} href='/'>
+                        <Image src={feedback} alt='Feedback' />
+                        <Image src={feedback1} alt='Feedback' /> Feedback
+                      </NavDropdown.Item>
 
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item as={Link} href='/'>
-                    <Image src={gift} alt='Feedback' />
-                    <Image src={gift} alt='Feedback' /> Refer Friends & Collect
-                    Rewards
+                      <NavDropdown.Divider />
+                      <NavDropdown.Item as={Link} href='/'>
+                        <Image src={gift} alt='Feedback' />
+                        <Image src={gift} alt='Feedback' /> Refer Friends &
+                        Collect Rewards
+                      </NavDropdown.Item>
+                      <NavDropdown.Divider />
+                    </>
+                  )}
+                  <NavDropdown.Item
+                    onClick={async () => {
+                      await methods.logout();
+                      await methods.initAuth();
+                      if (userAuth.status) {
+                        router.replace('/');
+                      }
+                    }}
+                    className='disconnect-btn'
+                  >
+                    <i className='fa fa-sign-out'></i> Disconnect
                   </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                </>
-              )}
-              <NavDropdown.Item
-                onClick={async () => {
-                  await methods.logout();
-                  await methods.initAuth();
-                  if (userAuth.status) {
-                    router.replace('/');
-                  }
-                }}
-                className='disconnect-btn'
-              >
-                <i className='fa fa-sign-out'></i> Disconnect
-              </NavDropdown.Item>
-            </NavDropdown>
-          </div>
+                </NavDropdown>
+              </div>
+            </li>
 
-          {/* <Button
+            {/* <Button
             className='connect-btn'
             style={buttonStyle ? { marginLeft: '10px' } : {}}
           >
             Create
           </Button> */}
-        </>
-      )}
+          </>
+        )}
+      </ul>
+
       <Modal centered show={show} onHide={handleClose} onClose={handleClose}>
         <Modal.Header closeButton className=''>
           Transfer ICP

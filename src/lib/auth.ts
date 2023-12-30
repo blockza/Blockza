@@ -34,6 +34,7 @@ const authMethods = ({
 
   //
   const initAuth = async () => {
+    setAuth({ ...auth, isLoading: true });
     const client = await AuthClient.create({
       idleOptions: {
         idleTimeout: 1000 * 60 * 30, // set to 30 minutes
@@ -53,13 +54,13 @@ const authMethods = ({
           state: 'anonymous',
           actor: tempActor,
           client,
+          isLoading: false,
         });
         return { success: false, actor: tempActor };
       }
     }
     return { success: false, actor: null };
   };
-
   const login = async () => {
     logger('TRYING', process.env.DFX_NETWORK);
     let ran = false;
@@ -73,7 +74,6 @@ const authMethods = ({
         // `http://localhost:8000?canisterId=${process.env.INTERNET_IDENTITY_CANISTER_ID}#authorize`,
         onSuccess: () => {
           authenticate(auth.client as AuthClient);
-          
         },
         onError: () => {
           handleClose();
@@ -101,6 +101,8 @@ const authMethods = ({
     }
   };
   const logout = async () => {
+    setAuth({ ...auth, isLoading: true });
+
     if (auth.state === 'initialized' && auth.client) {
       logger('LOGGIN OUT');
       await auth.client.logout();
@@ -109,6 +111,7 @@ const authMethods = ({
         state: 'anonymous',
         actor: null,
         client: null,
+        isLoading: false,
       });
       setUserAuth({
         name: '',
@@ -162,6 +165,10 @@ const authMethods = ({
   };
   const authenticate = async (client: AuthClient) => {
     try {
+      setAuth({
+        ...auth,
+        isLoading: true,
+      });
       const myIdentity = client.getIdentity();
       const actor = makeUserActor({
         agentOptions: {
@@ -184,24 +191,22 @@ const authMethods = ({
           principalArray: userPrincipalArray,
           userPerms,
         });
-        if (handleClose) 
-        handleClose();
+        if (handleClose) handleClose();
       }
       setAuth({
         state: 'initialized',
         actor,
         client,
+        isLoading: false,
       });
-      if (handleClose) 
-      handleClose();
+      if (handleClose) handleClose();
       return actor;
     } catch (e) {
       setAuth({
         ...auth,
         state: 'error',
       });
-      if (handleClose) 
-      handleClose();
+      if (handleClose) handleClose();
       setUserAuth({
         name: '',
         status: false,
@@ -242,4 +247,6 @@ const authMethods = ({
   };
 };
 export default authMethods;
+// export default { initAuth, login, logout, authenticate };
+
 // export default { initAuth, login, logout, authenticate };

@@ -12,6 +12,7 @@ const connectPlugWalletSlice = (
     state: 'initializing-auth',
     actor: null,
     client: null,
+    isLoading: true,
   },
   userAuth: {
     name: '',

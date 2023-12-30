@@ -125,6 +125,7 @@ export default function FeaturedSlider() {
                 const tempImg = await getImage(newUser.ok[1].profileImg[0]);
                 entry[1].userImg = tempImg;
               }
+            entry[1].userName=newUser.ok[1].name;
             }
             let articalimg = await getImage(entry[1].image);
             entry[1].image = articalimg;

@@ -4,15 +4,23 @@
   position: absolute;
   overflow: hidden;
   left: 0;
-  top: 88px;
+  top: 110px;
   z-index: 20;
   @include trans1();
   @include animation-anime(transleft, 1s, linear);
-
+  &.new{
+    top: 0;
+    z-index: 991;
+    ul{padding-top: 50px;}
+     ul li a.connect-btn,  ul li button.connect-btn{
+      margin-bottom: 50px;
+    }
+    ul.social-list{border-bottom: 0;}
+  }
   @media (max-width: 991px) {
     width: 60px;
     background-color: $white;
-    padding-top: 120px;
+    padding-top: 80px;
     min-height: 100vh;
     top: 0;
 
@@ -30,13 +38,13 @@
     height: 60px;
     overflow: hidden;
     min-height: unset;
+    padding-top: 120px;
 
     &.active {
       height: auto;
       min-height: 100vh;
     }
   }
-
   .sidebar-inner {
     min-height: calc(100vh - 100px);
     height: auto;
@@ -172,7 +180,7 @@
   ul {
     display: inline-block;
     width: 220px;
-    padding-top: 70px;
+    padding-top: 30px;
 
     @media (max-width: 1200px) {
       width: 220px;
@@ -475,7 +483,7 @@
    width: 58px;
   //  padding-left: 12px;
   li{
-    padding-left: 12px;
+    padding-left: 10px;
   }
     img{
       // margin: 0 -7px;

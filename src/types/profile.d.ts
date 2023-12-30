@@ -50,6 +50,7 @@ export interface Activity {
   title: string;
   target: string;
   isPromoted: boolean;
+  pressRelease: boolean;
   // wasPromote: boolean;
 }
 export interface AdminActivity {
@@ -67,6 +68,7 @@ export interface RefinedActivity {
   title: strring;
   target: string;
   isPromoted: boolean;
+  pressRelease: boolean;
   // wasPromote: boolean;
 }
 export interface RefinedAdminActivity {

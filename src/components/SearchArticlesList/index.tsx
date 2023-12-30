@@ -122,6 +122,7 @@ export default function SearchArticlesList() {
           minters: entry[1].minters,
           userId,
           status: entry[1].status,
+          pressRelease: entry[1].pressRelease,
         };
         if (user.ok) {
           newItem.userName = user.ok[1].name ?? entry[1].userName;
@@ -132,7 +133,11 @@ export default function SearchArticlesList() {
 
     return refinedPromise;
   };
-  const getEntriesList = async (all?: string,reset?: boolean, draft: boolean = false) => {
+  const getEntriesList = async (
+    all?: string,
+    reset?: boolean,
+    draft: boolean = false
+  ) => {
     const categ = all ? all : selectedCategory;
     const startIndex = all ? 0 : forcePaginate * itemsPerPage;
     const entryActor = makeEntryActor({
@@ -144,7 +149,7 @@ export default function SearchArticlesList() {
     const resp = await entryActor.getEntriesList(
       categ,
       draft,
-      reset? '':search,
+      reset ? '' : search,
       startIndex,
       itemsPerPage
     );
@@ -252,7 +257,7 @@ export default function SearchArticlesList() {
     // const newItems = tempList2.slice(newOffset, newOffset + itemsPerPage);
     const tempList = await getRefinedList(list);
     // logger({ newOffset, list, newItems: 'hi', tempList }, 'EEEEVENTTT');
-      setProcessedList(tempList);
+    setProcessedList(tempList);
 
     setIsGetting(false);
   };
@@ -267,14 +272,14 @@ export default function SearchArticlesList() {
     } else if (tab === 'Mine') {
       list = await getUserEntries(true, false, 'All');
     } else if (tab === 'Draft') {
-      list = await getEntriesList('All',false, true);
+      list = await getEntriesList('All', false, true);
     }
     const tempList = await getRefinedList(list);
-      setProcessedList(tempList);
+    setProcessedList(tempList);
     setIsGetting(false);
   };
 
-  const filter = async (reset?:boolean) => {
+  const filter = async (reset?: boolean) => {
     setForcePaginate(0);
     setIsGetting(true);
     let list = [];
@@ -283,13 +288,14 @@ export default function SearchArticlesList() {
     } else if (activeListName === 'Mine') {
       list = await getUserEntries(true);
     } else if (activeListName === 'Draft') {
-      list = await getEntriesList('All',false, true);
-    }  if(reset){
-      list = await getEntriesList('All',true);
-      logger(list,"oook")
+      list = await getEntriesList('All', false, true);
+    }
+    if (reset) {
+      list = await getEntriesList('All', true);
+      logger(list, 'oook');
     }
     const tempRefList = await getRefinedList(list);
-      setProcessedList(tempRefList);
+    setProcessedList(tempRefList);
     setIsGetting(false);
   };
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -307,7 +313,7 @@ export default function SearchArticlesList() {
     if (auth.state !== oldAuth) {
       setOldAuth(auth.state);
       handleTabChange('All');
-      getEntriesList('All',false, true);
+      getEntriesList('All', false, true);
     }
   }, [identity, pathName, auth]);
   useEffect(() => {
@@ -322,9 +328,9 @@ export default function SearchArticlesList() {
       <div className='section pt-0 ' id='top'>
         <Row>
           <Col xl='12' lg='12'>
-            <div className='pbg-pnl no-shadow text-left pt-1 ps-4 '>
+            <div className='pbg-pnl no-shadow ps-4 pt-1 text-left '>
               <Row>
-                <Col md='6' sm='6'  className=''>
+                <Col md='6' sm='6' className=''>
                   <ul className='all-filters-list v2'>
                     <li>
                       <span
@@ -397,11 +403,16 @@ export default function SearchArticlesList() {
                           onKeyDown={handleSearch}
                         />
                         {search.length >= 1 && (
-                          <button onClick={() =>{ setSearch('');filter(true);}}>
+                          <button
+                            onClick={() => {
+                              setSearch('');
+                              filter(true);
+                            }}
+                          >
                             <i className='fa-solid fa-xmark mx-1'></i>
                           </button>
                         )}
-                        <button onClick={()=>filter()}>
+                        <button onClick={() => filter()}>
                           <i className='fa fa-search'></i>
                         </button>
                       </div>
@@ -435,7 +446,10 @@ export default function SearchArticlesList() {
                         </Form.Select>
                       </li>
                       <li>
-                        <Button className='publish-btn' onClick={()=>filter()}>
+                        <Button
+                          className='publish-btn'
+                          onClick={() => filter()}
+                        >
                           Apply
                         </Button>
                       </li>

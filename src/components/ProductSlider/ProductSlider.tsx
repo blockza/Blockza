@@ -22,6 +22,22 @@ export default function ProductSlider() {
         },
       },
       {
+        breakpoint: 1199,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: false,
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          infinite: false,
+        },
+      },
+      {
         breakpoint: 575,
         settings: {
           slidesToShow: 1,
@@ -36,29 +52,50 @@ export default function ProductSlider() {
     <>
       <Slider {...Product} lazyLoad='anticipated'>
         <div className='Post-padding'>
-          <Link href='#' className='Product-post'>
+          <Link
+            href='https://nftstudio24.com/news/cryptopedia/blockchain-news/'
+            className='Product-post'
+          >
             <div className='Product-post-inner'>
               <div className='img-pnl'>
-                <Image src={bgimg} alt='Logo' />
+                <Image
+                  src={'/images/b-b.png'}
+                  width={213}
+                  height={78}
+                  alt='Logo'
+                />
               </div>
               <div className='text-pnl'>
-                <div className='flex-div-sm'>
+                <div className='d-flex'>
                   <div className='logo-img'>
-                    <Image src={sublogo} alt='Logo' />
+                    <Image
+                      src={'/images/l-b.png'}
+                      width={15}
+                      height={16}
+                      alt='Logo'
+                    />
                   </div>
                   <div className='heading-txt-pnl'>
-                    <h3>Afropolitan</h3>
-                    <p>
-                      Afropolitan is creating a Digital Nation to enable all
-                      Africans to build abundant ...
+                    <h3>Binance</h3>
+                    <p style={{ minHeight: 84 }}>
+                      Binance Contemplates US Exchange Closure Amidst Global
+                      Concern
                     </p>
                   </div>
                 </div>
                 <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
+                  <p>
+                    The general population should exercise caution while
+                    using...
+                  </p>
                   <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
+                    <Image
+                      src={'/images/l-n.png'}
+                      width={20}
+                      height={20}
+                      alt='Girl'
+                    />
+                    <h5>NFTStudio 24</h5>
                   </div>
                 </div>
                 <ul>
@@ -67,11 +104,11 @@ export default function ProductSlider() {
                     <span>Posts</span>
                   </li>
                   <li>
-                    <b>250</b>
+                    <b>345</b>
                     <span>Reviews</span>
                   </li>
                   <li>
-                    <b>1950</b>
+                    <b>2213</b>
                     <span>Upvotes</span>
                   </li>
                 </ul>
@@ -80,42 +117,63 @@ export default function ProductSlider() {
           </Link>
         </div>{' '}
         <div className='Post-padding'>
-          <Link href='#' className='Product-post'>
+          <Link
+            href='https://nftstudio24.com/news/cryptopedia/blockchain-news/'
+            className='Product-post'
+          >
             <div className='Product-post-inner'>
               <div className='img-pnl'>
-                <Image src={bgimg} alt='Logo' />
+                <Image
+                  src={'/images/b-s.png'}
+                  width={213}
+                  height={78}
+                  alt='Logo'
+                />
               </div>
               <div className='text-pnl'>
-                <div className='flex-div-sm'>
+                <div className='d-flex'>
                   <div className='logo-img'>
-                    <Image src={sublogo} alt='Logo' />
+                    <Image
+                      src={'/images/ls.png'}
+                      width={20}
+                      height={20}
+                      alt='Logo'
+                    />
                   </div>
                   <div className='heading-txt-pnl'>
-                    <h3>Afropolitan</h3>
-                    <p>
-                      Afropolitan is creating a Digital Nation to enable all
-                      Africans to build abundant ...
+                    <h3>Solana</h3>
+                    <p style={{ minHeight: 84 }}>
+                      Solana Blockchain Enables OpenAI’s ChatGPT Plugin for
+                      Enhanced User...
                     </p>
                   </div>
                 </div>
                 <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
+                  <p>
+                    The general population should exercise caution while
+                    using...
+                  </p>
                   <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
+                    <Image
+                      src={'/images/l-n.png'}
+                      width={20}
+                      height={20}
+                      alt='Girl'
+                    />
+                    <h5>NFTStudio 24</h5>
                   </div>
                 </div>
                 <ul>
                   <li>
-                    <b>2</b>
+                    <b>3</b>
                     <span>Posts</span>
                   </li>
                   <li>
-                    <b>250</b>
+                    <b>350</b>
                     <span>Reviews</span>
                   </li>
                   <li>
-                    <b>1950</b>
+                    <b>2950</b>
                     <span>Upvotes</span>
                   </li>
                 </ul>
@@ -124,42 +182,63 @@ export default function ProductSlider() {
           </Link>
         </div>
         <div className='Post-padding'>
-          <Link href='#' className='Product-post'>
+          <Link
+            href='https://nftstudio24.com/news/cryptopedia/blockchain-news/'
+            className='Product-post'
+          >
             <div className='Product-post-inner'>
               <div className='img-pnl'>
-                <Image src={bgimg} alt='Logo' />
+                <Image
+                  src={'/images/b-e.png'}
+                  width={213}
+                  height={78}
+                  alt='Logo'
+                />
               </div>
               <div className='text-pnl'>
-                <div className='flex-div-sm'>
+                <div className='d-flex'>
                   <div className='logo-img'>
-                    <Image src={sublogo} alt='Logo' />
+                    <Image
+                      src={'/images/l-e.png'}
+                      width={20}
+                      height={20}
+                      alt='Logo'
+                    />
                   </div>
                   <div className='heading-txt-pnl'>
-                    <h3>Afropolitan</h3>
-                    <p>
-                      Afropolitan is creating a Digital Nation to enable all
-                      Africans to build abundant ...
+                    <h3>Etherium</h3>
+                    <p style={{ minHeight: 84 }}>
+                      Crypto ETF Expert Predicts All Spot Bitcoin ETF
+                      Applications...
                     </p>
                   </div>
                 </div>
                 <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
+                  <p>
+                    The general population should exercise caution while
+                    using...
+                  </p>
                   <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
+                    <Image
+                      src={'/images/l-n.png'}
+                      width={20}
+                      height={20}
+                      alt='Girl'
+                    />
+                    <h5>NFTStudio 24</h5>
                   </div>
                 </div>
                 <ul>
                   <li>
-                    <b>2</b>
+                    <b>4</b>
                     <span>Posts</span>
                   </li>
                   <li>
-                    <b>250</b>
+                    <b>123</b>
                     <span>Reviews</span>
                   </li>
                   <li>
-                    <b>1950</b>
+                    <b>1356</b>
                     <span>Upvotes</span>
                   </li>
                 </ul>
@@ -168,42 +247,63 @@ export default function ProductSlider() {
           </Link>
         </div>
         <div className='Post-padding'>
-          <Link href='#' className='Product-post'>
+          <Link
+            href='https://nftstudio24.com/news/cryptopedia/blockchain-news/'
+            className='Product-post'
+          >
             <div className='Product-post-inner'>
               <div className='img-pnl'>
-                <Image src={bgimg} alt='Logo' />
+                <Image
+                  src={'/images/b-a.png'}
+                  width={213}
+                  height={78}
+                  alt='Logo'
+                />
               </div>
               <div className='text-pnl'>
-                <div className='flex-div-sm'>
+                <div className='d-flex'>
                   <div className='logo-img'>
-                    <Image src={sublogo} alt='Logo' />
+                    <Image
+                      src={'/images/l-a.png'}
+                      width={20}
+                      height={20}
+                      alt='Logo'
+                    />
                   </div>
                   <div className='heading-txt-pnl'>
-                    <h3>Afropolitan</h3>
-                    <p>
-                      Afropolitan is creating a Digital Nation to enable all
-                      Africans to build abundant ...
+                    <h3>Aptos</h3>
+                    <p style={{ minHeight: 84 }}>
+                      Aptos Ventures Abroad: Navigating Global Markets in the
+                      Web3 and...
                     </p>
                   </div>
                 </div>
                 <div className='txt-pnl'>
-                  <p>Afrocentric and innovative. Really dig the logo too</p>
+                  <p>
+                    The general population should exercise caution while
+                    using...
+                  </p>
                   <div className='img-pl'>
-                    <Image src={girl} alt='Girl' />
-                    <h5>Salome Ogbolu</h5>
+                    <Image
+                      src={'/images/l-n.png'}
+                      width={20}
+                      height={20}
+                      alt='Girl'
+                    />
+                    <h5>NFTStudio 24</h5>
                   </div>
                 </div>
                 <ul>
                   <li>
-                    <b>2</b>
+                    <b>4</b>
                     <span>Posts</span>
                   </li>
                   <li>
-                    <b>250</b>
+                    <b>123</b>
                     <span>Reviews</span>
                   </li>
                   <li>
-                    <b>1950</b>
+                    <b>1356</b>
                     <span>Upvotes</span>
                   </li>
                 </ul>

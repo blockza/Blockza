@@ -8,7 +8,7 @@ import user from '@/assets/Img/Profile/user.png';
 import iconcap from '@/assets/Img/Icons/icon-cap.png';
 import iconshare from '@/assets/Img/Icons/icon-share.png';
 import infinite from '@/assets/Img/Icons/infinity.png';
-import icpimage from '@/assets/Img/coin-image.png'
+import icpimage from '@/assets/Img/coin-image.png';
 export default function SurveyPost() {
   return (
     <>
@@ -17,33 +17,47 @@ export default function SurveyPost() {
           <div className='servey-post-head'>
             <div className='left-pnl'>
               <div className='img-pnl'>
-                <Image src={user} alt="User" />
+                <Image src={user} alt='User' />
               </div>
               <div className='txt-pnl'>
-                <h6>Dev Singh <Link href="#"><Image src={iconcap} alt="Cap" />Expert</Link></h6>
-                <p>Content Fellow of <span>NFTStudio24</span></p>
+                <h6>
+                  Dev Singh
+                  {/* <Link href="#"><Image src={iconcap} alt="Cap" />Expert</Link> */}
+                </h6>
+                <p>
+                  Content by <span>NFTStudio24</span>
+                </p>
               </div>
             </div>
             <div className='share'>
-              <Link href="#">Share <Image src={iconshare} alt="Cap" /></Link>
+              <h2 className='comingsoonlb1'>Coming Soon</h2>
             </div>
           </div>
           <div className='servey-post-body'>
-            <Image src={survey} alt="Survey" />
+            <Image src={survey} alt='Survey' />
             <p>NFTStudio24 Survey</p>
             <h3>Major Attractions in Web3</h3>
-            <h4><Image src={icpimage} alt="infinite" /> +500 ICP</h4>
+            <h4>
+              <Image src={icpimage} alt='infinite' /> +500 NS24
+            </h4>
             <ul>
               <li>
-                <Image src={iconclock} alt="infinite" /> 15 minutes
+                <Image src={iconclock} alt='infinite' /> 15 minutes
               </li>
               <li>
-                <Image src={iconquestion} alt="infinite" /> 5 questions
+                <Image src={iconquestion} alt='infinite' /> 5 questions
               </li>
             </ul>
-            <Link href="#" className='servey-btn'>Do Survey</Link>
+            <Link
+              href='#'
+              style={{
+                pointerEvents: 'none',
+              }}
+              className='servey-btn'
+            >
+              Do Survey
+            </Link>
           </div>
-
         </div>
       </div>
     </>

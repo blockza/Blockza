@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Col, Table } from 'react-bootstrap';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,7 +9,8 @@ import promotedIcon from '@/assets/Img/promoted-icon.png';
 import { utcToLocal } from '@/components/utils/utcToLocal';
 import Tippy from '@tippyjs/react';
 import logger from '@/lib/logger';
-
+import { usePathname } from 'next/navigation';
+import pressicon from '@/assets/Img/Icons/icon-press-release.png';
 export function ArticlesList({
   currentItems,
   currentTab,
@@ -17,11 +18,17 @@ export function ArticlesList({
   currentItems: any[];
   currentTab: string;
 }) {
+  const location = usePathname();
+
   // const tooltipRef = useRef<HTMLDivElement | null>(null);
   // const boxRef = useRef<HTMLDivElement | null>(null);
   // const [showTip, setShowTip] = useState(false);
 
   // const { styles, attributes } = usePopper(boxRef.current, tooltipRef.current);
+  useEffect(()=>{
+    logger(location,"location")
+  })
+
   return (
     <>
       <Col xl='12' lg='12'>
@@ -55,6 +62,7 @@ export function ArticlesList({
                 </thead>
                 <tbody>
                   {currentItems.map((article) => {
+                    
                     let status = article.isDraft
                       ? 'draft'
                       : Object.keys(article.status)[0];
@@ -68,7 +76,7 @@ export function ArticlesList({
                                 ? `/addarticle?draftId=${article.entryId}`
                                 : `/article?articleId=${article.entryId}`
                             }
-                            target={`${currentTab == 'All'? '_blank':'_self'}`}
+                            target={`${location == '/allarticles'? '_self':'_blank'}`}
                             className='removeUl'
                           >
                             <div className='d-flex align-items-start'>
@@ -108,6 +116,22 @@ export function ArticlesList({
                                   //   promotedIcon
                                   // </span>
                                 )}
+                                   {article.pressRelease && (
+                                  
+                                  <Tippy
+                                  content={ <p className='mb-0'>Press Release</p>}
+                                >
+                                     <Image
+                                      src={pressicon}
+                                      alt='pressicon'
+                                      style={{ width: 22, height: 22 }}
+                                    />
+                                </Tippy>
+                                
+                                  // <span className='publish-btn table-btn'>
+                                  //   promotedIcon
+                                  // </span>
+                                )}
                                 {article.title.slice(0, 75)}
                                 {article.title.length > 75 && '...'}{' '}
                                 {article.isDraft && <span>| Draft </span>}
@@ -118,7 +142,7 @@ export function ArticlesList({
                         <td>
                           <Link
                             href={`/profile?userId=${article.userId}`}
-                            target={`${currentTab == 'All'? '_blank':'_self'}`}
+                            target={`${location == '/allarticles'? '_self':'_blank'}`}
                             className='removeUl'
                           >
                             <p>{article?.userName}</p>

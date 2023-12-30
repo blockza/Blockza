@@ -2,19 +2,21 @@ import React, { useEffect, useState } from 'react';
 import iconcap from '@/assets/Img/Icons/icon-cap.png';
 import iconrise from '@/assets/Img/Icons/icon-rise.png';
 import infinity from '@/assets/Img/Icons/icon-infinite2.png';
-import icpimage from '@/assets/Img/coin-image.png'
+import icpimage from '@/assets/Img/coin-image.png';
 import Link from 'next/link';
 import Image from 'next/image';
 import girl from '@/assets/Img/user-img.png';
 import { useRouter } from 'next/navigation';
 import logger from '@/lib/logger';
 import { useConnectPlugWalletStore } from '@/store/useStore';
+import pressicon from '@/assets/Img/Icons/icon-press-release.png';
 import { getImage } from '@/components/utils/getImage';
 import { User } from '@/types/profile';
 import parse from 'html-react-parser';
 import { Button, Spinner } from 'react-bootstrap';
 import promotedIcon from '@/assets/Img/promoted-icon.png';
 import PromotedSVG from '@/components/PromotedSvg/Promoted';
+import Tippy from '@tippyjs/react';
 
 export default function ExportPost({
   entry,
@@ -94,21 +96,31 @@ export default function ExportPost({
               background: '#000',
               borderRadius: '15px 15px 0 0',
             }}
-            >
-           {entry?.isPromoted && <div className='promotedlable'><PromotedSVG/> <p className='mb-0' style={{fontWeight :"600"}}>Promoted Article</p></div>}
-          {featuredImage?  <Image
-              src={featuredImage}
-              className='backend-img expert-header-img '
-              fill={true}
-              alt='Profileicon'
-              style={{
-                maxHeight: '100%',
-                // height: 'auto',
-                borderRadius: '15px 15px 0 0',
-                margin: '0 auto',
-              }}
-            />:   <Spinner animation="border" variant="warning" />
-            }
+          >
+            {entry?.isPromoted && (
+              <div className='promotedlable'>
+                <PromotedSVG />{' '}
+                <p className='mb-0' style={{ fontWeight: '600' }}>
+                  Promoted Article
+                </p>
+              </div>
+            )}
+            {featuredImage ? (
+              <Image
+                src={featuredImage}
+                className='backend-img expert-header-img '
+                fill={true}
+                alt='Profileicon'
+                style={{
+                  maxHeight: '100%',
+                  // height: 'auto',
+                  borderRadius: '15px 15px 0 0',
+                  margin: '0 auto',
+                }}
+              />
+            ) : (
+              <Spinner animation='border' variant='warning' />
+            )}
           </div>
         </div>
         <div className='txt-pnl'>
@@ -158,6 +170,19 @@ export default function ExportPost({
               onClick={() => router.push(`/article?articleId=${entryId}`)}
               style={{ cursor: 'pointer' }}
             >
+              {entry?.pressRelease && (
+                <Tippy content={<p className='mb-0'>Press Release</p>}>
+                  <Image
+                    src={pressicon}
+                    alt='pressicon'
+                    style={{ width: 22, height: 22 }}
+                  />
+                </Tippy>
+
+                // <span className='publish-btn table-btn'>
+                //   promotedIcon
+                // </span>
+              )}{' '}
               {entry?.title ?? ''}
             </h2>
             {/* <div
@@ -190,7 +215,12 @@ export default function ExportPost({
             <div>
               <ul className='quiz-list'>
                 <li>
-                  <Image src={icpimage} alt='icpImage' style={{height:"25px",width:"30px"}} /> <span>+500 ICP</span>
+                  <Image
+                    src={icpimage}
+                    alt='icpImage'
+                    style={{ height: '25px', width: '30px' }}
+                  />{' '}
+                  <span>+500 ICP</span>
                 </li>
                 <li
                 // style={{ cursor: 'pointer' }}
