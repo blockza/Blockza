@@ -25,9 +25,10 @@ import {
   MAX_AUTHOR_INFO_CHARACTERS,
   MAX_AUTHOR_META_DESC_CHARACTERS,
   MAX_AUTHOR_TITLE_CHARACTERS,
+  MAX_DESIGNATION_CHARACTERS,
   MAX_IMAGE_SIZE,
   MAX_NAME_CHARACTERS,
-  MIN_NAME_CHARACTERS
+  MIN_NAME_CHARACTERS,
 } from '@/constant/validations';
 import { toast } from 'react-toastify';
 import { fileToCanisterBinaryStoreFormat } from '@/dfx/utils/image';
@@ -89,6 +90,7 @@ export default function ProfileDetails() {
 
   const initialUser = {
     name: user?.name[0] ?? '',
+    designation: user?.designation[0] ?? '',
     email: user?.email[0] ?? '',
     website: user?.website[0] ?? '',
     dob: user?.dob[0] ?? '',
@@ -111,7 +113,18 @@ export default function ProfileDetails() {
     name: string()
       .required('Name is required')
       .matches(/^[a-zA-Z\s]+$/, 'Only alphabets are allowed')
-      .max(MAX_NAME_CHARACTERS, 'Name can not be more than 40 characters').min(MIN_NAME_CHARACTERS,'Name can not be less than 3 characters'),
+      .max(MAX_NAME_CHARACTERS, 'Name can not be more than 40 characters')
+      .min(MIN_NAME_CHARACTERS, 'Name can not be less than 3 characters'),
+    designation: string()
+      .matches(/^[a-zA-Z0-9\s]+$/, 'Only AlphaNumeric characters are allowed')
+      .max(
+        MAX_DESIGNATION_CHARACTERS,
+        'Designation can not be more than 100 characters'
+      )
+      .min(
+        MIN_NAME_CHARACTERS,
+        'Designation can not be less than 3 characters'
+      ),
     // email: string().email('Invalid Email').required('Email is required'),
     email: string()
       .required('Email is required')
@@ -435,6 +448,7 @@ export default function ProfileDetails() {
 
                         const newUser = await auth.actor.update_user({
                           name: values.name,
+                          designation: values.designation,
                           email: values.email,
                           website: values.website,
                           dob: values.dob,
@@ -596,6 +610,31 @@ export default function ProfileDetails() {
                                 <ErrorMessage
                                   className='Mui-err'
                                   name='name'
+                                  component='div'
+                                />
+                              </div>
+                            </div>
+                            <div className='mb-4'>
+                              <Field name='designation'>
+                                {({ field, formProps }: any) => (
+                                  <Form.Group>
+                                    {/* {('Hi', field)} */}
+                                    <Form.Label>Designation</Form.Label>
+                                    <Form.Control
+                                      value={field.value}
+                                      onChange={handleChange}
+                                      onInput={handleBlur}
+                                      type='text'
+                                      name='designation'
+                                      placeholder='Enter designation'
+                                    />
+                                  </Form.Group>
+                                )}
+                              </Field>
+                              <div className='text-danger mt-2'>
+                                <ErrorMessage
+                                  className='Mui-err'
+                                  name='designation'
                                   component='div'
                                 />
                               </div>

@@ -11,8 +11,10 @@ import { useRouter } from 'next/navigation';
 import Tippy from '@tippyjs/react';
 export default React.memo(function EntryListNewHome({
   Entries,
+  connectModel
 }: {
   Entries: any[];
+  connectModel:any
 }) {
   let router = useRouter();
   let openArticleLink = (articleLink: any) => {
@@ -89,13 +91,13 @@ export default React.memo(function EntryListNewHome({
                 </p>
                 <ul className='thumb-list'>
                   <li>
-                    <a href='#'>
+                    <a  href='#' onClick={connectModel}>
                       <Image src={iconthumb} alt='Icon Thumb' />{' '}
                       {Number(ent[1].likes) != 0 ? Number(ent[1].likes) : 0}
                     </a>
                   </li>
                   <li>
-                    <a href='#'>
+                    <a href='#' onClick={connectModel}>
                       <Image src={iconmessage} alt='Icon Comment' /> 12 Comments
                     </a>
                   </li>

@@ -22,6 +22,7 @@ export const idlFactory = ({ IDL }) => {
     'instagram' : IDL.Opt(IDL.Text),
     'isBlocked' : IDL.Bool,
     'name' : IDL.Opt(IDL.Text),
+    'designation' : IDL.Opt(IDL.Text),
     'authorInfo' : IDL.Opt(IDL.Text),
     'role' : Role,
     'email' : IDL.Opt(IDL.Text),
@@ -77,6 +78,7 @@ export const idlFactory = ({ IDL }) => {
     'twitter' : IDL.Text,
     'instagram' : IDL.Text,
     'name' : IDL.Text,
+    'designation' : IDL.Text,
     'authorInfo' : IDL.Text,
     'email' : IDL.Text,
     'website' : IDL.Text,
@@ -137,6 +139,11 @@ export const idlFactory = ({ IDL }) => {
             })
           ),
         ],
+        ['query'],
+      ),
+    'get_user_name_only' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(IDL.Text)],
         ['query'],
       ),
     'make_admin' : IDL.Func([IDL.Principal, Role__1], [IDL.Bool], []),

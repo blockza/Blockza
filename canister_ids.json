@@ -1,9 +1,15 @@
 {
+  "DIP721": {
+    "ic": "xp6hi-syaaa-aaaal-adfqq-cai"
+  },
   "NFTStudio24": {
     "ic": "7uioq-vyaaa-aaaal-ac6ea-cai"
   },
   "collection": {
     "ic": "plghn-riaaa-aaaal-qce6a-cai"
+  },
+  "comment": {
+    "ic": "4s7mu-riaaa-aaaal-addsa-cai"
   },
   "entry": {
     "ic": "ogidd-6aaaa-aaaal-qcezq-cai"
@@ -16,6 +22,9 @@
   },
   "image": {
     "ic": "pfekf-kyaaa-aaaal-qce7a-cai"
+  },
+  "subscriber": {
+    "ic": "5aclj-ryaaa-aaaal-adekq-cai"
   },
   "user": {
     "ic": "6zgk6-2qaaa-aaaal-ac6dq-cai"

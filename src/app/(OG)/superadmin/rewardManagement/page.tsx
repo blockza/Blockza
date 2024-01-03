@@ -148,7 +148,7 @@ export default function UserManagment() {
       );
       // if (updated)
       logger(updated, 'UPPPPPPppp');
-      toast.success('Vote Reward has been updated successfully');
+      toast.success('Like Reward has been updated successfully');
       handleModalClose();
       getInitValues();
       likeRewardRef?.current?.resetForm();
@@ -411,12 +411,12 @@ export default function UserManagment() {
                               {({ field, formProps }: any) => (
                                 <Form.Group controlId='formBasicEmail'>
                                   <Form.Label>
-                                    Vote Reward
+                                    Like Reward
                                     <Tippy
                                       content={
                                         <div>
                                           <p className='mb-0'>
-                                            Vote Reward is amount of ICP in e8s
+                                            Like Reward is amount of ICP in e8s
                                           </p>
                                           <p className='mb-0'>
                                             {' '}
@@ -478,7 +478,7 @@ export default function UserManagment() {
               {/* <i className='fa fa-question-circle-o'></i> */}
               <p></p>
               <p className='text-bold h5 fw-bold text-danger m-0'>
-                Update Vote Rewards
+                Update Like Rewards
               </p>
               {/* <i onClick={handleModalClose} className='fa fa-close'></i> */}
               <i

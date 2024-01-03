@@ -11,7 +11,7 @@
   &.new{
     top: 0;
     z-index: 991;
-    ul{padding-top: 50px;}
+    ul{padding-top: 50px;margin-bottom: 0;}
      ul li a.connect-btn,  ul li button.connect-btn{
       margin-bottom: 50px;
     }
@@ -46,8 +46,8 @@
     }
   }
   .sidebar-inner {
-    min-height: calc(100vh - 100px);
-    height: auto;
+    // min-height: calc(100vh - 100px);
+    min-height: 100vh;
     background: $white;
     box-shadow: 2px 0px 2px rgba(0, 0, 0, 0.1);
     width: 100%;
@@ -216,7 +216,7 @@
         font-size: 16px;
         position: relative;
         font-weight: 600;
-        padding: 15px 15px;
+        padding: 10px 15px;
         color: $darkgrey;
         padding-left: 30px;
         font-family: $inter;
@@ -750,3 +750,17 @@
 
 /* Side Bar Ends Here
 ===================== */
+
+
+@media (max-height: 900px) and (min-height: 800px)  {
+  .sidebar-home.new ul li a.connect-btn, .sidebar-home.new ul li button.connect-btn{margin-bottom: 20px;}
+  .sidebar-home ul li a, .sidebar-home ul li button{font-size: 14px;}
+  .sidebar-home .sidebar-inner{padding-bottom: 88px;}
+}
+@media (max-height: 800px) and (min-height: 700px) {
+  .sidebar-home.new ul li a.connect-btn, .sidebar-home.new ul li button.connect-btn{margin-bottom: 10px;}
+  .sidebar-home .sidebar-inner{padding-bottom: 88px;}
+  .sidebar-home ul li a{padding: 7.5px 20px 7.5px 30px;}
+  .sidebar-home ul li a, .sidebar-home ul li button{font-size: 14px;}
+
+}

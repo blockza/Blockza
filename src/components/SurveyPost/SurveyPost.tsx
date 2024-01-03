@@ -30,7 +30,9 @@ export default function SurveyPost() {
               </div>
             </div>
             <div className='share'>
-              <h2 className='comingsoonlb1'>Coming Soon</h2>
+              <a href='#'>
+                Share <Image src={iconshare} alt='Share Icon' />
+              </a>
             </div>
           </div>
           <div className='servey-post-body'>

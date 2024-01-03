@@ -1,9 +1,9 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { Row, Col} from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
-import {  useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import hot from '@/assets/Img/Icons/icon-flame-1.png';
@@ -79,7 +79,8 @@ export default function HomePage() {
                   <Row>
                     <Col xl='12' lg='12' md='12' className='heding'>
                       <h4>
-                        <Image src={stars} alt='Hot' /> FEATURED CAMPAIGNS{' '}
+                        <Image src={stars} alt='Hot' />
+                        Featured Compaigns{' '}
                       </h4>
                       <div className='spacer-20'></div>
                     </Col>
@@ -110,91 +111,6 @@ export default function HomePage() {
                 </h4>
                 <div className='spacer-20'></div>
                 <Articles />
-                {/* <ul className='tabs-list'>
-                  <li>
-                    <Link href='#' className='active'>
-                      All Content
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href='#'>Features</Link>
-                  </li>
-                  <li>
-                    <Link href='#'>Quiz</Link>
-                  </li>
-                  <li>
-                    <Link href='#'>Podcasts</Link>
-                  </li>
-                  <li>
-                    <Link href='#'>Guide</Link>
-                  </li>
-                  <li>
-                    <Link href='#' className='arrow-link'>
-                      <i className='fa fa-angle-right'></i>
-                    </Link>
-                  </li>
-                  <li>
-                    <Dropdown>
-                      <Dropdown.Toggle id='dropdown-basic'>
-                        <Image src={iconfilter} alt='Icon Filter' /> Filter
-                      </Dropdown.Toggle>
-
-                      <Dropdown.Menu>
-                        <Dropdown.Item href='#/action-1'>Action</Dropdown.Item>
-                        <Dropdown.Item href='#/action-2'>
-                          Another action
-                        </Dropdown.Item>
-                        <Dropdown.Item href='#/action-3'>
-                          Something else
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </li>
-                </ul>
-                <div className='spacer-10'></div> */}
-                {/* <ExportPost /> */}
-
-                {/* <Tabs
-                  defaultActiveKey='allcontent'
-                  id='uncontrolled-tab-example'
-                  className='tabs-fill'
-                >
-                  <Tab eventKey='allcontent' title='All Content'>
-                    <Row>
-                      <Col xl='12' lg='12' md='12'>
-                      
-                      </Col>
-                    </Row>
-                  </Tab>
-                  <Tab eventKey='features' title='Features'>
-                    <Row>
-                      <Col xl='12' lg='12' md='12'>
-                        <ExportPost />
-                      </Col>
-                    </Row>
-                  </Tab>
-                  <Tab eventKey='Quiz' title='Quiz'>
-                    <Row>
-                      <Col xl='12' lg='12' md='12'>
-                        <ExportPost />
-                      </Col>
-                    </Row>
-                  </Tab>
-                  <Tab eventKey='Podcasts' title='Podcasts'>
-                    <Row>
-                      <Col xl='12' lg='12' md='12'>
-                        <ExportPost />
-                      </Col>
-                    </Row>
-                  </Tab>
-                  <Tab eventKey='Guide' title='Guide'>
-                    <Row>
-                      <Col xl='12' lg='12' md='12'>
-                        <ExportPost />
-                      </Col>
-                    </Row>
-                  </Tab>
-                </Tabs> */}
               </Col>
               <Col
                 // xxl={{ span: 5, offset: 1 }}
@@ -234,7 +150,7 @@ export default function HomePage() {
                       </h4>
                       <div className='spacer-20'></div>
                       <div className='flex-div-xs'>
-                        <Link href='#' className='upcoming-btn'>
+                        <Link href='#' className='upcoming-btn text-capitalize'>
                           Upcoming <i className='fa fa-angle-right'></i>
                         </Link>
                         <div className='search-pnl'>

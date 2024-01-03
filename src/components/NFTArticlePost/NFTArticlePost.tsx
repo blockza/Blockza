@@ -6,6 +6,7 @@ import iconrise from '@/assets/Img/Icons/icon-rise.png';
 import infinity from '@/assets/Img/Icons/icon-infinite.png';
 import icpimage from '@/assets/Img/coin-image.png';
 import iconcomment from '@/assets/Img/Icons/icon-comment.png';
+import iconthumb from '@/assets/Img/Icons/icon-thumb.png';
 import iconshare from '@/assets/Img/Icons/icon-share.png';
 import iconcap from '@/assets/Img/Icons/icon-cap.png';
 import { Button, Form, Modal, Spinner } from 'react-bootstrap';
@@ -44,7 +45,7 @@ import { Principal } from '@dfinity/principal';
 import { canisterId as entryCanisterId } from '@/dfx/declarations/entry';
 import { canisterId as commentCanisterId } from '@/dfx/declarations/comment';
 import { AccountIdentifier } from '@dfinity/ledger-icp';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import PromotedSVG from '@/components/PromotedSvg/Promoted';
 import updateReward from '@/components/utils/updateReward';
 import updateBalance from '@/components/utils/updateBalance';
@@ -67,26 +68,61 @@ function VoteButton({
   const likeEntryMiddleWare = () => {
     if (entry.isPromoted && isLiked) return;
     handleLikeEntry();
+    // setToggleLiked((prev) => !prev);
   };
   const disabled = isLiking || (entry.isPromoted && isLiked);
+
   return (
     <>
-      <ul className='vote-comment-list'>
-        <li
-          className={`${disabled ? 'disabled' : ''}  ${
-            isLiked ? ' liked' : ''
-          }`}
-          onClick={likeEntryMiddleWare}
-        >
-          <div>
-            <Image src={iconrise} alt='Rise' /> Vote
-          </div>
-          <div>{parseInt(entry?.likes ?? '0') + tempLike}</div>
-        </li>
-      </ul>
+      {/* <ul className='vote-comment-list'> */}
+      {/* <li
+      > */}
+      <h6
+        className={` ${disabled ? 'disabled' : ''}  ${isLiked ? ' liked' : ''}`}
+        onClick={likeEntryMiddleWare}
+        style={{
+          pointerEvents: disabled ? 'none' : 'all',
+          marginTop: 7,
+          cursor: 'pointer',
+        }}
+      >
+        {isLiked ? (
+          <Image
+            src={'/images/liked.svg'}
+            alt='Icon Thumb'
+            style={{ maxWidth: 25 }}
+            height={25}
+            width={25}
+          />
+        ) : (
+          // <i className='fa fa-like'></i>
+          // <i
+          //   className='fa-solid  fa-thumbs-up my-fa'
+          //   style={{ fontSize: 20, height: 25, width: 25, maxWidth: 25 }}
+          // ></i>
+          <Image
+            src={'/images/like.svg'}
+            alt='Icon Thumb'
+            style={{ maxWidth: 25 }}
+            height={25}
+            width={25}
+          />
+          // <i
+          //   className='fa-regular  fa-thumbs-up  my-fa'
+          //   style={{ fontSize: 20, height: 25, width: 25, maxWidth: 25 }}
+          // ></i>
+        )}{' '}
+        {parseInt(entry?.likes ?? '0') + tempLike}
+      </h6>
+      {/* </li> */}
+      {/* </ul> */}
       <h6>
-        <Image src={iconcomment} alt='Comment' /> {commentsLength ?? ''}{' '}
-        Comments
+        <Image
+          src={iconcomment}
+          alt='Comment'
+          style={{ height: 25, width: 25, maxWidth: 25 }}
+        />{' '}
+        {commentsLength ?? ''} Comments
       </h6>
     </>
   );
@@ -438,6 +474,9 @@ export default function NFTArticlePost({
       isDraft: entry.isDraft,
       isPromoted: true,
       userName: entry.userName,
+      imageTags: entry.imageTags,
+      caption: entry.caption,
+      tags: entry.tags,
       // promotionLikesTarget: promotionentry.likes,
       promotionICP: promotionE8S,
       pressRelease: entry.pressRelease,
@@ -601,7 +640,25 @@ export default function NFTArticlePost({
     window.navigator.clipboard.writeText(currentURL);
     toast.success('URL copied to clipboard');
   };
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const routeValue = urlParams.get('route');
+    if (routeValue == 'comments' && !userArticleCommentsLoading && entry) {
+      const scrollOptions: any = {
+        behavior: 'smooth',
+      };
 
+      if (window.innerWidth >= 768) {
+        // Scroll to 200px from the top on laptops
+        scrollOptions.top = 1400;
+      } else {
+        // Scroll to 400px from the top on mobile devices
+        scrollOptions.top = 1600;
+      }
+
+      window.scrollTo(scrollOptions);
+    }
+  }, [userArticleCommentsLoading, entry]);
   return (
     <>
       <div className='article-detail-pnl '>
@@ -694,7 +751,8 @@ export default function NFTArticlePost({
                     )}
                   </h6>
                   <p>
-                    Content Felow of <b>NFTStudio24</b>
+                    {/* Content Felow of <b>NFTStudio24</b> */}
+                    {user?.designation[0] ?? ''}
                   </p>
                   <span className='small'>
                     {' '}
@@ -709,7 +767,7 @@ export default function NFTArticlePost({
               </div>
               <div className='count-description-pnl'>
                 {!(statusString == 'pending' || statusString == 'rejected') && (
-                  <div className='d-flex sm ' id='articlecls1'>
+                  <div className='d-flex sm gap-3' id='articlecls1'>
                     {auth.state === 'initialized' && (
                       <MintButton
                         isMinted={isMinted}
@@ -729,13 +787,19 @@ export default function NFTArticlePost({
                       tempLike={tempLike}
                     />
 
-                    <Link
-                      href='#'
-                      className='share-btn'
+                    <h6
+                      style={{
+                        marginTop: 7,
+                      }}
                       onClick={copyArticleLink}
                     >
-                      Share <Image src={iconshare} alt='share' />
-                    </Link>
+                      <Image
+                        src={iconshare}
+                        alt='share'
+                        style={{ height: 25, width: 25, maxWidth: 25 }}
+                      />{' '}
+                      Share
+                    </h6>
                   </div>
                 )}
               </div>
@@ -763,7 +827,7 @@ export default function NFTArticlePost({
               {!(isPending || isRejected) && (
                 <>
                   <div className='count-description-pnl'>
-                    <div className='d-flex'>
+                    <div className='d-flex gap-3'>
                       <VoteButton
                         isLiked={isLiked}
                         isLiking={isLiking}
@@ -901,36 +965,42 @@ export default function NFTArticlePost({
         ></Button> */}
               </div>
               <div>
-                <p className='text-center'>
+                <p className='text-secondary'>
                   Are you sure you want to promote your article for{' '}
-                  {promotionValues.icp + gasFee * 2 + gasFee / 5} ICP tokens ?
+                  {(promotionValues.icp + gasFee * 2 + gasFee / 5).toFixed(6)} ICP tokens ?
                 </p>
-                <p className='text-secondary mb-0'>
-                  Transaction fee: {gasFee * 2 + gasFee / 5} ICP
+                <p className=' d-flex  justify-content-between mb-0'>
+                  <span>Transaction fee:</span>{' '}
+                  <span className='text-secondary'>
+                    {gasFee * 2 + gasFee / 5} ICP
+                  </span>
                 </p>
-                <p className='text-secondary mb-1'>
-                  <span
+                <p className='d-flex justify-content-between mb-1'>
+                  {/* <span
                     style={{
                       border: '2px',
                     }}
-                  >
-                    Promotion amount: {promotionValues.icp} ICP
+                  > */}
+                  <span>Promotion amount:</span>{' '}
+                  <span className='text-secondary'>
+                    {promotionValues.icp} ICP
                   </span>
+                  {/* </span> */}
                 </p>
                 <div
                   style={{
                     height: 1,
                     backgroundColor: 'gray',
-                    width: '40%',
+                    width: '100%',
                   }}
                 ></div>
-                <p className='text-secondary mt-1 mb-0'>
-                  Total: {promotionValues.icp + gasFee * 2 + gasFee / 5} ICP
+                <p className=' mt-1 mb-0 d-flex justify-content-between'>
+                 <span > Total:</span> <span className='text-secondary'>{(promotionValues.icp + gasFee * 2 + gasFee / 5).toFixed(6)} ICP</span>
                 </p>
               </div>
-              <div className='d-flex justify-content-center'>
+              <div className='d-flex justify-content-center mt-2'>
                 <Button
-                  className='publish-btn'
+                  className='publish-btn w-100 mt-2 py-2'
                   disabled={isArticleSubmitting}
                   onClick={handleTransaction}
                   // type='submit'

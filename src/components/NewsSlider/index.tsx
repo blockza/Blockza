@@ -206,11 +206,11 @@ export default function NewsSlider() {
                     </p>
                     <ul className='thumb-list flex'>
                       <li>
-                        <a href='#' className='mr-3'>
+                        <a href={`${entry ? entry[0]? `/article?articleId=${entry[0]}`:"#":`#`}`} className='mr-3'>
                           <Image src={iconthumb} alt='Icon Thumb' />
                           {entry ? entry[1]?.likes ?? 0 : 0}
                         </a>
-                        <a href='#'>
+                        <a href={`${entry ? entry[0]? `/article?articleId=${entry[0]}&route=comments`:"#":`#`}`}>
                           <Image src={iconmessage} alt='Icon Comment' /> 12
                           Comments
                         </a>

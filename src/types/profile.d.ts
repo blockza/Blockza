@@ -1,5 +1,6 @@
 export interface User {
   name: string;
+  designation: string;
   email: string;
   website: string;
   dob: string;

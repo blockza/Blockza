@@ -643,7 +643,7 @@ export default function HomePage() {
                             <div className='spacer-30'></div>
 
                             <h4>
-                              <Image src={press} alt='Hot' /> PRESS RELEASE
+                              <Image src={press} alt='Hot' /> Press Release
                             </h4>
                             <div className='spacer-20'></div>
                           </Col>
@@ -817,7 +817,8 @@ export default function HomePage() {
                           <Col xl='12' lg='12' md='12' className='heding'>
                             <div className='spacer-30'></div>
                             <h4>
-                              <Image src={stars} alt='Hot' /> FEATURED CAMPAIGNS{' '}
+                              <Image src={stars} alt='Hot' />
+                              Featured Compaigns{' '}
                             </h4>
                             <div className='spacer-20'></div>
                           </Col>

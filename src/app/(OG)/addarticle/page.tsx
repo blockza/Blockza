@@ -55,7 +55,8 @@ import { canisterId as commentCanisterId } from '@/dfx/declarations/comment';
 import { canisterId as entryCanisterId } from '@/dfx/declarations/entry';
 import { E8S, GAS_FEE } from '@/constant/config';
 import { BsMenuButton } from 'react-icons/bs';
-
+import { Typeahead } from 'react-bootstrap-typeahead';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 /**
  * SVGR Support
  * Caveat: No React Props Type.
@@ -96,6 +97,9 @@ export default function AddArticle() {
   const [user, setUser] = useState<any>();
   const [value, setValue] = useState<any>('');
   const [draftArticleCreator, setDraftArticleCreator] = useState<any>();
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTagsImg, setSelectedTagsImg] = useState<string[]>([]);
+  const [imgCation, setImgCation] = useState<string>('');
   const [categories, setCategories] = useState<string[]>([
     'AI',
     'BlockChain',
@@ -209,8 +213,18 @@ export default function AddArticle() {
       setIsPressRelease(tempEntry[0].pressRelease);
       setDraftPreviewImg(tempEntry[0].image);
       setDraftArticleCreator(tempEntry[0].user);
+      setSelectedTags(
+        tempEntry[0].tags.map((e: any, ind: any) => {
+          return { customOption: true, label: e, id: `${ind}` };
+        })
+      );
+      setSelectedTagsImg(
+        tempEntry[0].imageTags.map((e: any, ind: any) => {
+          return { customOption: true, label: e, id: `${ind}` };
+        })
+      );
+      setImgCation(tempEntry[0].caption);
       setIsArticleDraft(true);
-
       // setEntry(tempEntry[0]);
       logger(tempEntry[0], 'Draft fetched from canister');
     }
@@ -251,14 +265,14 @@ export default function AddArticle() {
       .required('Seo Title is required')
       .max(100, 'Seo Title cannot be more than 100 characters'),
     seoDescription: string()
-      .required('Seo Description is required')
-      .max(250, 'Seo Description cannot be more than 250 characters'),
+      .required('Meta Description is required')
+      .max(250, 'Meta Description cannot be more than 250 characters'),
     seoExcerpt: string()
       .required('Seo Excerpt is required')
       .max(160, 'Seo Excerpt cannot be more than 160 characters'),
     seoSlug: string()
-      .required('Seo Slug is required')
-      .max(100, 'Seo Slug cannot be more than 100 characters'),
+      .required('Slug is required')
+      .max(100, 'Slug cannot be more than 100 characters'),
     // img: mixed().required('Image is required'),
   });
 
@@ -299,6 +313,7 @@ export default function AddArticle() {
       } else {
         setTempPreviewImg(imgUrl);
         setPreviewFile(img);
+        setImgCation(img.name);
       }
 
       URL.revokeObjectURL(objectURL);
@@ -307,6 +322,7 @@ export default function AddArticle() {
     // setTempPreviewImg(imgUrl);
     // setPreviewFile(img);
   };
+  const options = [''];
 
   const clearPost = () => {
     formikRef.current?.resetForm();
@@ -314,6 +330,7 @@ export default function AddArticle() {
     // setEditorKey(newKey);
     setSelectedCategory([]);
     setPreviewFile(null);
+    setImgCation('');
     setArticleContent('');
     setDraftPreviewImg(null);
     setDraftContent({
@@ -328,6 +345,9 @@ export default function AddArticle() {
 
   const uploadEntry = async (values: FormikValues) => {
     let previewArray = null;
+    // if (articleContent.length <= 0) {
+    //   return toast.error('Article Cannot be empty  category');
+    // }
     if (previewFile !== null) {
       previewArray = await fileToCanisterBinaryStoreFormat(previewFile);
     } else if (draftPreviewImg !== null) {
@@ -338,6 +358,24 @@ export default function AddArticle() {
 
     if (selectedCategory.length === 0) {
       return toast.error('Please select at least one  category');
+    }
+    if (selectedTags.length < 1) {
+      return toast.error('Please select at least one meta Tag.');
+    }
+    if (selectedTags.length > 5) {
+      return toast.error("Meta Tags can't be more five.");
+    }
+    if (selectedTagsImg.length < 1) {
+      return toast.error('Please select at least one Image Tag.');
+    }
+    if (selectedTagsImg.length > 5) {
+      return toast.error("Image Tags can't be more five.");
+    }
+    if (imgCation.length < 3) {
+      return toast.error("Caption can't be less then 3 charactors.");
+    }
+    if (imgCation.length >= 200) {
+      return toast.error("Caption can't be more 200 charactors.");
     }
     if (isArticleDraft) {
       setIsDraftSubmitting(true);
@@ -364,6 +402,10 @@ export default function AddArticle() {
     let promotedICP = promotionE8S + gasInE8S;
     logger({ gasInE8S, promotedICP });
     // let promotedICP = (reward / 100) * (promotionValues.icp * E8S);
+    logger({ gasInE8S, promotedICP });
+    // let tagslist=selectedTagsImg.map((e:any)=>e.title),
+
+    logger(selectedTagsImg, 'selectedTagsImg');
 
     const article = {
       title: values.title,
@@ -381,6 +423,9 @@ export default function AddArticle() {
       // promotionLikesTarget: promotionValues.likes,
       promotionICP: 0,
       pressRelease: isPressRelease,
+      imageTags: selectedTagsImg.map((item: any) => item.label),
+      caption: imgCation,
+      tags: selectedTags.map((item: any) => item.label),
     };
     if (isArticleDraft) {
     }
@@ -524,6 +569,12 @@ export default function AddArticle() {
         setNestedObjectValues<FormikTouched<FormikValues>>(errors, true)
       );
     }
+  };
+  const handleTagChange = (selectedOptions: any) => {
+    setSelectedTags(selectedOptions);
+  };
+  const handleTagChangeImg = (selectedOptions: any) => {
+    setSelectedTagsImg(selectedOptions);
   };
   const handlePublish = async () => {
     setIsArticleDraft(false);
@@ -889,6 +940,19 @@ export default function AddArticle() {
                             component='div'
                           />
                         </div>
+                        <Form.Label>Meta Tags</Form.Label>
+                        <Typeahead
+                          id='tagInput'
+                          multiple
+                          options={options}
+                          selected={selectedTags}
+                          onChange={handleTagChange}
+                          placeholder='Enter tags...'
+                          allowNew // Allow users to add new tags
+                          newSelectionPrefix='Add new tag: '
+                          clearButton // Show a clear button
+                        />
+
                         <Field name='seoExcerpt'>
                           {({ field, formProps }: any) => (
                             <Form.Group
@@ -1169,6 +1233,35 @@ export default function AddArticle() {
                           Select Featured Image
                         </label>
                       </p>
+
+                      {(previewFile || draftPreviewImg) && (
+                        <>
+                          <Form.Label>Caption</Form.Label>
+
+                          <Form.Control
+                            type='text'
+                            placeholder='Enter Caption here'
+                            autoComplete='off'
+                            value={imgCation}
+                            // onInput={handleBlur}
+                            onChange={(e) => setImgCation(e.target.value)}
+                            name='caption'
+                          />
+
+                          <Form.Label>Image Tags</Form.Label>
+                          <Typeahead
+                            id='tagInput'
+                            multiple
+                            options={options}
+                            selected={selectedTagsImg}
+                            onChange={handleTagChangeImg}
+                            placeholder='Enter tags...'
+                            allowNew // Allow users to add new tags
+                            newSelectionPrefix='Add new tag: '
+                            clearButton
+                          />
+                        </>
+                      )}
                     </Accordion.Body>
                   </Accordion.Item>
                 </Accordion>

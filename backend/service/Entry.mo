@@ -346,6 +346,9 @@ shared ({ caller = initializer }) actor class () {
                   status = isEntry.status;
                   promotionHistory = isEntry.promotionHistory;
                   pressRelease = isEntry.pressRelease;
+                  imageTags =  isEntry.imageTags;
+                  caption = isEntry.caption;
+                  tags = isEntry.tags;
                 };
                 let newEntry = entryStorage.replace(key, tempEntry);
                 let activited = commentCanister.addActivity(caller, key, #like);
@@ -377,6 +380,9 @@ shared ({ caller = initializer }) actor class () {
                   status = isEntry.status;
                   promotionHistory = isEntry.promotionHistory;
                   pressRelease = isEntry.pressRelease;
+                  imageTags =  isEntry.imageTags;
+                  caption = isEntry.caption;
+                  tags = isEntry.tags;
                 };
                 let newEntry = entryStorage.replace(key, tempEntry);
                 return #ok("Error while liking", true);
@@ -424,6 +430,9 @@ shared ({ caller = initializer }) actor class () {
                 status = isEntry.status;
                 promotionHistory = isEntry.promotionHistory;
                 pressRelease = isEntry.pressRelease;
+                imageTags =  isEntry.imageTags;
+                caption = isEntry.caption;
+                tags = isEntry.tags;
               };
               let newEntry = entryStorage.replace(key, tempEntry);
               #ok("Article Unliked Successfully", false);
@@ -457,6 +466,9 @@ shared ({ caller = initializer }) actor class () {
                 status = isEntry.status;
                 pressRelease = isEntry.pressRelease;
                 promotionHistory = isEntry.promotionHistory;
+                imageTags =  isEntry.imageTags;
+                caption = isEntry.caption;
+                tags = isEntry.tags;
               };
               let newEntry = entryStorage.replace(key, tempEntry);
               let activited = commentCanister.addActivity(caller, key, #like);
@@ -513,6 +525,9 @@ shared ({ caller = initializer }) actor class () {
               isPromoted = isEntry.isPromoted;
               promotionICP = isEntry.promotionICP;
               userName = isEntry.userName;
+              imageTags =  isEntry.imageTags;
+              caption = isEntry.caption;
+              tags = isEntry.tags;
 
               status = isEntry.status;
               // promotionLikesTarget = isEntry.promotionLikesTarget;
@@ -722,6 +737,9 @@ shared ({ caller = initializer }) actor class () {
         status = entry.status;
         isPromoted = entry.isPromoted;
         pressRelease = entry.pressRelease;
+        imageTags =  entry.imageTags;
+        caption = entry.caption;
+        tags = entry.tags;
       };
       if ((inputCategory == "All")) {
         if (draft and entry.isDraft or not draft and not entry.isDraft and shouldSendListEntry(entry.status)) {
@@ -774,6 +792,9 @@ shared ({ caller = initializer }) actor class () {
           status = entry.status;
           isPromoted = entry.isPromoted;
           pressRelease = entry.pressRelease;
+          imageTags =  entry.imageTags;
+          caption = entry.caption;
+          tags = entry.tags;
         };
         if ((inputCategory == "All")) {
 
@@ -825,6 +846,9 @@ shared ({ caller = initializer }) actor class () {
         status = entry.status;
         isPromoted = entry.isPromoted;
         pressRelease = entry.pressRelease;
+        imageTags =  entry.imageTags;
+        caption = entry.caption;
+        tags = entry.tags;
       };
       if (not entry.isDraft) {
         if ((inputCategory == "All")) {
@@ -895,6 +919,9 @@ shared ({ caller = initializer }) actor class () {
           status = status;
           promotionHistory = null;
           pressRelease = entry.pressRelease;
+          imageTags =  entry.imageTags;
+          caption = entry.caption;
+          tags = entry.tags;
         };
         let activitied = commentCanister.addAdminActivity(caller, key, activity);
         let newEntry = entryStorage.replace(key, tempEntry);

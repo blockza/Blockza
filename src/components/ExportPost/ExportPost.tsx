@@ -199,15 +199,51 @@ export default function ExportPost({
             Show more <i className='fa fa-caret-down'></i>
           </Link>
           <div className='count-description-pnl'>
-            <div className='d-flex'>
-              <ul className='vote-comment-list'>
+            <div style={{ display: 'flex', marginBottom: 10 }}>
+              {/* <ul className='vote-comment-list'>
                 <li>
                   <div>
                     <Image src={iconrise} alt='Rise' /> Vote
                   </div>
                   <div>{parseInt(entry?.likes ?? '0')}</div>
                 </li>
-              </ul>
+              </ul> */}
+              {/* <div></div> */}
+              <h6
+                style={{
+                  pointerEvents: 'none',
+                  marginTop: 7,
+                  cursor: 'pointer',
+                }}
+              >
+                {false ? (
+                  <Image
+                    src={'/images/liked.svg'}
+                    alt='Icon Thumb'
+                    style={{ maxWidth: 25 }}
+                    height={25}
+                    width={25}
+                  />
+                ) : (
+                  // <i className='fa fa-like'></i>
+                  // <i
+                  //   className='fa-solid  fa-thumbs-up my-fa'
+                  //   style={{ fontSize: 20, height: 25, width: 25, maxWidth: 25 }}
+                  // ></i>
+                  <Image
+                    src={'/images/like.svg'}
+                    alt='Icon Thumb'
+                    style={{ maxWidth: 25 }}
+                    height={25}
+                    width={25}
+                  />
+                  // <i
+                  //   className='fa-regular  fa-thumbs-up  my-fa'
+                  //   style={{ fontSize: 20, height: 25, width: 25, maxWidth: 25 }}
+                  // ></i>
+                )}{' '}
+              </h6>
+              <h6 className='ms-2 pt-1 '>{parseInt(entry?.likes ?? '0')}</h6>
               {/* <h6>
                 <Image src={iconcomment} alt='Comment' /> 12 Comments
               </h6> */}

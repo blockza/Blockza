@@ -29,6 +29,7 @@ type anon_class_20_1 =
            image: opt ImageObject__1;
            name: opt text;
          }) query;
+   get_user_name_only: (principal) -> (opt text) query;
    make_admin: (principal, Role__1) -> (bool);
    unBlock_user: (text, text) -> (Result_1);
    update_user: (InputUser) -> (Result);
@@ -40,6 +41,7 @@ type User =
    authorInfo: opt text;
    authorTitle: opt text;
    bannerImg: opt ImageObject;
+   designation: opt text;
    dob: opt text;
    email: opt text;
    facebook: opt text;
@@ -132,6 +134,7 @@ type InputUser =
    authorInfo: text;
    authorTitle: text;
    bannerImg: opt ImageObject;
+   designation: text;
    dob: text;
    email: text;
    facebook: text;

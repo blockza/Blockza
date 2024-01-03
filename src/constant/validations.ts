@@ -1,4 +1,5 @@
 export const MAX_NAME_CHARACTERS = 40;
+export const MAX_DESIGNATION_CHARACTERS = 100;
 export const MIN_NAME_CHARACTERS = 3;
 export const MAX_BIO_CHARACTERS = 140;
 export const MAX_AUTHOR_INFO_CHARACTERS = 500;

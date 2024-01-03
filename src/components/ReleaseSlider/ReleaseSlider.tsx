@@ -382,7 +382,7 @@ export default function ReleaseSlider() {
                             />
                           </Link>
                         </span>{' '}
-                        Press Release By {' '}
+                        Press Release By{' '}
                         <b>
                           <Link
                             href={`/profile?userId=${entry[1].user.toString()}`}
@@ -393,11 +393,13 @@ export default function ReleaseSlider() {
                         </b>
                       </p>
                       <div className='d-flex justify-content-center'>
-                      <Link href={`/article?articleId=${entry[0]}`} style={{width: "270px"}}>
-                        Read More
-                      </Link>
+                        <Link
+                          href={`/article?articleId=${entry[0]}`}
+                          style={{ width: '270px' }}
+                        >
+                          Read More
+                        </Link>
                       </div>
-                      
                     </div>
                   </div>
                 </div>

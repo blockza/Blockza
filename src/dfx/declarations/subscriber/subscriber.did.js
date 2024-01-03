@@ -7,20 +7,32 @@ export const idlFactory = ({ IDL }) => {
     'ok' : IDL.Tuple(Subscriber, IDL.Text),
     'err' : IDL.Text,
   });
-  const Subscribers = IDL.Vec(Subscriber);
   const Result = IDL.Variant({
-    'ok' : IDL.Tuple(Subscribers, IDL.Text),
+    'ok' : IDL.Tuple(
+      IDL.Record({ 'entries' : IDL.Vec(Subscriber), 'amount' : IDL.Nat }),
+      IDL.Text,
+    ),
     'err' : IDL.Text,
   });
-  const anon_class_18_1 = IDL.Service({
+  const anon_class_20_1 = IDL.Service({
     'addSubscriber' : IDL.Func(
         [IDL.Principal, IDL.Text, IDL.Text],
         [Result_1],
         [],
       ),
-    'getSubscribers' : IDL.Func([], [Result], ['query']),
+    'getSubscribers' : IDL.Func([IDL.Nat, IDL.Nat], [Result], ['query']),
     'isSubscriber' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
+    'searchPaginateSubscribersByLatest' : IDL.Func(
+        [IDL.Vec(Subscriber), IDL.Text, IDL.Text, IDL.Nat, IDL.Nat],
+        [IDL.Record({ 'entries' : IDL.Vec(Subscriber), 'amount' : IDL.Nat })],
+        [],
+      ),
+    'searchSubscribers' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Nat, IDL.Nat],
+        [Result],
+        [],
+      ),
   });
-  return anon_class_18_1;
+  return anon_class_20_1;
 };
 export const init = ({ IDL }) => { return []; };

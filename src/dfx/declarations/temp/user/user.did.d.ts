@@ -11,6 +11,7 @@ export interface InputUser {
   'twitter' : string,
   'instagram' : string,
   'name' : string,
+  'designation' : string,
   'authorInfo' : string,
   'email' : string,
   'website' : string,
@@ -67,6 +68,7 @@ export interface User {
   'instagram' : [] | [string],
   'isBlocked' : boolean,
   'name' : [] | [string],
+  'designation' : [] | [string],
   'authorInfo' : [] | [string],
   'role' : Role,
   'email' : [] | [string],
@@ -101,6 +103,7 @@ export interface anon_class_20_1 {
     [Principal],
     [] | [{ 'name' : [] | [string], 'image' : [] | [ImageObject__1] }]
   >,
+  'get_user_name_only' : ActorMethod<[Principal], [] | [string]>,
   'make_admin' : ActorMethod<[Principal, Role__1], boolean>,
   'unBlock_user' : ActorMethod<[string, string], Result_1>,
   'update_user' : ActorMethod<[InputUser], Result>,

@@ -11,6 +11,7 @@ import {
 } from '@/dfx/service/actor-locator';
 import logger from '@/lib/logger';
 import { getImage } from '@/components/utils/getImage';
+import { canisterId as userCanisterId } from '@/dfx/declarations/user';
 import { utcToLocal } from '@/components/utils/utcToLocal';
 // import { usePopper } from 'react-popper';
 import Tippy from '@tippyjs/react';
@@ -166,20 +167,14 @@ function Items({
 }
 
 export default function AllArticles() {
-  const [entriesList, setEntriesList] = useState([]);
-  const [processedList, setProcessedList] = useState<any[]>([]);
   const [isGetting, setIsGetting] = useState(true);
   const [itemOffset, setItemOffset] = useState(0);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [userArticleList, setUserArticleList] = useState<any[]>([]);
-  const [activeListName, setActiveListName] = useState('All');
   const [subscribersList, setSubscribersList] = useState<any[]>([]);
+  const [search, setSearch] = useState('');
   const [refinedSubscribersList, setRefinedSubscribersList] = useState<any[]>(
     []
   );
-  const [activeList, setActiveList] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [userDraftList, setUserDraftList] = useState<any[]>([]);
+  const [subscriberSize, setSubscriberSize] = useState(0);
   const [forcePaginate, setForcePaginate] = useState(0);
   const router = useRouter();
   const pathName = usePathname();
@@ -190,24 +185,51 @@ export default function AllArticles() {
       identity: state.identity,
     })
   );
-
+  const subscriberActor = makeSubscriberActor({
+    agentOptions: {
+      identity,
+    },
+  });
   const endOffset = itemOffset + itemsPerPage;
   let currentItems = subscribersList.slice(itemOffset, endOffset);
   let pageCount = Math.ceil(subscribersList.length / itemsPerPage);
+  const pageCounts = Math.ceil(subscriberSize / itemsPerPage);
 
-  const getSubscribers = async () => {
-    const subscriberActor = makeSubscriberActor({
-      agentOptions: {
-        identity,
-      },
-    });
-    const tempSubs = await subscriberActor.getSubscribers();
-    if (tempSubs.ok) {
-      setSubscribersList(tempSubs.ok[0]);
+  const getSubscribers = async (reset?: boolean) => {
+    if (!identity) return;
+    const startIndex = forcePaginate * itemsPerPage;
+    if (reset || search === '') {
+      const resp = await subscriberActor.getSubscribers(
+        startIndex,
+        itemsPerPage
+      );
+      if (resp.ok) {
+        const tempSubs = resp.ok[0]?.entries;
+        // setSubscribersList(tempSubs);
+        const tempList = await getRefinedSubscribers(tempSubs);
+        setRefinedSubscribersList(tempList);
+        setSubscriberSize(parseInt(resp.ok[0].amount));
+      } else {
+        logger(resp);
+      }
+      logger(resp, 'SUBBBBBB');
     } else {
-      logger(tempSubs);
+      const resp = await subscriberActor.searchSubscribers(
+        userCanisterId,
+        search,
+        startIndex,
+        itemsPerPage
+      );
+      if (resp.ok) {
+        const tempSubs = resp.ok[0]?.entries;
+        // setSubscribersList(tempSubs);
+        const tempList = await getRefinedSubscribers(tempSubs);
+        setRefinedSubscribersList(tempList);
+        setSubscriberSize(parseInt(resp.ok[0].amount));
+      } else {
+        logger(resp);
+      }
     }
-    logger(tempSubs, 'SUBBBBBB');
   };
   const getRefinedSubscribers = async (tempSubList: any[]) => {
     if (tempSubList.length === 0) {
@@ -229,145 +251,108 @@ export default function AllArticles() {
     );
     return refinedPromise;
   };
-  const getCategories = async () => {
-    const entryActor = makeEntryActor({
-      agentOptions: {
-        identity,
-      },
-    });
-    const tempCat = await entryActor.getCategories();
-    setCategories(tempCat);
-  };
-
-  const getEntriesList = async (all?: string) => {
-    const entryActor = makeEntryActor({
-      agentOptions: {
-        identity,
-      },
-    });
-    const tempList = await entryActor.getEntriesList(
-      all ? all : selectedCategory
-    );
-    setEntriesList(tempList);
-    setActiveList(tempList);
-    logger(tempList, 'Entries List');
-
-    // logger(
-    //   tempList.slice(0, itemsPerPage),
-    //   'Entries List fetched from canister'
-    // );
-    // const myEntries = await getRefinedList(tempList.slice(0, itemsPerPage));
-    // setProcessedList(myEntries);
-    return tempList;
-  };
-
-  const getUserEntries = async (
-    reset?: boolean,
-    draft: boolean = false,
-    all?: string
-  ) => {
-    const entryActor = makeEntryActor({
-      agentOptions: {
-        identity,
-      },
-    });
-    const tempList = await entryActor.getUserEntriesList(
-      all ? all : selectedCategory,
-      draft
-    );
-    if (draft) {
-      setUserDraftList(tempList);
-    } else {
-      setUserArticleList(tempList);
-    }
-    logger(tempList, 'JUST SAT THIS');
-    if (reset) {
-      setActiveList(tempList);
-
-      // const myEntries = await getRefinedList(tempList);
-      // setProcessedList(myEntries);
-      // setActiveListName(draft ? 'Draft' : 'User');
-      return;
-    }
-    return;
-    // logger(myEntries, 'Entries List fetched from canister');
-  };
 
   // Invoke when user click to request another page.
   const handlePageClick = async (event: any) => {
-    setIsGetting(true);
-    setForcePaginate(event.selected);
-    const newOffset = (event.selected * itemsPerPage) % subscribersList.length;
-    // setItemOffset(newOffset);
-    const newItems = subscribersList.slice(newOffset, newOffset + itemsPerPage);
-    const tempList = await getRefinedSubscribers(newItems);
-    logger({ newOffset, subscribersList, newItems, tempList }, 'EEEEVENTTT');
-    setRefinedSubscribersList(tempList);
-    setIsGetting(false);
-  };
-  const handleTabChange = (tab: string) => {
-    setIsGetting(true);
-    setSelectedCategory('All');
-    setActiveListName(tab);
-    setForcePaginate(0);
-    if (tab === 'All') {
-      // getEntriesList('All');
-    } else if (tab === 'Mine') {
-      // getUserEntries(true, false, 'All');
-    } else if (tab === 'Draft') {
-      // getUserEntries(true, true, 'All');
+    try {
+      setIsGetting(true);
+      setForcePaginate(event.selected);
+      const newOffset =
+        (event.selected * itemsPerPage) % subscribersList.length;
+      // setItemOffset(newOffset);
+      // const newItems = subscribersList.slice(newOffset, newOffset + itemsPerPage);
+      const startIndex = forcePaginate * itemsPerPage;
+      if (search === '') {
+        const resp = await subscriberActor.getSubscribers(
+          startIndex,
+          itemsPerPage
+        );
+        if (resp.ok) {
+          const tempSubs = resp.ok[0]?.entries;
+          // setSubscribersList(tempSubs);
+          const tempList = await getRefinedSubscribers(tempSubs);
+          logger({ newOffset, subscribersList, tempList }, 'EEEEVENTTT');
+          setRefinedSubscribersList(tempList);
+        }
+      } else {
+        const resp = await subscriberActor.searchSubscribers(
+          userCanisterId,
+          search,
+          startIndex,
+          itemsPerPage
+        );
+        if (resp.ok) {
+          const tempSubs = resp.ok[0]?.entries;
+          // setSubscribersList(tempSubs);
+          const tempList = await getRefinedSubscribers(tempSubs);
+          logger({ newOffset, subscribersList, tempList }, 'EEEEVENTTT');
+          setRefinedSubscribersList(tempList);
+        } else {
+          logger(resp);
+        }
+      }
+      // const tempList = await getRefinedSubscribers(newItems);
+      setIsGetting(false);
+    } catch (error) {
+      setIsGetting(false);
     }
-    setIsGetting(false);
   };
 
-  const filter = () => {
-    if (activeListName == 'All') {
-      getEntriesList();
-    } else if (activeListName === 'Mine') {
-      getUserEntries(true);
-    } else if (activeListName === 'Draft') {
-      getUserEntries(true, true);
-    }
+  const filter = async (reset?: boolean) => {
+    setIsGetting(true);
+    setForcePaginate(0);
+    await getSubscribers(reset);
+    setIsGetting(false);
   };
 
   // useEffect(() => {}, [selectedCategory]);
 
-  useEffect(() => {
-    if (auth.client) {
-      const tempFun = async () => {
-        setIsGetting(true);
-        const tempList = await getRefinedSubscribers(currentItems);
-        setRefinedSubscribersList(tempList);
-        setIsGetting(false);
-      };
-      tempFun();
-    }
-  }, [subscribersList]);
+  // useEffect(() => {
+  //   if (auth.client) {
+  //     const tempFun = async () => {
+  //       setIsGetting(true);
+  //       const tempList = await getRefinedSubscribers(currentItems);
+  //       setRefinedSubscribersList(tempList);
+  //       setIsGetting(false);
+  //     };
+  //     tempFun();
+  //   }
+  // }, [subscribersList]);
 
   useEffect(() => {
     // getEntriesList();
     // getCategories();
   }, []);
 
-  useEffect(() => {
-    if (auth.client) {
-      const tempFun = async () => {
-        setIsGetting(true);
-        const tempList = await getRefinedSubscribers(currentItems);
-        setRefinedSubscribersList(tempList);
-        setIsGetting(false);
-      };
-      tempFun();
+  // useEffect(() => {
+  //   if (auth.client) {
+  //     const tempFun = async () => {
+  //       setIsGetting(true);
+  //       const tempList = await getRefinedSubscribers(currentItems);
+  //       setRefinedSubscribersList(tempList);
+  //       setIsGetting(false);
+  //     };
+  //     tempFun();
+  //   }
+  //   if (auth.state !== 'initialized') {
+  //     router.replace('/');
+  //   }
+  // }, [auth, pathName]);
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      filter();
     }
-    if (auth.state !== 'initialized') {
-      router.replace('/');
-    }
-  }, [auth, pathName]);
+  };
 
   useEffect(() => {
+    const subs = async () => {
+      await getSubscribers();
+      setIsGetting(false);
+    };
     if (identity) {
+      subs();
       // getUserEntries();
-      getSubscribers();
+
       // getUserEntries(false, true);
     }
   }, [identity, pathName]);
@@ -400,8 +385,24 @@ export default function AllArticles() {
 
                         <div>
                           <div className='search-post-pnl'>
-                            <input type='text' placeholder='Search Users' />
-                            <button>
+                            <input
+                              type='text'
+                              placeholder='Search Users'
+                              value={search}
+                              onChange={(e) => setSearch(e.target.value)}
+                              onKeyDown={handleSearch}
+                            />
+                            {search.length >= 1 && (
+                              <button
+                                onClick={() => {
+                                  setSearch('');
+                                  filter(true);
+                                }}
+                              >
+                                <i className='fa-solid fa-xmark mx-1'></i>
+                              </button>
+                            )}
+                            <button onClick={() => filter()}>
                               <i className='fa fa-search'></i>
                             </button>
                           </div>
@@ -434,7 +435,10 @@ export default function AllArticles() {
                             </Form.Select>
                           </li> */}
                           <li>
-                            <Button className='filter-btn' onClick={filter}>
+                            <Button
+                              className='filter-btn'
+                              onClick={() => filter()}
+                            >
                               Filter
                             </Button>
                           </li>
@@ -448,7 +452,7 @@ export default function AllArticles() {
                           nextLabel=''
                           onPageChange={handlePageClick}
                           pageRangeDisplayed={5}
-                          pageCount={pageCount}
+                          pageCount={pageCounts}
                           previousLabel=''
                           renderOnZeroPageCount={null}
                           forcePage={forcePaginate}

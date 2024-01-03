@@ -31,7 +31,15 @@ export default function WebstoriesSlider() {
     slidesToScroll: 7,
     responsive: [
       {
-        breakpoint: 1500,
+        breakpoint: 1400,
+        settings: {
+          slidesToShow: 6,
+          slidesToScroll: 6,
+          infinite: false,
+        },
+      },
+      {
+        breakpoint: 1200,
         settings: {
           slidesToShow: 5,
           slidesToScroll: 5,
@@ -39,15 +47,7 @@ export default function WebstoriesSlider() {
         },
       },
       {
-        breakpoint: 1400,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 4,
-          infinite: false,
-        },
-      },
-      {
-        breakpoint: 1200,
+        breakpoint: 991,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,

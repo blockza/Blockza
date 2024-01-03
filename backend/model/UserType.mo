@@ -39,6 +39,7 @@ module UserType {
     profileImg : ?ImageObject;
     bannerImg : ?ImageObject;
     name : ?Text;
+    designation : ?Text;
     email : ?Text;
     website : ?Text;
     dob : ?Text;
@@ -71,6 +72,7 @@ module UserType {
     profileImg : ?ImageObject;
     bannerImg : ?ImageObject;
     name : Text;
+    designation : Text;
     email : Text;
     website : Text;
     dob : Text;

@@ -122,9 +122,11 @@ type LikeReward = nat;
 type Key = text;
 type InputEntry = 
  record {
+   caption: text;
    category: vec text;
    description: text;
    image: ImageObject;
+   imageTags: vec text;
    isDraft: bool;
    isPromoted: bool;
    pressRelease: bool;
@@ -134,6 +136,7 @@ type InputEntry =
    seoSlug: text;
    seoTitle: text;
    subscription: bool;
+   tags: vec text;
    title: text;
    userName: text;
  };
@@ -153,10 +156,12 @@ type EntryStatus =
 type EntryId = text;
 type Entry = 
  record {
+   caption: text;
    category: vec text;
    creation_time: int;
    description: text;
    image: ImageObject;
+   imageTags: vec text;
    isDraft: bool;
    isPromoted: bool;
    likedUsers: vec principal;
@@ -171,6 +176,7 @@ type Entry =
    seoTitle: text;
    status: EntryStatus;
    subscription: bool;
+   tags: vec text;
    title: text;
    user: UserId;
    userName: text;

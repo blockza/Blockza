@@ -26,8 +26,11 @@ module EntryStoreHelper {
   type EntryId = EntryType.EntryId;
   type ListEntryItem = EntryType.ListEntryItem;
   type Key = Text;
+  type SubKey = EntryType.SubKey;
+
   type Id = UserType.Id;
   type ListUser = UserType.ListUser;
+  type Subscriber = EntryType.Subscriber;
   type ListAdminUser = UserType.ListAdminUser;
 
   type ImageStore = Trie.Trie<ImageId, ImageObject>;
@@ -103,6 +106,9 @@ module EntryStoreHelper {
             status = isEntry.status;
             promotionHistory = newPromotion;
             pressRelease = isEntry.pressRelease;
+            imageTags = isEntry.imageTags;
+          caption = isEntry.caption;
+          tags = isEntry.tags;
           };
           let oldEntry = entryStorage.replace(draftId, tempEntry);
           let newEntryStorage : Map.HashMap<EntryId, Entry> = Map.fromIter<EntryId, Entry>(entryStorage.entries(), entryStorage.size(), Text.equal, Text.hash);
@@ -140,6 +146,9 @@ module EntryStoreHelper {
         status = entryStatus;
         promotionHistory = List.nil<Int>();
         pressRelease = entry.pressRelease;
+        imageTags = entry.imageTags;
+          caption = entry.caption;
+          tags = entry.tags;
       };
       if (isDraftUpdate) {
         let oldEntry = entryStorage.replace(draftId, tempEntry);
@@ -417,4 +426,51 @@ module EntryStoreHelper {
     };
     return { entries = paginatedArray; amount = sortedEntries.size() };
   };
+  public func paginateSubscribersByLatest(array : [Subscriber], startIndex : Nat, length : Nat) : {
+    entries : [Subscriber];
+    amount : Nat;
+  } {
+    let compare = func(a : Subscriber, b : Subscriber) : Order.Order {
+      if (a.subscribed_on > b.subscribed_on) {
+        return #less;
+      } else if (a.subscribed_on < b.subscribed_on) {
+        return #greater;
+      } else {
+        return #equal;
+      };
+    };
+    // let sortedArray = Array.sort(newArr, func((keyA : Key, a : ListSubscriberItem), (keyB : Key, b : ListSubscriberItem)) { Order.fromCompare((b.creation_time - a.creation_time)) });
+    let sortedEntries = Array.sort(
+      array,
+      compare,
+    );
+    var paginatedArray : [Subscriber] = [];
+    let size = sortedEntries.size();
+    let amount : Nat = size - startIndex;
+    let itemsPerPage = 11;
+    if (size > startIndex and size > (length + startIndex) and length != 0) {
+      paginatedArray := Array.subArray<Subscriber>(sortedEntries, startIndex, length);
+    } else if (size > startIndex and size > (startIndex + itemsPerPage)) {
+      if (length != 0) {
+        paginatedArray := Array.subArray<Subscriber>(sortedEntries, startIndex, amount);
+      } else {
+        paginatedArray := Array.subArray<Subscriber>(sortedEntries, startIndex, itemsPerPage);
+
+      };
+
+    } else if (size > startIndex and size < (startIndex + itemsPerPage) and size > itemsPerPage) {
+      Debug.print(debug_show (size, startIndex, amount));
+      paginatedArray := Array.subArray<Subscriber>(sortedEntries, startIndex, amount);
+
+    } else if (size > startIndex) {
+      paginatedArray := Array.subArray<Subscriber>(sortedEntries, startIndex, amount);
+
+    } else if (size > itemsPerPage) {
+      paginatedArray := Array.subArray<Subscriber>(sortedEntries, 0, itemsPerPage);
+    } else {
+      paginatedArray := sortedEntries;
+    };
+    return { entries = paginatedArray; amount = sortedEntries.size() };
+  };
+
 };

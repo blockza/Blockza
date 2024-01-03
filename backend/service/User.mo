@@ -22,6 +22,7 @@ shared ({ caller = initializer }) actor class () {
   private let MAX_USERS = 1_000;
   private let MAX_NAME_CHARS = 40;
   private let MAX_TITLE_CHARS = 60;
+  private let MAX_DESIGNATION_CHARS = 100;
   private let MAX_BIO_CHARS = 500;
   private let MAX_LINK_CHARS = 2048;
   private let MAX_EMAIL_CHARS = 320;
@@ -100,6 +101,7 @@ shared ({ caller = initializer }) actor class () {
       profileImg = null;
       bannerImg = null;
       name = ?result;
+      designation = null;
       email = null;
       website = null;
       dob = null;
@@ -206,6 +208,7 @@ shared ({ caller = initializer }) actor class () {
               profileImg = iuser.profileImg;
               bannerImg = iuser.bannerImg;
               name = ?name;
+              designation = iuser.designation;
               email = iuser.email;
               website = iuser.website;
               dob = iuser.dob;
@@ -243,6 +246,7 @@ shared ({ caller = initializer }) actor class () {
       profileImg = null;
       bannerImg = null;
       name = ?name;
+      designation = null;
       email = null;
       website = null;
       dob = null;
@@ -288,6 +292,7 @@ shared ({ caller = initializer }) actor class () {
             profileImg = iuser.profileImg;
             bannerImg = iuser.bannerImg;
             name = iuser.name;
+            designation = iuser.designation;
             email = iuser.email;
             website = iuser.website;
             dob = iuser.dob;
@@ -322,6 +327,7 @@ shared ({ caller = initializer }) actor class () {
       profileImg = null;
       bannerImg = null;
       name = ?result;
+      designation = null;
       email = null;
       website = null;
       dob = null;
@@ -493,6 +499,19 @@ shared ({ caller = initializer }) actor class () {
     // let user = userStorage.get(caller);
 
   };
+  public query func get_user_name_only(userId : Principal) : async ?Text {
+    let user = userStorage.get(userId);
+    switch user {
+      case (?iuser) {
+        return iuser.name;
+
+      };
+      case (null) {
+        return null;
+      };
+    };
+
+  };
   public shared ({ caller }) func block_user(userId : Text, commentCanisterId : Text) : async Result.Result<(Text, User), Text> {
     assert require_permission(caller, #manage_user);
     let commentCanister = actor (commentCanisterId) : actor {
@@ -505,6 +524,7 @@ shared ({ caller = initializer }) actor class () {
       case (?user) {
         var tempUser = {
           name = user.name;
+          designation = user.designation;
           email = user.email;
           website = user.website;
           dob = user.dob;
@@ -548,6 +568,7 @@ shared ({ caller = initializer }) actor class () {
 
         var tempUser = {
           name = user.name;
+          designation = user.designation;
           email = user.email;
           website = user.website;
           dob = user.dob;
@@ -618,6 +639,7 @@ shared ({ caller = initializer }) actor class () {
     // var tempTwitter = "";
     // var tempEmail = "";
     var tempName = "";
+    var tempDesignation = "";
     var tempEmail = "";
     var tempWebsite = "";
     var tempDob = "";
@@ -640,6 +662,8 @@ shared ({ caller = initializer }) actor class () {
     assert user.name.size() <= MAX_NAME_CHARS;
     assert user.name.size() >= 1;
     tempName := user.name;
+    assert user.designation.size() <= MAX_DESIGNATION_CHARS;
+    tempDesignation := user.designation;
 
     assert user.email.size() <= MAX_EMAIL_CHARS;
     tempEmail := user.email;
@@ -711,6 +735,7 @@ shared ({ caller = initializer }) actor class () {
 
     var tempUser = {
       name = ?tempName;
+      designation = ?tempDesignation;
       email = ?tempEmail;
       website = ?tempWebsite;
       dob = ?tempDob;
@@ -750,6 +775,7 @@ shared ({ caller = initializer }) actor class () {
         let newRewards : Rewards = Array.append(oldRewards, [newReward]);
         var tempUser = {
           name = isUser.name;
+          designation = isUser.designation;
           email = isUser.email;
           website = isUser.website;
           dob = isUser.dob;
@@ -823,6 +849,7 @@ shared ({ caller = initializer }) actor class () {
         Debug.print(debug_show ("got thi may", count, claimableAmount, newRewards));
         var tempUser = {
           name = isUser.name;
+          designation = isUser.designation;
           email = isUser.email;
           website = isUser.website;
           dob = isUser.dob;

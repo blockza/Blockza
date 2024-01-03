@@ -16,25 +16,66 @@
   background-size: 100% 100%;
   border-radius: 0px;
   margin-top: 20px;
-  padding: 20px;
+  padding: 20px 20px 50px;
   max-width: 520px;
+  padding-bottom: 30px;
   text-align: center;
-  .heading-pnl{
+  @media (max-width: 1600px) {
+    padding: 20px 10px;
+
+    padding-bottom: 30px;
+  }
+  .heading-pnl {
     position: relative;
     width: 100%;
-    span{position: absolute;border-radius:50%;
-      img{border-radius: 50%;}
-      &:nth-of-type(1){width: 56px;height: 56px;left: -15px;bottom: 0;}
-      &:nth-of-type(2){width: 32px;height: 32px;right: 30px;top:20px;}
-      &:nth-of-type(3){width: 26px;height: 26px;top: 0;left: 45px;}
-      &:nth-of-type(4){width: 18px;height: 18px;right: 0;top: 50px;}
+    span {
+      position: absolute;
+      border-radius: 50%;
+      img {
+        border-radius: 50%;
+      }
+      &:nth-of-type(1) {
+        width: 56px;
+        height: 56px;
+        left: -15px;
+        bottom: 0;
+      }
+      &:nth-of-type(2) {
+        width: 32px;
+        height: 32px;
+        right: 30px;
+        top: 20px;
+      }
+      &:nth-of-type(3) {
+        width: 26px;
+        height: 26px;
+        top: 0;
+        left: 45px;
+      }
+      &:nth-of-type(4) {
+        width: 18px;
+        height: 18px;
+        right: 0;
+        top: 50px;
+      }
     }
   }
-.learn-more-btn,a.show-more-link{color: $black;font-weight: 700;font-size: 16px;
-  span{background-color: $color;border-radius: 50%;width: 20px;height: 20px;display: inline-flex;justify-content: center;
-    align-items: center;margin-left: 15px;
+  .learn-more-btn,
+  a.show-more-link {
+    color: $black;
+    font-weight: 700;
+    font-size: 16px;
+    span {
+      background-color: $color;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 15px;
+    }
   }
-}
   h1 {
     color: $skyblue;
     font-size: 25px;
@@ -49,9 +90,12 @@
     font-weight: 800;
     padding: 5px 20px;
     border: 3px solid #ffb802;
-    
   }
-  h6{font-size: 14px;margin-bottom: 20px;font-weight: 600;}
+  h6 {
+    font-size: 14px;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
   h5 {
     font-size: 18px;
     color: $black;
@@ -76,7 +120,10 @@
       h4 {
         font-weight: 700;
         margin: 0;
-        font-size: 16px;
+        font-size: 15px;
+        @media (max-width: 1600px) {
+          font-size: 14px;
+        }
       }
 
       h5 {
@@ -84,6 +131,9 @@
         color: $black;
         font-size: 15px;
         margin: 0;
+        @media (max-width: 1600px) {
+          font-size: 14px;
+        }
       }
     }
 
@@ -99,10 +149,15 @@
       font-size: 15px;
       font-weight: 600;
       border-color: $white;
+      @media (max-width: 1600px) {
+        padding: 0.5rem 5px;
+      }
       b {
         font-size: 18px;
+        @media (max-width: 1600px) {
+          font-size: 16px;
+        }
       }
-
     }
   }
 

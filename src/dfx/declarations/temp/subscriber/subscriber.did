@@ -1,10 +1,15 @@
-type anon_class_18_1 = 
+type anon_class_20_1 = 
  service {
    addSubscriber: (principal, text, text) -> (Result_1);
-   getSubscribers: () -> (Result) query;
+   getSubscribers: (nat, nat) -> (Result) query;
    isSubscriber: (principal) -> (bool) query;
+   searchPaginateSubscribersByLatest: (vec Subscriber, text, text, nat,
+    nat) -> (record {
+               amount: nat;
+               entries: vec Subscriber;
+             });
+   searchSubscribers: (text, text, nat, nat) -> (Result);
  };
-type Subscribers = vec Subscriber;
 type Subscriber = 
  record {
    subscribed_on: int;
@@ -22,8 +27,11 @@ type Result =
  variant {
    err: text;
    ok: record {
-         Subscribers;
+         record {
+           amount: nat;
+           entries: vec Subscriber;
+         };
          text;
        };
  };
-service : () -> anon_class_18_1
+service : () -> anon_class_20_1

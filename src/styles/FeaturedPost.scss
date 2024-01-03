@@ -4,16 +4,15 @@
   margin-bottom: 15px;
   background-color: #eeeeee;
   padding: 10px;
-  min-height: 373px;
   @include bd-radius(5px);
   border-bottom: 3px solid #d9d9d9;
 
   @media (max-width: 1400px) {
-    min-height: 340px;
+    min-height: auto;
   }
 
   @media (max-width: 1200px) {
-    min-height: 345px;
+    min-height: auto;
   }
 
   @media (max-width: 991px) {
@@ -39,8 +38,6 @@
       float: left;
       padding: 10px 0 0;
       @include bd-radius(0px 0px 15px 15px);
-
-     
 
       h5 {
         color: $black;
@@ -95,21 +92,20 @@
             width: 20px;
             height: 20px;
           }
-          img.myimg{
+          img.myimg {
             margin-right: 0 !important;
           }
         }
       }
-p a.mylink {
-  border: none !important;
-  padding: 0 !important;
-  
-  &:hover {
-    background-color: unset !important;
-    color: unset !important;
-  }
+      p a.mylink {
+        border: none !important;
+        padding: 0 !important;
 
-}
+        &:hover {
+          background-color: unset !important;
+          color: unset !important;
+        }
+      }
       a {
         width: 100%;
         background-color: transparent;
@@ -119,9 +115,13 @@ p a.mylink {
         border-radius: 5px;
         padding: 10px 5px;
         font-size: 14px;
+        background-color: white;
+        max-width: 80%;
+        margin: 0 auto 10px;
         font-weight: 600;
         display: flex;
         align-items: center;
+        text-align: left;
         justify-content: center;
 
         &:hover {
@@ -133,6 +133,10 @@ p a.mylink {
           width: 25px;
           margin-right: 5px;
         }
+      }
+      p a {
+        margin-bottom: 0;
+        background-color: transparent;
       }
     }
 
@@ -149,7 +153,8 @@ p a.mylink {
         z-index: 2;
         margin-bottom: 0px;
         position: absolute;
-        left: 0;bottom:0;
+        left: 0;
+        bottom: 0;
         &::before {
           position: absolute;
           content: '';
@@ -164,7 +169,7 @@ p a.mylink {
       }
 
       img {
-        max-height: 185px;
+        max-height: 129px;
       }
 
       a,
@@ -177,18 +182,24 @@ p a.mylink {
   &.press .Featured-Post-inner .txt-pnl {
     h5 {
       height: 36px;
-      margin-bottom:20px;
+      margin-bottom: 20px;
     }
 
     p {
       margin-bottom: 5px;
     }
-    .read-more-btn{background-color: $white;max-width: 80%;margin: 25px auto 0;
-      &:hover{background-color: $color;}
+    .read-more-btn {
+      background-color: $white;
+      max-width: 80%;
+      margin: 25px auto 0;
+      &:hover {
+        background-color: $color;
+      }
     }
   }
 }
-.comingsoonlb, .comingsoonlb1{
+.comingsoonlb,
+.comingsoonlb1 {
   color: $white;
   font-size: 16px;
   text-transform: uppercase;
@@ -198,7 +209,8 @@ p a.mylink {
   z-index: 2;
   margin-bottom: 0px;
   position: absolute;
-  left: 0;bottom:0;
+  left: 0;
+  bottom: 0;
   &::before {
     position: absolute;
     content: '';
@@ -211,7 +223,7 @@ p a.mylink {
     clip-path: polygon(0 0, 90% 0%, 100% 100%, 0% 100%);
   }
 }
-.comingsoonlb1{
+.comingsoonlb1 {
   color: $white;
   font-size: 16px;
   text-transform: uppercase;
@@ -221,8 +233,9 @@ p a.mylink {
   z-index: 2;
   margin-bottom: 0px;
   width: 170px;
-height: 30px;
-  left: 0;bottom:0;
+  height: 30px;
+  left: 0;
+  bottom: 0;
   &::before {
     position: absolute;
     content: '';
@@ -233,5 +246,28 @@ height: 30px;
     background-color: $blue;
     z-index: -1;
     clip-path: polygon(0 0, 90% 0%, 100% 100%, 0% 100%);
+  }
+}
+.Featured-Post .Featured-Post-inner .img-pnl {
+  height: 129px !important;
+  img {
+    height: 129px;
+  }
+}
+.Featured-Post .Featured-Post-inner .txt-pnl h5 {
+  word-break: break-all;
+}
+.Featured-Post .Featured-Post-inner {
+  height: unset !important;
+}
+.Featured-Post .Featured-Post-inner .txt-pnl a {
+  font-size: 12px;
+  @media (max-width: 1600px) {
+    font-size: 11px;
+  }
+}
+.Featured-Post {
+  @media (max-width: 1600px) {
+    min-height: 310px;
   }
 }

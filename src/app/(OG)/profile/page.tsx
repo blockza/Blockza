@@ -52,15 +52,14 @@ export default function Profiles() {
   }));
 
   const handleClose = () => {};
-  const { auth, setAuth, setIdentity, identity ,principal} = useConnectPlugWalletStore(
-    (state) => ({
+  const { auth, setAuth, setIdentity, identity, principal } =
+    useConnectPlugWalletStore((state) => ({
       auth: state.auth,
       setAuth: state.setAuth,
       setIdentity: state.setIdentity,
       identity: state.identity,
-      principal : state.principal
-    })
-  );
+      principal: state.principal,
+    }));
   const methods = authMethods({
     useConnectPlugWalletStore,
     setIsLoading,
@@ -156,12 +155,12 @@ export default function Profiles() {
       setIsSubscribing(false);
     }
   };
-  let copyProfileLink=(e:any)=>{
+  let copyProfileLink = (e: any) => {
     e.preventDefault();
-    let profileLink=`${window.location.href}?userId=${principal}`
+    let profileLink = `${window.location.href}?userId=${principal}`;
     window.navigator.clipboard.writeText(profileLink);
-    toast.success("Copied successfully.")
-  }
+    toast.success('Copied successfully.');
+  };
   useEffect(() => {
     if (auth.state === 'initialized') {
       getUser();
@@ -266,7 +265,7 @@ export default function Profiles() {
                               </div>
                             </div>
                             <div className='txt-pnl'>
-                              <h2>
+                              <h2 className='mb-1'>
                                 {user ? user.name : 'User Name'}{' '}
                                 {isOwner && (
                                   <Link
@@ -277,6 +276,10 @@ export default function Profiles() {
                                   </Link>
                                 )}
                               </h2>
+                              <p className='m-0'>
+                                {user ? user.designation : ''}{' '}
+                                {/* CEO of NFTStudio24 */}
+                              </p>
                             </div>
                           </div>
                           <div className='edit-profile'>

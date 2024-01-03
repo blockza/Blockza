@@ -45,6 +45,10 @@ module EntryType {
     // promotionLikesTarget : Nat;
     promotionICP : Nat;
     promotionHistory : List.List<Int>;
+    imageTags : [Text];
+    caption : Text;
+    tags : [Text];
+
   };
   public type InputEntry = {
     title : Text;
@@ -62,6 +66,9 @@ module EntryType {
     isPromoted : Bool;
     promotionICP : Nat;
     pressRelease : Bool;
+    imageTags : [Text];
+    caption : Text;
+    tags : [Text];
     // promotionLikesTarget : Nat;
     // promotion: ;
 
@@ -82,6 +89,11 @@ module EntryType {
     pressRelease : Bool;
   };
   public type EntryStorage = Map.HashMap<EntryId, Entry>;
+  public type Subscriber = {
+    user : Principal;
+    subscribed_on : Int;
+  };
+  public type SubKey = Principal;
   public func generateNewRemoteObjectId() : EntryId {
     return Int.toText(Time.now());
   };

@@ -190,7 +190,8 @@ export default function HomePage() {
                   <Row>
                     <Col xl='12' lg='12' md='12' className='heding'>
                       <h4>
-                        <Image src={stars} alt='Hot' /> FEATURED CAMPAIGNS{' '}
+                        <Image src={stars} alt='Hot' />
+                        Featured Compaigns{' '}
                       </h4>
                       <div className='spacer-20'></div>
                     </Col>
@@ -203,7 +204,7 @@ export default function HomePage() {
                   <Row>
                     <Col xl='12' lg='12' md='12' className='heding'>
                       <h4>
-                        <Image src={press} alt='Hot' /> PRESS RELEASE
+                        <Image src={press} alt='Hot' /> Press Release
                       </h4>
                       <div className='spacer-20'></div>
                     </Col>
@@ -456,10 +457,17 @@ export default function HomePage() {
                           </span>
                         </li>
                         <li>
-                          <a href='#'>
+                          {/* <a href='#'> */}
+                          <Link
+                            href={`/article?articleId=${
+                              latestEntry.length != 0 ? latestEntry[0] : '#'
+                            }`}
+                            target='_self'
+                          >
                             <Image src={iconmessage} alt='Icon Comment' /> 12
                             Comments
-                          </a>
+                            {/* </a> */}
+                          </Link>
                         </li>
                         <li>
                           <div className='count-description-pnl'>

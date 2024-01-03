@@ -388,13 +388,13 @@ export default function Reward() {
                   <Col xl='4' lg='6' md='6'>
                     <div className='total-pnl' style={{ paddingTop: '10px' }}>
                       {/* <Image src={Circle} alt='Circle' /> */}
-                      <div className='d-flex justify-content-center'>
+                      <div className='d-flex justify-content-center ghContainer'>
                         {rewards && rewards.length == 0 ? (
-                          <div style={{ width: '200px' }}>
+                          <div style={{ height: '100%' }}>
                             <Doughnut data={ifNoVal} />
                           </div>
                         ) : (
-                          <div style={{ width: '200px' }}>
+                          <div style={{ height: '100%' }}>
                             <Doughnut data={chartData} options={options} />
                           </div>
                         )}

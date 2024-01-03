@@ -16,8 +16,8 @@ export default function ProductSlider() {
       {
         breakpoint: 1800,
         settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
+          slidesToShow: 3,
+          slidesToScroll: 3,
           infinite: false,
         },
       },
@@ -32,8 +32,8 @@ export default function ProductSlider() {
       {
         breakpoint: 767,
         settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
+          slidesToShow: 3,
+          slidesToScroll: 3,
           infinite: false,
         },
       },
@@ -100,15 +100,14 @@ export default function ProductSlider() {
                 </div>
                 <ul>
                   <li>
-                    <b>2</b>
-                    <span>Posts</span>
+                    2<span>Posts</span>
                   </li>
                   <li>
-                    <b>345</b>
+                    345
                     <span>Reviews</span>
                   </li>
                   <li>
-                    <b>2213</b>
+                    2213
                     <span>Upvotes</span>
                   </li>
                 </ul>
@@ -165,15 +164,14 @@ export default function ProductSlider() {
                 </div>
                 <ul>
                   <li>
-                    <b>3</b>
-                    <span>Posts</span>
+                    3<span>Posts</span>
                   </li>
                   <li>
-                    <b>350</b>
+                    350
                     <span>Reviews</span>
                   </li>
                   <li>
-                    <b>2950</b>
+                    2950
                     <span>Upvotes</span>
                   </li>
                 </ul>
@@ -230,15 +228,14 @@ export default function ProductSlider() {
                 </div>
                 <ul>
                   <li>
-                    <b>4</b>
-                    <span>Posts</span>
+                    4<span>Posts</span>
                   </li>
                   <li>
-                    <b>123</b>
+                    123
                     <span>Reviews</span>
                   </li>
                   <li>
-                    <b>1356</b>
+                    1356
                     <span>Upvotes</span>
                   </li>
                 </ul>
@@ -295,15 +292,14 @@ export default function ProductSlider() {
                 </div>
                 <ul>
                   <li>
-                    <b>4</b>
-                    <span>Posts</span>
+                    4<span>Posts</span>
                   </li>
                   <li>
-                    <b>123</b>
+                    123
                     <span>Reviews</span>
                   </li>
                   <li>
-                    <b>1356</b>
+                    1356
                     <span>Upvotes</span>
                   </li>
                 </ul>
