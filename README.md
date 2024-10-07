@@ -1,4 +1,4 @@
-# Nftstudio24 decentralized media platform.
+# Blockza decentralized media platform.
 
 ## Running Nftstudio24
 
